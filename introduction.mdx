@@ -1,0 +1,62 @@
+---
+title: "Ticto API: crie produtos e ofertas via integração"
+sidebarTitle: "Introdução"
+description: "A Ticto API permite criar e gerenciar produtos e ofertas programaticamente. Integre sua central ou ERP diretamente à Ticto."
+---
+
+A Ticto API v2 é a interface de integração pública da Ticto que permite criar e gerenciar **produtos** e **ofertas** diretamente via código. Com ela, você conecta sua central, ERP ou sistema interno à Ticto sem precisar acessar o painel manualmente para cada operação.
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Faça sua primeira chamada à API em minutos
+  </Card>
+  <Card title="Autenticação" icon="key" href="/authentication/overview">
+    Gere seu token e aprenda a autenticar requisições
+  </Card>
+  <Card title="Criar Produto" icon="box" href="/guides/create-product">
+    Guia passo a passo para criar seu primeiro produto
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/products/list">
+    Referência completa de todos os endpoints
+  </Card>
+</CardGroup>
+
+## O que você pode fazer
+
+A API v2 expõe dois recursos principais:
+
+- **Produtos** — crie cursos, ebooks, assinaturas, softwares e produtos físicos
+- **Ofertas** — defina preços, formas de cobrança (única ou recorrente) e condições de pagamento para cada produto
+
+Com poucas linhas de código, você envia apenas os campos essenciais. O restante é preenchido automaticamente pelos padrões da Ticto com base no tipo de produto.
+
+## Como funciona
+
+<Steps>
+  <Step title="Gere um token de API">
+    Acesse o painel da Ticto, navegue até **Integrações → API v2** e crie um token com os escopos necessários.
+  </Step>
+  <Step title="Autentique suas requisições">
+    Passe o token no header `Authorization: Bearer` em cada chamada à API.
+  </Step>
+  <Step title="Crie produtos e ofertas">
+    Use os endpoints `/api/v2/products` e `/api/v2/products/{hash}/offers` para criar e listar seus recursos.
+  </Step>
+  <Step title="Ative na dashboard">
+    Produtos criados via API ficam como **rascunho** por padrão. Ative-os no painel quando estiver pronto para vender.
+  </Step>
+</Steps>
+
+## Bases da API
+
+<CardGroup cols={3}>
+  <Card title="Ambientes" icon="flask" href="/concepts/environments">
+    Sandbox e produção
+  </Card>
+  <Card title="Idempotência" icon="rotate" href="/concepts/idempotency">
+    Retries seguros sem duplicação
+  </Card>
+  <Card title="Erros" icon="triangle-exclamation" href="/concepts/errors">
+    Formato de erro e códigos HTTP
+  </Card>
+</CardGroup>

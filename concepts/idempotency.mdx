@@ -1,0 +1,90 @@
+---
+title: "Idempotência na Ticto API: retries sem duplicação"
+sidebarTitle: "Idempotência"
+description: "Use o header Idempotency-Key em requisições POST para garantir que retries não criem recursos duplicados na Ticto API."
+---
+
+Idempotência é a propriedade que garante que realizar a mesma operação múltiplas vezes produz o mesmo resultado que realizá-la uma única vez. Na Ticto API, isso é essencial para lidar com falhas de rede: se uma requisição POST não receber resposta (timeout, queda de conexão, etc.), você pode reenviá-la com segurança usando a mesma chave — sem risco de criar produtos ou ofertas duplicados na sua conta.
+
+## Como funciona
+
+Toda requisição `POST` para a Ticto API exige o header `Idempotency-Key` contendo um **UUID v4**. O comportamento é o seguinte:
+
+- Na **primeira** chamada com uma chave, a API processa a requisição normalmente e armazena a resposta vinculada àquela chave.
+- Em chamadas **subsequentes** com a mesma chave, a API retorna exatamente a mesma resposta da primeira chamada bem-sucedida, com status `409` — sem processar a operação novamente.
+- O escopo da chave é **por token**: chaves de outros produtores não interferem nas suas.
+
+### Exemplo de requisição com Idempotency-Key
+
+```bash
+curl -X POST https://api.ticto.com.br/api/v2/products \
+  -H "Authorization: Bearer ticto_live_SUA_CHAVE_AQUI" \
+  -H "Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Curso de Marketing Digital",
+    "type": "digital"
+  }'
+```
+
+## Comportamento de 409
+
+Quando a mesma `Idempotency-Key` é reenviada, a API responde com status `409` e o corpo da resposta original:
+
+```json
+{
+  "error": "idempotency_conflict",
+  "message": "Esta requisição já foi processada.",
+  "request_id": "req_xxx"
+}
+```
+
+Isso sinaliza que a operação original já foi concluída — você pode usar os dados retornados na primeira chamada sem realizar nenhuma ação adicional.
+
+<Warning>
+  Use um UUID único por operação lógica. Reutilizar a mesma chave para operações **diferentes** pode fazer a API retornar um resultado inesperado — ela devolverá a resposta armazenada da operação original, não da nova.
+</Warning>
+
+## Boas práticas
+
+- **Gere UUIDs v4 aleatórios** para cada nova operação. Não use identificadores previsíveis ou sequenciais.
+- **Armazene a chave junto com a operação** em sua base de dados. Assim, em caso de falha, você pode recuperar a chave original para o retry.
+- **Em retries, use a mesma chave** da tentativa original — isso é exatamente o que garante a idempotência.
+- **Não reutilize chaves entre recursos diferentes**: uma chave usada para criar um produto não deve ser reaproveitada para criar uma oferta.
+
+## Gerando UUIDs
+
+<CodeGroup>
+
+```javascript JavaScript
+// Node.js 14.17+ ou browsers modernos
+const idempotencyKey = crypto.randomUUID();
+// Exemplo: "3b5a6c2d-1f4e-4a8b-9c0d-e2f3a4b5c6d7"
+
+// Alternativa com biblioteca uuid
+import { v4 as uuidv4 } from 'uuid';
+const idempotencyKey = uuidv4();
+```
+
+```php PHP
+// PHP 7.4+ com extensão ramsey/uuid
+require 'vendor/autoload.php';
+use Ramsey\Uuid\Uuid;
+
+$idempotencyKey = Uuid::uuid4()->toString();
+// Exemplo: "3b5a6c2d-1f4e-4a8b-9c0d-e2f3a4b5c6d7"
+
+// Alternativa nativa (PHP 7+)
+function generateUuidV4(): string {
+    return sprintf(
+        '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0x0fff) | 0x4000,
+        mt_rand(0, 0x3fff) | 0x8000,
+        mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+    );
+}
+```
+
+</CodeGroup>

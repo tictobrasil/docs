@@ -1,0 +1,131 @@
+---
+title: "Rate limits da Ticto API v2"
+sidebarTitle: "Rate Limits"
+description: "A Ticto API permite 150 requisições a cada 5 minutos por token. Saiba como lidar com o erro 429 e implementar retry com backoff."
+---
+
+A Ticto API aplica limites de requisições por token para garantir estabilidade e desempenho para todas as integrações. Monitore os headers de rate limit em cada resposta para antecipar quando a cota está próxima de ser esgotada.
+
+## Limites de requisições
+
+| Limite       | Valor                     |
+|--------------|---------------------------|
+| Requisições  | 150 por token / 5 minutos |
+| Escopo       | Por token de API          |
+| Reset        | A cada 5 minutos          |
+
+## Headers de rate limit
+
+Toda resposta da API inclui headers informativos sobre o estado atual da cota do token utilizado:
+
+| Header                  | Exemplo   | Descrição                                                                              |
+|-------------------------|-----------|----------------------------------------------------------------------------------------|
+| `X-RateLimit-Limit`     | `150`     | Número total de requisições permitidas na janela de 5 minutos.                         |
+| `X-RateLimit-Remaining` | `87`      | Número de requisições ainda disponíveis na janela atual.                               |
+| `Retry-After`           | `47`      | Presente apenas em respostas `429`. Indica os segundos restantes até o reset da cota.  |
+
+### Exemplo de resposta 429
+
+Quando a cota é esgotada, a API retorna o seguinte envelope de erro:
+
+```json Resposta 429
+{
+  "error": "too_many_requests",
+  "message": "Você atingiu o limite de requisições. Aguarde antes de tentar novamente.",
+  "request_id": "req_9a1d05c3e72f",
+  "details": []
+}
+```
+
+Com o header:
+
+```
+Retry-After: 47
+```
+
+## Boas práticas
+
+<Steps>
+  <Step title="Verifique X-RateLimit-Remaining antes de envios em lote">
+    Antes de iniciar uma operação que dispara múltiplas requisições, leia o header `X-RateLimit-Remaining` de uma chamada anterior. Se o valor estiver baixo, adicione um intervalo entre as requisições ou distribua o envio ao longo do tempo.
+  </Step>
+
+  <Step title="Implemente retry com exponential backoff ao receber 429">
+    Ao receber um erro `429`, não tente novamente imediatamente. Use o valor do header `Retry-After` como base para o tempo de espera, aplicando backoff exponencial com jitter para evitar picos sincronizados em integrações paralelas.
+  </Step>
+
+  <Step title="Use Idempotency-Key para reenviar requisições POST com segurança">
+    Ao reenviar uma requisição `POST` após falha de rede ou timeout, utilize o mesmo `Idempotency-Key` UUID da tentativa original. A Ticto API reconhecerá a duplicata e retornará a resposta original sem criar um segundo recurso.
+  </Step>
+
+  <Step title="Processe criações em batch com intervalos entre requests">
+    Para criar múltiplos recursos em sequência (ex.: várias ofertas), adicione um intervalo de pelo menos 100–200 ms entre cada requisição. Isso evita atingir o limite em rajadas curtas e distribui a carga de forma mais previsível.
+  </Step>
+</Steps>
+
+## Exemplo de retry com backoff exponencial
+
+O exemplo abaixo implementa retry automático em JavaScript, respeitando o header `Retry-After` e aplicando backoff exponencial com jitter para tentativas subsequentes:
+
+```javascript Retry com backoff exponencial
+async function requestWithRetry(url, options, maxRetries = 4) {
+  let attempt = 0;
+
+  while (attempt <= maxRetries) {
+    const response = await fetch(url, options);
+
+    if (response.status !== 429) {
+      // Qualquer resposta que não seja 429 é retornada diretamente
+      return response;
+    }
+
+    if (attempt === maxRetries) {
+      // Esgotou todas as tentativas
+      throw new Error(`Limite de tentativas atingido após ${maxRetries} retries.`);
+    }
+
+    // Lê o header Retry-After (em segundos) ou usa backoff exponencial como fallback
+    const retryAfterHeader = response.headers.get("Retry-After");
+    const retryAfterSeconds = retryAfterHeader
+      ? parseInt(retryAfterHeader, 10)
+      : Math.pow(2, attempt); // 1s, 2s, 4s, 8s...
+
+    // Adiciona jitter aleatório (0–1000 ms) para evitar picos sincronizados
+    const jitter = Math.random() * 1000;
+    const waitMs = retryAfterSeconds * 1000 + jitter;
+
+    console.warn(
+      `Rate limit atingido. Tentativa ${attempt + 1}/${maxRetries}. ` +
+      `Aguardando ${(waitMs / 1000).toFixed(1)}s...`
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
+    attempt++;
+  }
+}
+
+// Exemplo de uso
+const response = await requestWithRetry(
+  "https://api.ticto.com.br/api/v2/products/PROD-ABC123/offers",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer {seu_token}",
+      "Content-Type": "application/json",
+      "Idempotency-Key": crypto.randomUUID(),
+    },
+    body: JSON.stringify({
+      name: "Plano Mensal",
+      price: 9700,
+      charge_type: "one_time",
+    }),
+  }
+);
+
+const data = await response.json();
+console.log(data);
+```
+
+<Note>
+  O limite é por token de API. Você pode usar múltiplos tokens para integrar sistemas diferentes — por exemplo, um token para o seu CRM e outro para seu sistema de automação — sem que compartilhem a mesma cota de requisições.
+</Note>

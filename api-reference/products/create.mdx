@@ -1,0 +1,79 @@
+---
+title: "POST /products — Criar produto na Ticto API"
+sidebarTitle: "Criar Produto"
+description: "Crie um novo produto na Ticto API v2. O produto é criado como rascunho e pode ser ativado no painel."
+---
+
+Cria um novo produto na sua conta Ticto. Todo produto é criado inicialmente com o status `draft` (rascunho). Para ativá-lo e disponibilizá-lo para venda, acesse o painel da Ticto após a criação.
+
+## Endpoint
+
+```
+POST /api/v2/products
+```
+
+## Headers obrigatórios
+
+| Header | Valor | Descrição |
+|--------|-------|-----------|
+| `Authorization` | `Bearer ticto_live_...` | Token de acesso à API. Use `ticto_test_...` para o ambiente sandbox. |
+| `Content-Type` | `application/json` | Formato do corpo da requisição. |
+| `Idempotency-Key` | UUID v4 | Chave única para evitar criação duplicada em caso de retentativas. |
+
+## Corpo da requisição
+
+<ParamField body="name" type="string" required>
+  Nome do produto. Máximo de **255 caracteres**.
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Tipo do produto. Valores aceitos: `course`, `ebook`, `subscription`, `software`, `physical`.
+</ParamField>
+
+<ParamField body="description" type="string">
+  Descrição detalhada do produto. Campo opcional.
+</ParamField>
+
+## Exemplo de requisição
+
+```bash
+curl --request POST \
+  --url https://api.ticto.com.br/api/v2/products \
+  --header "Authorization: Bearer ticto_live_SEU_TOKEN_AQUI" \
+  --header "Content-Type: application/json" \
+  --header "Idempotency-Key: f47ac10b-58cc-4372-a567-0e02b2c3d479" \
+  --data '{
+    "name": "Curso de Marketing Digital",
+    "type": "course",
+    "description": "Aprenda marketing digital do zero."
+  }'
+```
+
+## Resposta 201
+
+Produto criado com sucesso. Retorna o objeto completo do produto recém-criado.
+
+```json
+{
+  "id": "PROD-K7M2",
+  "hash": "abc123def",
+  "name": "Curso de Marketing Digital",
+  "type": "course",
+  "description": "Aprenda marketing digital do zero.",
+  "status": "draft",
+  "created_at": "2024-03-15T14:32:00Z"
+}
+```
+
+<Note>
+  O campo `hash` é usado para referenciar o produto nos endpoints de ofertas. Salve-o após a criação.
+</Note>
+
+## Erros possíveis
+
+| Código HTTP | Erro | Descrição |
+|-------------|------|-----------|
+| `400` | `validation_failed` | Um ou mais campos do corpo da requisição são inválidos ou estão ausentes. Verifique o campo `details[]` na resposta para mais informações. |
+| `401` | — | Token de autenticação ausente, inválido ou expirado. Verifique o header `Authorization`. |
+| `409` | `idempotency_conflict` | Já existe uma requisição com o mesmo `Idempotency-Key`. O produto pode ter sido criado anteriormente. |
+| `429` | — | Limite de requisições excedido. Aguarde antes de realizar uma nova tentativa. |

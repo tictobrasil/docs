@@ -1,0 +1,55 @@
+---
+title: "GET /products/{hash} — Buscar produto na Ticto API"
+sidebarTitle: "Buscar Produto"
+description: "Busque um produto específico pelo hash na Ticto API v2. Retorna o objeto completo do produto."
+---
+
+Retorna os dados completos de um produto específico da sua conta, identificado pelo seu `hash`. O hash é obtido no momento da criação do produto ou através do endpoint de listagem.
+
+## Endpoint
+
+```
+GET /api/v2/products/{product_hash}
+```
+
+## Parâmetros de path
+
+<ParamField path="product_hash" type="string" required>
+  O hash único do produto (obtido ao criar ou listar produtos). Exemplo: `abc123def`.
+</ParamField>
+
+## Requisição
+
+```bash
+curl --request GET \
+  --url https://api.ticto.com.br/api/v2/products/abc123def \
+  --header "Authorization: Bearer ticto_live_SEU_TOKEN_AQUI"
+```
+
+## Resposta
+
+Retorna o objeto completo do produto correspondente ao hash informado.
+
+```json
+{
+  "id": "PROD-K7M2",
+  "hash": "abc123def",
+  "name": "Curso de Marketing Digital",
+  "type": "course",
+  "description": "Aprenda marketing digital do zero.",
+  "status": "active",
+  "created_at": "2024-03-15T14:32:00Z"
+}
+```
+
+<Note>
+  Somente produtos da sua conta são acessíveis. Tentar acessar o produto de outro produtor retorna `404`.
+</Note>
+
+## Erros possíveis
+
+| Código HTTP | Descrição |
+|-------------|-----------|
+| `401` | Token de autenticação ausente, inválido ou expirado. Verifique o header `Authorization`. |
+| `403` | Você não tem permissão para acessar este recurso. |
+| `404` | Produto não encontrado. O hash informado não existe ou pertence a outra conta. |

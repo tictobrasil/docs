@@ -1,0 +1,73 @@
+---
+title: "Tratamento de erros da Ticto API"
+sidebarTitle: "Erros"
+description: "Referência de todos os códigos de erro e status HTTP da Ticto API v2. Inclui o formato do envelope de erro e slugs estáveis."
+---
+
+Todos os erros da Ticto API v2 seguem um envelope JSON consistente, com um **slug estável e legível por máquina** no campo `error` e uma **mensagem em linguagem natural** no campo `message`. Isso facilita o tratamento programático de erros sem depender de textos que podem mudar entre versões.
+
+## Formato do envelope de erro
+
+```json
+{
+  "error": "validation_failed",
+  "message": "O preço mínimo é R$ 5,00.",
+  "request_id": "req_a1b2c3",
+  "details": [
+    { "field": "price", "code": "min" }
+  ]
+}
+```
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `error` | `string` | Slug estável e machine-readable que identifica o tipo do erro. Use este campo na lógica de tratamento. |
+| `message` | `string` | Mensagem em português para exibição ou logs. Pode mudar sem aviso prévio — **não programe contra ela**. |
+| `request_id` | `string` | Identificador único da requisição. Informe ao suporte para diagnóstico rápido. |
+| `details` | `array` | Lista de erros por campo. Presente apenas em erros de validação (`400` / `422`). Pode ser omitido em outros erros. |
+
+## Códigos HTTP
+
+| Status | Slug | Quando ocorre |
+|---|---|---|
+| `201` | — | Recurso criado com sucesso |
+| `400` | `validation_failed` | Dados inválidos no corpo da requisição |
+| `401` | `unauthorized` | Token ausente, inválido, expirado ou revogado |
+| `403` | `insufficient_scope` | Token não possui o escopo exigido pela rota |
+| `404` | `not_found` | Recurso não encontrado ou não pertence à sua conta |
+| `409` | `idempotency_conflict` | `Idempotency-Key` já usada para outra operação |
+| `422` | `unprocessable_entity` | Dados semanticamente inválidos |
+| `429` | `rate_limit_exceeded` | Muitas requisições — aguarde antes de tentar novamente |
+| `503` | `service_unavailable` | Serviço temporariamente indisponível |
+
+<Note>
+  O slug `error` é estável e machine-readable — programe sua lógica de tratamento de erro contra ele. O campo `message` pode mudar sem aviso e não deve ser usado como base para decisões programáticas.
+</Note>
+
+<Tip>
+  Em caso de erro, sempre logue o `request_id`. Ele acelera o diagnóstico quando você entrar em contato com o suporte da Ticto.
+</Tip>
+
+## Erros de validação
+
+Quando a API retorna `400` ou `422`, o campo `details` traz um array com erros específicos por campo. Cada item possui:
+
+- `field`: o caminho do campo que falhou na validação (ex.: `"price"`, `"offers[0].name"`)
+- `code`: um código de regra de validação (ex.: `"min"`, `"required"`, `"invalid_format"`)
+
+### Exemplo com múltiplos erros de campo
+
+```json
+{
+  "error": "validation_failed",
+  "message": "Alguns campos estão inválidos. Verifique os detalhes.",
+  "request_id": "req_d4e5f6",
+  "details": [
+    { "field": "name", "code": "required" },
+    { "field": "price", "code": "min" },
+    { "field": "offers[0].checkout_url", "code": "invalid_format" }
+  ]
+}
+```
+
+Itere sobre o array `details` para exibir mensagens de erro contextuais ao usuário ou para registrar quais campos precisam de correção antes de reenviar a requisição.

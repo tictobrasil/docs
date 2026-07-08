@@ -1,0 +1,62 @@
+---
+title: "Ciclo de vida do token da Ticto API"
+sidebarTitle: "Ciclo de Vida"
+description: "Entenda como criar, revogar e rotacionar tokens da Ticto API v2 para manter sua integração segura."
+---
+
+Um token da Ticto API passa por estados bem definidos desde o momento em que é gerado até deixar de ser válido. Entender esse ciclo ajuda a manter sua integração segura: saber quando revogar, como rotacionar sem downtime e o que esperar quando um token expira são práticas essenciais para qualquer integração em produção.
+
+## Estados do token
+
+<Steps>
+  <Step title="Emitido">
+    O token é criado no painel com os escopos e, opcionalmente, uma data de expiração. O plaintext é exibido uma única vez — após fechar a tela, ele não pode ser recuperado.
+  </Step>
+  <Step title="Ativo">
+    O token está válido e pode ser usado para autenticar requisições. Permanece neste estado até ser revogado manualmente ou atingir sua data de expiração.
+  </Step>
+  <Step title="Em uso">
+    Cada requisição autenticada com o token é validada em tempo real. O token continua ativo enquanto não for revogado ou expirado.
+  </Step>
+  <Step title="Expirado ou Revogado">
+    O token deixa de ser aceito. Qualquer requisição que o utilize passa a receber `401 Unauthorized`. Para restaurar o acesso, crie um novo token.
+  </Step>
+</Steps>
+
+## Criar um token
+
+A criação de tokens é feita no painel da Ticto em **Integrações → API v2**. Consulte a página de [Visão Geral](/authentication/overview) para o passo a passo completo, incluindo como selecionar os escopos corretos.
+
+## Revogar um token
+
+Para revogar um token, acesse **Integrações → API v2** no painel, localize o token na lista e clique em **Revogar**. A revogação é aplicada imediatamente.
+
+<Note>
+  Revogação é imediata — requisições em andamento com o token revogado passam a retornar `401` instantaneamente. Não há período de graça.
+</Note>
+
+Revogue tokens sempre que:
+- Suspeitar que o token foi exposto ou vazado;
+- Um colaborador com acesso ao token deixar a equipe;
+- A integração que usava o token for descontinuada.
+
+## Rotacionar tokens
+
+A rotação de tokens é a prática de substituir um token ativo por um novo sem interromper o serviço. Siga esta ordem para evitar downtime:
+
+1. **Crie o novo token** no painel com os mesmos escopos do token atual.
+2. **Atualize sua integração** para usar o novo token (variável de ambiente, secret manager, etc.).
+3. **Verifique** que a integração está funcionando corretamente com o novo token.
+4. **Revogue o token antigo** somente após confirmar que o novo está em uso.
+
+Nunca revogue o token antigo antes de atualizar a integração — isso causaria uma janela de indisponibilidade.
+
+## Expiração automática
+
+Ao criar um token, você pode definir uma **data de expiração** (`expires_at`). Quando essa data é atingida, o token expira automaticamente e todas as requisições que o utilizarem passam a retornar `401 Unauthorized`.
+
+A expiração automática é recomendada para tokens de uso temporário — como integrações de teste, scripts pontuais ou acessos concedidos a terceiros com prazo definido.
+
+<Warning>
+  Nunca commite tokens no código-fonte ou em repositórios públicos. Use **variáveis de ambiente** ou **cofres de segredos** (ex: AWS Secrets Manager, HashiCorp Vault, Doppler). Tokens com prefixo `ticto_live_` são detectados automaticamente pelo **GitHub Secret Scanning** — se um commit com esse padrão for enviado para um repositório público, o GitHub notificará a Ticto e o token poderá ser revogado automaticamente.
+</Warning>

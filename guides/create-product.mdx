@@ -1,0 +1,102 @@
+---
+title: "Como criar um produto na Ticto via API"
+sidebarTitle: "Criar Produto"
+description: "Guia completo para criar cursos, ebooks, assinaturas e outros tipos de produto na Ticto usando a API v2."
+---
+
+A API v2 da Ticto permite que você crie e gerencie produtos de forma programática, integrando sua plataforma diretamente ao seu fluxo de desenvolvimento ou ferramentas de automação. Com um único endpoint, você registra cursos, ebooks, assinaturas e muito mais — sem precisar acessar o painel para cada cadastro.
+
+## Tipos de produto
+
+Antes de criar um produto, escolha o tipo que melhor descreve o que você está vendendo. O campo `type` define como a Ticto trata o produto internamente, incluindo quais métodos de pagamento e configurações são aplicados automaticamente.
+
+| Tipo           | Descrição                                    |
+| -------------- | -------------------------------------------- |
+| `course`       | Curso online com área de membros             |
+| `ebook`        | Livro digital ou material para download      |
+| `subscription` | Assinatura recorrente (SaaS, clube)          |
+| `software`     | Software ou aplicativo digital               |
+| `physical`     | Produto físico com entrega                   |
+
+## Criando um produto digital
+
+<Steps>
+  <Step title="Prepare o payload">
+    Monte o corpo da requisição com o nome e o tipo do produto. Para produtos digitais, apenas esses campos básicos são necessários — o **Preset Resolver** da Ticto configura automaticamente os métodos de pagamento e outras opções.
+
+    ```json
+    {
+      "name": "Curso Completo de Marketing Digital",
+      "type": "course",
+      "description": "Do zero ao avançado em estratégias de marketing digital para negócios online."
+    }
+    ```
+  </Step>
+
+  <Step title="Envie a requisição">
+    Faça um `POST` para `/api/v2/products`, incluindo o header de autenticação e um `Idempotency-Key` único para garantir que a requisição não seja processada mais de uma vez.
+
+    ```bash
+    curl --request POST \
+      --url https://api.ticto.com.br/api/v2/products \
+      --header "Authorization: Bearer ticto_live_..." \
+      --header "Content-Type: application/json" \
+      --header "Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000" \
+      --data '{
+        "name": "Curso Completo de Marketing Digital",
+        "type": "course",
+        "description": "Do zero ao avançado em estratégias de marketing digital para negócios online."
+      }'
+    ```
+  </Step>
+
+  <Step title="Verifique a resposta">
+    Uma resposta `201 Created` confirma que o produto foi registrado. Anote o campo `hash` — você vai precisar dele para criar ofertas vinculadas a este produto.
+
+    ```json
+    {
+      "id": 1042,
+      "hash": "prd_a1b2c3d4e5f6",
+      "name": "Curso Completo de Marketing Digital",
+      "type": "course",
+      "status": "draft",
+      "created_at": "2025-01-15T14:30:00Z"
+    }
+    ```
+  </Step>
+
+  <Step title="Ative no painel">
+    Produtos criados via API sempre iniciam com `status: "draft"`. Para publicá-lo e permitir vendas, acesse o **painel da Ticto**, localize o produto na lista de rascunhos e clique em **Ativar**. Esse passo manual garante que nenhum produto seja publicado sem a sua aprovação.
+  </Step>
+</Steps>
+
+## Campos do produto
+
+<ParamField body="name" type="string" required>
+  Nome do produto exibido no painel e no checkout. Deve ser claro e descritivo para seus clientes.
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Tipo do produto. Valores aceitos: `course`, `ebook`, `subscription`, `software`, `physical`. Define as configurações padrão aplicadas automaticamente pelo Preset Resolver.
+</ParamField>
+
+<ParamField body="description" type="string">
+  Descrição detalhada do produto. Aparece na página de checkout e na área de membros. Opcional, mas recomendado para melhorar a conversão.
+</ParamField>
+
+<Note>
+  Todos os produtos criados via API começam como rascunho (`draft`). Isso garante que um token comprometido não publique produtos em seu nome imediatamente. Ative manualmente no painel quando estiver pronto.
+</Note>
+
+## Próximos passos
+
+Com o produto criado e o `hash` em mãos, o próximo passo é configurar uma oferta — que define o preço e as condições de pagamento que seus clientes verão no checkout.
+
+<CardGroup cols={2}>
+  <Card title="Criar Oferta Única" icon="tag" href="/guides/create-offer">
+    Defina um preço de pagamento único para o seu produto e obtenha o link de checkout.
+  </Card>
+  <Card title="Criar Oferta Recorrente" icon="arrows-rotate" href="/guides/recurring-offers">
+    Configure planos de assinatura com intervalo, trial e ciclos para o seu produto.
+  </Card>
+</CardGroup>

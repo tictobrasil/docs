@@ -1,47 +1,155 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Comece a usar a Ticto API em 5 minutos"
+sidebarTitle: "Quickstart"
+description: "Aprenda a autenticar e fazer sua primeira chamada à Ticto API v2 criando um produto em menos de 5 minutos."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenciar produtos e ofertas de forma programática, integrando o ecossistema Ticto diretamente às suas ferramentas e fluxos de trabalho. Este guia mostra, passo a passo, como obter suas credenciais, autenticar suas requisições e criar seu primeiro produto com uma oferta associada — tudo em menos de 5 minutos.
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+
+  <Step title="Gere seu token de API">
+    Acesse o painel da Ticto e navegue até **Integrações → API v2**. Clique em **Novo Token**, dê um nome descritivo e selecione os escopos necessários para este guia:
+
+    | Escopo           | O que permite                          |
+    |------------------|----------------------------------------|
+    | `products:read`  | Listar e consultar produtos            |
+    | `products:write` | Criar e atualizar produtos             |
+    | `offers:read`    | Listar e consultar ofertas             |
+    | `offers:write`   | Criar e atualizar ofertas              |
+
+    Após confirmar, o token será exibido **uma única vez** em texto simples. Copie-o imediatamente e armazene em um local seguro (por exemplo, um gerenciador de segredos ou variável de ambiente). Tokens de produção começam com o prefixo `ticto_live_`; tokens de sandbox começam com `ticto_test_`.
+
+    <Warning>
+      Por segurança, o valor completo do token não é exibido novamente após esta tela. Se perdê-lo, será necessário revogar e criar um novo.
+    </Warning>
+  </Step>
+
+  <Step title="Faça sua primeira requisição">
+    Com o token em mãos, valide sua configuração listando os produtos da sua conta. Substitua o valor do cabeçalho `Authorization` pelo seu token real.
 
     ```bash
-    npm install your-package
+    curl --request GET \
+      --url https://api.ticto.com.br/api/v2/products \
+      --header "Authorization: Bearer ticto_live_VIHfM4Ynb0J8kQ2rXXXXXXXXXXXXXXXXXXXXXXXX" \
+      --header "Accept: application/json"
+    ```
+
+    Uma resposta `200 OK` com a lista de produtos confirma que a autenticação está funcionando corretamente:
+
+    ```json
+    {
+      "data": [
+        {
+          "id": 42,
+          "hash": "abc123def456",
+          "name": "Meu Curso Online",
+          "type": "course",
+          "status": "active"
+        }
+      ],
+      "meta": {
+        "current_page": 1,
+        "total": 1
+      }
+    }
     ```
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+
+  <Step title="Crie um produto">
+    Para criar um produto, envie uma requisição `POST /products`. Todas as requisições POST exigem o cabeçalho `Idempotency-Key` com um UUID v4 único — isso garante que requisições repetidas (por exemplo, após uma falha de rede) não criem duplicatas.
 
     ```bash
-    your-cli init
+    curl --request POST \
+      --url https://api.ticto.com.br/api/v2/products \
+      --header "Authorization: Bearer ticto_live_VIHfM4Ynb0J8kQ2rXXXXXXXXXXXXXXXXXXXXXXXX" \
+      --header "Content-Type: application/json" \
+      --header "Accept: application/json" \
+      --header "Idempotency-Key: e4d909c2-90d4-4809-b3f4-1c3f3e4a1234" \
+      --data '{
+        "name": "Curso de Marketing Digital",
+        "type": "course",
+        "description": "Aprenda estratégias avançadas de marketing digital do zero ao avançado."
+      }'
     ```
+
+    Em caso de sucesso, a API retorna `201 Created` com os dados do produto recém-criado:
+
+    ```json
+    {
+      "data": {
+        "id": 101,
+        "hash": "mkt2024xyz789",
+        "name": "Curso de Marketing Digital",
+        "type": "course",
+        "description": "Aprenda estratégias avançadas de marketing digital do zero ao avançado.",
+        "status": "draft",
+        "created_at": "2024-07-15T10:30:00Z"
+      }
+    }
+    ```
+
+    <Info>
+      Produtos recém-criados via API sempre recebem o status `"draft"`. Consulte o passo **Ative seu produto** para disponibilizá-lo para venda.
+    </Info>
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+
+  <Step title="Crie uma oferta">
+    Com o `hash` do produto criado no passo anterior, adicione uma oferta a ele. Preços são informados **em centavos** — por exemplo, `19700` equivale a R$&nbsp;197,00.
 
     ```bash
-    your-cli start
+    curl --request POST \
+      --url https://api.ticto.com.br/api/v2/products/mkt2024xyz789/offers \
+      --header "Authorization: Bearer ticto_live_VIHfM4Ynb0J8kQ2rXXXXXXXXXXXXXXXXXXXXXXXX" \
+      --header "Content-Type: application/json" \
+      --header "Accept: application/json" \
+      --header "Idempotency-Key: b7f3a1e2-55c8-4d12-9e6b-8a2f1d0c5e78" \
+      --data '{
+        "name": "Acesso Completo",
+        "price": 19700,
+        "charge_type": "one_time"
+      }'
+    ```
+
+    A resposta `201 Created` inclui o `id` da oferta e a `checkout_url` pronta para ser compartilhada com seus clientes:
+
+    ```json
+    {
+      "data": {
+        "id": 55,
+        "name": "Acesso Completo",
+        "price": 19700,
+        "charge_type": "one_time",
+        "checkout_url": "https://pay.ticto.com.br/mkt2024xyz789/acesso-completo",
+        "created_at": "2024-07-15T10:35:00Z"
+      }
+    }
     ```
   </Step>
+
+  <Step title="Ative seu produto">
+    Produtos criados via API entram no status `draft` e **não ficam disponíveis para compra** enquanto não forem ativados. Para ativar seu produto, acesse o painel da Ticto, localize o produto em **Produtos → Meus Produtos** e clique em **Ativar**.
+
+    Após a ativação, o status do produto passa para `active` e a `checkout_url` gerada na oferta estará acessível ao público para receber pagamentos reais.
+  </Step>
+
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+<Note>
+  Tokens com prefixo `ticto_test_` apontam para o ambiente sandbox (`https://sandbox.ticto.com.br/api/v2`). Produtos e ofertas criados no sandbox são rascunhos descartáveis e **nunca geram cobranças reais** — use-os à vontade para testar integrações, validar payloads e simular fluxos sem nenhum risco financeiro.
+</Note>
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+<CardGroup cols={2}>
+  <Card title="Autenticação" icon="key" href="/authentication/overview">
+    Entenda os tipos de token, escopos disponíveis e boas práticas para proteger suas credenciais.
+  </Card>
+  <Card title="Criar Produto" icon="box" href="/guides/create-product">
+    Guia detalhado sobre todos os campos, tipos de produto e opções de configuração disponíveis.
+  </Card>
+  <Card title="Produtos" icon="list" href="/api-reference/products/list">
+    Referência completa do endpoint de listagem e criação de produtos.
+  </Card>
+  <Card title="Ofertas" icon="tag" href="/api-reference/offers/list">
+    Referência completa do endpoint de listagem e criação de ofertas vinculadas a produtos.
+  </Card>
+</CardGroup>

@@ -1,0 +1,41 @@
+---
+title: "Ambientes sandbox e produção da Ticto API"
+sidebarTitle: "Ambientes"
+description: "Use o ambiente sandbox da Ticto API para testar integrações sem gerar cobranças reais ou produtos visíveis ao público."
+---
+
+A Ticto API v2 oferece dois ambientes distintos: **sandbox** e **produção**. O ambiente sandbox permite que você desenvolva e teste sua integração de forma segura, utilizando tokens com prefixo `ticto_test_`, sem gerar cobranças reais nem tornar produtos visíveis ao público. O ambiente de produção é destinado a operações reais, utiliza tokens com prefixo `ticto_live_` e persiste dados permanentemente.
+
+## Comparativo de ambientes
+
+|  | Sandbox | Produção |
+|---|---|---|
+| **Base URL** | `https://sandbox.ticto.com.br/api/v2` | `https://api.ticto.com.br/api/v2` |
+| **Prefixo do token** | `ticto_test_` | `ticto_live_` |
+| **Cobranças reais** | Não | Sim |
+| **Produtos visíveis** | Não | Sim (quando ativados) |
+| **Dados persistidos** | Descartáveis | Permanentes |
+
+## Como usar o sandbox
+
+Para começar a usar o sandbox, gere um token `ticto_test_` no painel da Ticto — o fluxo é idêntico ao de produção. Em seguida, substitua a base URL das suas requisições pela URL do sandbox:
+
+```
+https://sandbox.ticto.com.br/api/v2
+```
+
+Todas as rotas disponíveis em produção estão espelhadas no sandbox. Você pode criar produtos, ofertas e realizar qualquer operação sem impacto real.
+
+<Note>
+  Tokens de produção e sandbox são separados. Um token `ticto_live_` não funciona no endpoint sandbox, e vice-versa.
+</Note>
+
+## Draft-by-default
+
+Todos os produtos criados via API — em ambos os ambientes — começam como **rascunhos** (draft). No sandbox, esses rascunhos são descartáveis e não têm visibilidade pública. Em produção, os produtos também surgem como rascunhos e precisam ser ativados manualmente no painel da Ticto antes de estarem disponíveis para venda.
+
+Isso garante que nenhum produto seja exposto ao público acidentalmente por uma chamada de API.
+
+<Tip>
+  Sempre teste em sandbox antes de ir para produção. Crie o mesmo fluxo de integração nos dois ambientes para garantir que tudo funcione conforme esperado antes de afetar dados reais.
+</Tip>

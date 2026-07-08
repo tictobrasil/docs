@@ -1,0 +1,99 @@
+---
+title: "GET /products — Listar produtos da Ticto API"
+sidebarTitle: "Listar Produtos"
+description: "Liste todos os seus produtos na Ticto API v2. Retorna um array paginado de produtos ordenados por data de criação."
+---
+
+Retorna a lista paginada de todos os produtos vinculados à sua conta na Ticto, ordenados do mais recente para o mais antigo. Use os parâmetros de query para filtrar e paginar os resultados conforme necessário.
+
+## Endpoint
+
+```
+GET /api/v2/products
+```
+
+## Requisição
+
+```bash
+curl --request GET \
+  --url https://api.ticto.com.br/api/v2/products \
+  --header "Authorization: Bearer ticto_live_SEU_TOKEN_AQUI"
+```
+
+## Parâmetros de query
+
+<ParamField query="page" type="integer">
+  Número da página a ser retornada. **Padrão:** `1`.
+</ParamField>
+
+<ParamField query="per_page" type="integer">
+  Quantidade de itens por página. **Padrão:** `20`. **Máximo:** `100`.
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filtra os produtos pelo status. Valores aceitos: `draft` ou `active`.
+</ParamField>
+
+## Resposta
+
+Retorna um objeto com o array `data` contendo os produtos e o objeto `meta` com informações de paginação.
+
+```json
+{
+  "data": [
+    {
+      "id": "PROD-K7M2",
+      "hash": "abc123def",
+      "name": "Curso de Marketing Digital",
+      "type": "course",
+      "description": "Aprenda marketing digital do zero.",
+      "status": "active",
+      "created_at": "2024-03-15T14:32:00Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 20,
+    "total": 42
+  }
+}
+```
+
+## Campos da resposta
+
+<ResponseField name="data" type="array">
+  Array de objetos de produto pertencentes à sua conta.
+
+  <Expandable title="Campos de cada produto em data[]">
+    <ResponseField name="data[].id" type="string">
+      Identificador único do produto no formato `PROD-XXXX`.
+    </ResponseField>
+
+    <ResponseField name="data[].hash" type="string">
+      Hash único do produto, usado como referência nos demais endpoints da API.
+    </ResponseField>
+
+    <ResponseField name="data[].name" type="string">
+      Nome do produto cadastrado.
+    </ResponseField>
+
+    <ResponseField name="data[].type" type="string">
+      Tipo do produto. Valores possíveis: `course`, `ebook`, `subscription`, `software`, `physical`.
+    </ResponseField>
+
+    <ResponseField name="data[].status" type="string">
+      Status atual do produto: `draft` (rascunho) ou `active` (ativo).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="meta.total" type="integer">
+  Número total de produtos encontrados (considerando os filtros aplicados).
+</ResponseField>
+
+## Erros possíveis
+
+| Código HTTP | Descrição |
+|-------------|-----------|
+| `401` | Token de autenticação ausente, inválido ou expirado. Verifique o header `Authorization`. |
+| `429` | Limite de requisições excedido. Aguarde antes de realizar uma nova tentativa. |

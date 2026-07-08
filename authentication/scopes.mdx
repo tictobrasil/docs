@@ -1,0 +1,45 @@
+---
+title: "Escopos de acesso da Ticto API"
+sidebarTitle: "Escopos"
+description: "Configure permissões granulares no seu token da Ticto API v2. Saiba quais escopos cada endpoint exige."
+---
+
+Escopos definem exatamente o que um token pode fazer. Ao criar um token, você escolhe um conjunto de escopos — e o token só poderá acessar os endpoints cobertos por essas permissões. Essa granularidade segue o **princípio de menor privilégio**: um token que só precisa ler produtos nunca deve ter permissão para criá-los. Isso limita o raio de impacto em caso de vazamento e facilita a auditoria de acessos.
+
+## Escopos disponíveis
+
+| Escopo | Permissão |
+|--------|-----------|
+| `products:read` | Listar e visualizar seus produtos |
+| `products:write` | Criar produtos |
+| `offers:read` | Listar e visualizar ofertas dos seus produtos |
+| `offers:write` | Criar ofertas |
+
+## Quais escopos cada endpoint exige
+
+| Endpoint | Método | Escopo obrigatório |
+|----------|--------|--------------------|
+| `/products` | `GET` | `products:read` |
+| `/products/{hash}` | `GET` | `products:read` |
+| `/products` | `POST` | `products:write` |
+| `/products/{hash}/offers` | `GET` | `offers:read` |
+| `/products/{hash}/offers/{id}` | `GET` | `offers:read` |
+| `/products/{hash}/offers` | `POST` | `offers:write` |
+
+<Tip>
+  Crie tokens separados para leitura e escrita. Se o token de leitura vazar, sua conta não corre risco de criação fraudulenta de produtos — ele simplesmente não tem essa permissão.
+</Tip>
+
+## Erro de escopo insuficiente
+
+Quando um token válido tenta acessar um endpoint para o qual não possui o escopo necessário, a API retorna `403 Forbidden` com o seguinte corpo:
+
+```json
+{
+  "error": "insufficient_scope",
+  "message": "O token utilizado não possui o escopo necessário para acessar este recurso.",
+  "request_id": "req_xxx"
+}
+```
+
+Para corrigir, verifique quais escopos o endpoint exige (tabela acima) e gere um novo token com as permissões adequadas, ou adicione o escopo ao token existente no painel em **Integrações → API v2**.

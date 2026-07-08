@@ -1,0 +1,121 @@
+---
+title: "Como criar ofertas recorrentes na Ticto API"
+sidebarTitle: "Recorrência"
+description: "Configure assinaturas e planos recorrentes na Ticto API v2. Defina intervalo de cobrança, período trial e ciclos."
+---
+
+Ofertas recorrentes permitem que você cobre seus clientes de forma automática em intervalos definidos — ideal para assinaturas de cursos com mensalidade, plataformas SaaS, clubes de conteúdo e qualquer modelo que dependa de receita previsível. Ao usar `charge_type: "recurring"`, a Ticto gerencia todo o ciclo de cobrança: tentativas automáticas, notificações ao assinante e cancelamentos.
+
+## O objeto recurrence
+
+Quando `charge_type` é `"recurring"`, o campo `recurrence` é **obrigatório**. Ele define as regras de cobrança da assinatura.
+
+<ParamField body="recurrence.interval" type="string" required>
+  Frequência com que o cliente será cobrado. Valores aceitos: `monthly`, `quarterly`, `semiannually`, `annually`.
+</ParamField>
+
+<ParamField body="recurrence.trial_days" type="integer">
+  Número de dias de acesso gratuito antes da primeira cobrança. Use `0` para não oferecer período trial. Quando definido, o cliente tem acesso imediato ao produto mas só é cobrado após o período de trial expirar.
+</ParamField>
+
+<ParamField body="recurrence.cycles" type="integer | null">
+  Número total de cobranças antes de encerrar a assinatura automaticamente. Use `null` para uma assinatura sem data de término (infinita). Exemplo: `cycles: 12` em um plano mensal resulta em exatamente 12 meses de cobrança.
+</ParamField>
+
+## Exemplo: plano anual com trial
+
+O exemplo abaixo cria um plano anual de R$ 497,00 com 7 dias de acesso gratuito e sem limite de ciclos — a assinatura se renova anualmente até ser cancelada.
+
+```bash
+curl --request POST \
+  --url https://api.ticto.com.br/api/v2/products/prd_a1b2c3d4e5f6/offers \
+  --header "Authorization: Bearer ticto_live_..." \
+  --header "Content-Type: application/json" \
+  --header "Idempotency-Key: 3fa85f64-5717-4562-b3fc-2c963f66afa6" \
+  --data '{
+    "name": "Plano Anual",
+    "price": 49700,
+    "charge_type": "recurring",
+    "recurrence": {
+      "interval": "annually",
+      "trial_days": 7,
+      "cycles": null
+    }
+  }'
+```
+
+A resposta `201 Created` confirma a criação da oferta recorrente, já com status `active` e o link de checkout disponível:
+
+```json
+{
+  "id": 415,
+  "reference_id": "ofr_r3c0r1e2n3t4",
+  "name": "Plano Anual",
+  "price": 49700,
+  "charge_type": "recurring",
+  "status": "active",
+  "checkout_url": "https://pay.ticto.com.br/checkout/ofr_r3c0r1e2n3t4"
+}
+```
+
+## Intervalos disponíveis
+
+Escolha o intervalo que melhor se adapta ao seu modelo de negócio. Você pode criar múltiplas ofertas para o mesmo produto com intervalos diferentes — por exemplo, um plano mensal e um anual com desconto.
+
+| Intervalo      | Cobrança     |
+| -------------- | ------------ |
+| `monthly`      | Mensal       |
+| `quarterly`    | Trimestral   |
+| `semiannually` | Semestral    |
+| `annually`     | Anual        |
+
+## Período de trial
+
+Quando `trial_days` é maior que `0`, o cliente recebe acesso imediato ao produto sem ser cobrado. A primeira cobrança ocorre somente após o período trial expirar. Isso reduz a fricção na conversão e permite que o assinante experimente antes de pagar.
+
+```json
+{
+  "name": "Plano Mensal com Trial",
+  "price": 9700,
+  "charge_type": "recurring",
+  "recurrence": {
+    "interval": "monthly",
+    "trial_days": 7,
+    "cycles": null
+  }
+}
+```
+
+Nesse exemplo, o cliente tem 7 dias gratuitos e, em seguida, é cobrado R$ 97,00 todo mês até cancelar.
+
+## Ciclos limitados
+
+Por padrão, assinaturas com `cycles: null` renovam indefinidamente até que o assinante ou o vendedor cancele. Quando você precisa de uma assinatura com prazo determinado — como um parcelamento ou um plano de 12 meses fixos — defina `cycles` como um inteiro positivo.
+
+```json
+{
+  "name": "Plano Mensal 12x",
+  "price": 4700,
+  "charge_type": "recurring",
+  "recurrence": {
+    "interval": "monthly",
+    "trial_days": 0,
+    "cycles": 12
+  }
+}
+```
+
+Nesse exemplo, o cliente é cobrado 12 vezes de R$ 47,00 (totalizando R$ 564,00) e a assinatura é encerrada automaticamente após o último ciclo — sem necessidade de cancelamento manual.
+
+<Note>
+  O `charge_type: "recurring"` está disponível para produtos do tipo `course`, `subscription` e `software`. Produtos do tipo `physical` não suportam cobrança recorrente e retornarão erro de validação caso esse campo seja utilizado.
+</Note>
+
+<CardGroup cols={2}>
+  <Card title="Referência: Criar Oferta" icon="code" href="/api-reference/offers/create">
+    Veja todos os campos aceitos, validações e exemplos de resposta na documentação completa do endpoint.
+  </Card>
+  <Card title="Criar Oferta Única" icon="tag" href="/guides/create-offer">
+    Prefere cobrar uma única vez? Veja como criar ofertas de pagamento único com checkout imediato.
+  </Card>
+</CardGroup>

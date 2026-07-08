@@ -1,0 +1,59 @@
+---
+title: "Autentique requisições na Ticto API"
+sidebarTitle: "Visão Geral"
+description: "Aprenda a gerar e usar tokens de API para autenticar suas requisições à Ticto API v2 com segurança."
+---
+
+A Ticto API v2 utiliza **Bearer tokens** para autenticar todas as requisições. Cada chamada deve incluir um token válido no cabeçalho `Authorization` — sem ele, a API rejeitará a requisição imediatamente. Os tokens são gerados diretamente no painel da Ticto e carregam as permissões (escopos) que você definir no momento da criação.
+
+## Como gerar um token
+
+<Steps>
+  <Step title="Acesse Integrações → API v2 no painel">
+    No menu lateral do painel Ticto, navegue até **Integrações** e clique em **API v2**.
+  </Step>
+  <Step title="Clique em Novo token">
+    Clique no botão **Novo token** no canto superior direito da página. Dê um nome descritivo ao token para identificá-lo facilmente depois (ex: `backend-producao`, `script-importacao`).
+  </Step>
+  <Step title="Selecione os escopos necessários">
+    Marque apenas os escopos que a sua integração realmente precisa. Seguir o princípio de menor privilégio reduz o impacto caso o token seja comprometido. Consulte a página de [Escopos](/authentication/scopes) para saber quais escopos cada endpoint exige.
+  </Step>
+  <Step title="Copie o token — exibido uma única vez">
+    Após confirmar, o token será exibido **uma única vez**. Copie-o imediatamente e armazene-o em local seguro. Não será possível visualizá-lo novamente.
+  </Step>
+</Steps>
+
+## Como usar o token
+
+Inclua o token no cabeçalho `Authorization` de **todas** as requisições à API, utilizando o esquema `Bearer`:
+
+```bash
+curl https://api.ticto.com.br/v2/products \
+  -H "Authorization: Bearer ticto_live_SEU_TOKEN_AQUI"
+```
+
+<Note>
+  O cabeçalho `Authorization: Bearer <token>` é obrigatório em todas as requisições. Requisições sem esse cabeçalho, ou com um token inválido, serão rejeitadas com `401 Unauthorized`.
+</Note>
+
+<Warning>
+  O plaintext do token é exibido **apenas uma vez** na criação. Salve-o imediatamente em um cofre de senhas (ex: 1Password, AWS Secrets Manager). Se você perder o token, será necessário revogá-lo e criar um novo.
+</Warning>
+
+## Erros de autenticação
+
+| Código HTTP | Código de erro | Causa |
+|-------------|----------------|-------|
+| `401` | `unauthorized` | Token ausente, inválido, expirado ou revogado |
+| `403` | `insufficient_scope` | Token válido, mas sem o escopo exigido pela rota |
+
+## Próximos passos
+
+<CardGroup cols={2}>
+  <Card title="Escopos de acesso" icon="key" href="/authentication/scopes">
+    Configure permissões granulares e saiba quais escopos cada endpoint exige.
+  </Card>
+  <Card title="Ciclo de vida do token" icon="arrows-rotate" href="/authentication/token-lifecycle">
+    Aprenda a criar, revogar e rotacionar tokens com segurança.
+  </Card>
+</CardGroup>
