@@ -1,7 +1,7 @@
 ---
 title: "Idempotência na Ticto API: retries sem duplicação"
 sidebarTitle: "Idempotência"
-description: "Use o header Idempotency-Key em requisições POST para garantir que retries não criem recursos duplicados na Ticto API."
+description: "Aprenda a usar o header Idempotency-Key em requisições POST para garantir que retries não criem recursos duplicados na Ticto API."
 ---
 
 Idempotência é a propriedade que garante que realizar a mesma operação múltiplas vezes produz o mesmo resultado que realizá-la uma única vez. Na Ticto API, isso é essencial para lidar com falhas de rede: se uma requisição POST não receber resposta (timeout, queda de conexão, etc.), você pode reenviá-la com segurança usando a mesma chave — sem risco de criar produtos ou ofertas duplicados na sua conta.
@@ -74,16 +74,12 @@ use Ramsey\Uuid\Uuid;
 $idempotencyKey = Uuid::uuid4()->toString();
 // Exemplo: "3b5a6c2d-1f4e-4a8b-9c0d-e2f3a4b5c6d7"
 
-// Alternativa nativa (PHP 7+)
+// Alternativa nativa (PHP 7+) — usa random_bytes para aleatoriedade criptográfica
 function generateUuidV4(): string {
-    return sprintf(
-        '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-        mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-        mt_rand(0, 0xffff),
-        mt_rand(0, 0x0fff) | 0x4000,
-        mt_rand(0, 0x3fff) | 0x8000,
-        mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-    );
+    $data = random_bytes(16);
+    $data[6] = chr((ord($data[6]) & 0x0f) | 0x40); // versão 4
+    $data[8] = chr((ord($data[8]) & 0x3f) | 0x80); // variante RFC 4122
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
 ```
 

@@ -1,7 +1,7 @@
 ---
-title: "Autentique requisições na Ticto API"
+title: "Autenticação Bearer na Ticto API v2 — tokens de acesso"
 sidebarTitle: "Visão Geral"
-description: "Aprenda a gerar e usar tokens de API para autenticar suas requisições à Ticto API v2 com segurança."
+description: "Saiba como gerar tokens Bearer no painel da Ticto, incluí-los corretamente nas requisições e tratar erros de autenticação da API v2."
 ---
 
 A Ticto API v2 utiliza **Bearer tokens** para autenticar todas as requisições. Cada chamada deve incluir um token válido no cabeçalho `Authorization` — sem ele, a API rejeitará a requisição imediatamente. Os tokens são gerados diretamente no painel da Ticto e carregam as permissões (escopos) que você definir no momento da criação.
@@ -28,7 +28,7 @@ A Ticto API v2 utiliza **Bearer tokens** para autenticar todas as requisições.
 Inclua o token no cabeçalho `Authorization` de **todas** as requisições à API, utilizando o esquema `Bearer`:
 
 ```bash
-curl https://api.ticto.com.br/v2/products \
+curl https://api.ticto.com.br/api/v2/products \
   -H "Authorization: Bearer ticto_live_SEU_TOKEN_AQUI"
 ```
 

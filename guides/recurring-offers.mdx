@@ -1,7 +1,7 @@
 ---
-title: "Como criar ofertas recorrentes na Ticto API"
+title: "Como criar ofertas recorrentes e assinaturas na Ticto"
 sidebarTitle: "Recorrência"
-description: "Configure assinaturas e planos recorrentes na Ticto API v2. Defina intervalo de cobrança, período trial e ciclos."
+description: "Configure assinaturas e planos recorrentes na Ticto API v2. Defina intervalo de cobrança, período trial e número de ciclos com exemplos prontos."
 ---
 
 Ofertas recorrentes permitem que você cobre seus clientes de forma automática em intervalos definidos — ideal para assinaturas de cursos com mensalidade, plataformas SaaS, clubes de conteúdo e qualquer modelo que dependa de receita previsível. Ao usar `charge_type: "recurring"`, a Ticto gerencia todo o ciclo de cobrança: tentativas automáticas, notificações ao assinante e cancelamentos.
@@ -53,8 +53,14 @@ A resposta `201 Created` confirma a criação da oferta recorrente, já com stat
   "name": "Plano Anual",
   "price": 49700,
   "charge_type": "recurring",
+  "recurrence": {
+    "interval": "annually",
+    "trial_days": 7,
+    "cycles": null
+  },
   "status": "active",
-  "checkout_url": "https://pay.ticto.com.br/checkout/ofr_r3c0r1e2n3t4"
+  "checkout_url": "https://pay.ticto.com.br/checkout/ofr_r3c0r1e2n3t4",
+  "created_at": "2025-01-15T16:00:00Z"
 }
 ```
 

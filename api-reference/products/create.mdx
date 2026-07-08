@@ -1,7 +1,7 @@
 ---
-title: "POST /products — Criar produto na Ticto API"
+title: "Criar Produto — POST /products — Ticto API v2"
 sidebarTitle: "Criar Produto"
-description: "Crie um novo produto na Ticto API v2. O produto é criado como rascunho e pode ser ativado no painel."
+description: "Crie um novo produto na Ticto API v2. O produto é criado como rascunho e pode ser ativado no painel. Requer Idempotency-Key para evitar duplicatas."
 ---
 
 Cria um novo produto na sua conta Ticto. Todo produto é criado inicialmente com o status `draft` (rascunho). Para ativá-lo e disponibilizá-lo para venda, acesse o painel da Ticto após a criação.
@@ -65,9 +65,35 @@ Produto criado com sucesso. Retorna o objeto completo do produto recém-criado.
 }
 ```
 
-<Note>
-  O campo `hash` é usado para referenciar o produto nos endpoints de ofertas. Salve-o após a criação.
-</Note>
+## Campos da resposta
+
+<ResponseField name="id" type="string">
+  Identificador único do produto no formato `PROD-XXXX`.
+</ResponseField>
+
+<ResponseField name="hash" type="string">
+  Hash único do produto, usado para referenciar o produto nos endpoints de ofertas e demais operações. Salve este valor após a criação.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Nome do produto conforme enviado na requisição.
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  Tipo do produto. Valores possíveis: `course`, `ebook`, `subscription`, `software`, `physical`.
+</ResponseField>
+
+<ResponseField name="description" type="string | null">
+  Descrição do produto, se fornecida; caso contrário, `null`.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Status do produto recém-criado. Sempre retorna `draft` (rascunho) na criação.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  Data e hora de criação do produto no formato ISO 8601 (ex.: `2024-03-15T14:32:00Z`).
+</ResponseField>
 
 ## Erros possíveis
 

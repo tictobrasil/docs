@@ -1,7 +1,7 @@
 ---
-title: "Escopos de acesso da Ticto API"
+title: "Escopos de acesso da Ticto API v2 — lista e permissões"
 sidebarTitle: "Escopos"
-description: "Configure permissões granulares no seu token da Ticto API v2. Saiba quais escopos cada endpoint exige."
+description: "Configure permissões granulares no seu token da Ticto API v2. Veja quais escopos cada endpoint exige e como lidar com erros de escopo insuficiente."
 ---
 
 Escopos definem exatamente o que um token pode fazer. Ao criar um token, você escolhe um conjunto de escopos — e o token só poderá acessar os endpoints cobertos por essas permissões. Essa granularidade segue o **princípio de menor privilégio**: um token que só precisa ler produtos nunca deve ter permissão para criá-los. Isso limita o raio de impacto em caso de vazamento e facilita a auditoria de acessos.
@@ -18,7 +18,7 @@ Escopos definem exatamente o que um token pode fazer. Ao criar um token, você e
 ## Quais escopos cada endpoint exige
 
 | Endpoint | Método | Escopo obrigatório |
-|----------|--------|--------------------|
+|----------|--------|-------------------|
 | `/products` | `GET` | `products:read` |
 | `/products/{hash}` | `GET` | `products:read` |
 | `/products` | `POST` | `products:write` |

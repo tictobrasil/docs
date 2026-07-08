@@ -1,7 +1,7 @@
 ---
-title: "GET /products/{hash} — Buscar produto na Ticto API"
+title: "Buscar Produto por Hash — GET /products/{hash} — Ticto API v2"
 sidebarTitle: "Buscar Produto"
-description: "Busque um produto específico pelo hash na Ticto API v2. Retorna o objeto completo do produto."
+description: "Busque um produto específico pelo hash na Ticto API v2. Retorna o objeto completo com id, nome, tipo, status e data de criação."
 ---
 
 Retorna os dados completos de um produto específico da sua conta, identificado pelo seu `hash`. O hash é obtido no momento da criação do produto ou através do endpoint de listagem.
@@ -42,14 +42,40 @@ Retorna o objeto completo do produto correspondente ao hash informado.
 }
 ```
 
-<Note>
-  Somente produtos da sua conta são acessíveis. Tentar acessar o produto de outro produtor retorna `404`.
-</Note>
+## Campos da resposta
+
+<ResponseField name="id" type="string">
+  Identificador único do produto no formato `PROD-XXXX`.
+</ResponseField>
+
+<ResponseField name="hash" type="string">
+  Hash único do produto, usado como referência nos demais endpoints da API.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Nome do produto cadastrado.
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  Tipo do produto. Valores possíveis: `course`, `ebook`, `subscription`, `software`, `physical`.
+</ResponseField>
+
+<ResponseField name="description" type="string | null">
+  Descrição do produto, se preenchida; caso contrário, `null`.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Status atual do produto: `draft` (rascunho) ou `active` (ativo).
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  Data e hora de criação do produto no formato ISO 8601 (ex.: `2024-03-15T14:32:00Z`).
+</ResponseField>
 
 ## Erros possíveis
 
 | Código HTTP | Descrição |
 |-------------|-----------|
 | `401` | Token de autenticação ausente, inválido ou expirado. Verifique o header `Authorization`. |
-| `403` | Você não tem permissão para acessar este recurso. |
-| `404` | Produto não encontrado. O hash informado não existe ou pertence a outra conta. |
+| `404` | Produto não encontrado ou não acessível pela sua conta. |
+| `429` | Limite de requisições excedido. Aguarde antes de realizar uma nova tentativa. |

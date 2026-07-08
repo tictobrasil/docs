@@ -1,7 +1,7 @@
 ---
-title: "GET /products — Listar produtos da Ticto API"
+title: "Listar Produtos — GET /products — Ticto API v2"
 sidebarTitle: "Listar Produtos"
-description: "Liste todos os seus produtos na Ticto API v2. Retorna um array paginado de produtos ordenados por data de criação."
+description: "Liste todos os seus produtos na Ticto API v2. Retorna um array paginado de produtos ordenados do mais recente para o mais antigo."
 ---
 
 Retorna a lista paginada de todos os produtos vinculados à sua conta na Ticto, ordenados do mais recente para o mais antigo. Use os parâmetros de query para filtrar e paginar os resultados conforme necessário.
@@ -81,14 +81,36 @@ Retorna um objeto com o array `data` contendo os produtos e o objeto `meta` com 
       Tipo do produto. Valores possíveis: `course`, `ebook`, `subscription`, `software`, `physical`.
     </ResponseField>
 
+    <ResponseField name="data[].description" type="string | null">
+      Descrição do produto, se preenchida; caso contrário, `null`.
+    </ResponseField>
+
     <ResponseField name="data[].status" type="string">
       Status atual do produto: `draft` (rascunho) ou `active` (ativo).
+    </ResponseField>
+
+    <ResponseField name="data[].created_at" type="string">
+      Data e hora de criação do produto no formato ISO 8601 (ex.: `2024-03-15T14:32:00Z`).
     </ResponseField>
   </Expandable>
 </ResponseField>
 
-<ResponseField name="meta.total" type="integer">
-  Número total de produtos encontrados (considerando os filtros aplicados).
+<ResponseField name="meta" type="object">
+  Informações de paginação da resposta.
+
+  <Expandable title="Campos de meta">
+    <ResponseField name="meta.current_page" type="integer">
+      Número da página atual retornada.
+    </ResponseField>
+
+    <ResponseField name="meta.per_page" type="integer">
+      Quantidade de itens por página utilizada na consulta.
+    </ResponseField>
+
+    <ResponseField name="meta.total" type="integer">
+      Número total de produtos encontrados (considerando os filtros aplicados).
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 ## Erros possíveis

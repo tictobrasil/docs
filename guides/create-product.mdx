@@ -1,7 +1,7 @@
 ---
-title: "Como criar um produto na Ticto via API"
+title: "Como criar um produto na Ticto usando a API v2"
 sidebarTitle: "Criar Produto"
-description: "Guia completo para criar cursos, ebooks, assinaturas e outros tipos de produto na Ticto usando a API v2."
+description: "Guia completo para criar cursos, ebooks, assinaturas e outros tipos de produto na Ticto usando a API v2. Inclui payload, resposta e próximos passos."
 ---
 
 A API v2 da Ticto permite que você crie e gerencie produtos de forma programática, integrando sua plataforma diretamente ao seu fluxo de desenvolvimento ou ferramentas de automação. Com um único endpoint, você registra cursos, ebooks, assinaturas e muito mais — sem precisar acessar o painel para cada cadastro.
@@ -22,7 +22,7 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
 
 <Steps>
   <Step title="Prepare o payload">
-    Monte o corpo da requisição com o nome e o tipo do produto. Para produtos digitais, apenas esses campos básicos são necessários — o **Preset Resolver** da Ticto configura automaticamente os métodos de pagamento e outras opções.
+    Monte o corpo da requisição com o nome e o tipo do produto. Para produtos digitais, apenas esses campos básicos são necessários — a Ticto preenche automaticamente os métodos de pagamento e outras configurações padrão.
 
     ```json
     {
@@ -59,6 +59,7 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
       "hash": "prd_a1b2c3d4e5f6",
       "name": "Curso Completo de Marketing Digital",
       "type": "course",
+      "description": "Do zero ao avançado em estratégias de marketing digital para negócios online.",
       "status": "draft",
       "created_at": "2025-01-15T14:30:00Z"
     }
@@ -77,7 +78,7 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
 </ParamField>
 
 <ParamField body="type" type="string" required>
-  Tipo do produto. Valores aceitos: `course`, `ebook`, `subscription`, `software`, `physical`. Define as configurações padrão aplicadas automaticamente pelo Preset Resolver.
+  Tipo do produto. Valores aceitos: `course`, `ebook`, `subscription`, `software`, `physical`. Define as configurações padrão aplicadas automaticamente pela Ticto.
 </ParamField>
 
 <ParamField body="description" type="string">

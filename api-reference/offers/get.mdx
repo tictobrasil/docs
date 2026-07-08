@@ -1,5 +1,5 @@
 ---
-title: "GET /products/{hash}/offers/{id} — Buscar oferta na Ticto API"
+title: "GET /products/{hash}/offers/{id} — Buscar oferta Ticto API"
 sidebarTitle: "Buscar Oferta"
 description: "Busque uma oferta específica pelo ID na Ticto API v2. Retorna o objeto completo com checkout URL e configurações de recorrência."
 ---
@@ -92,6 +92,10 @@ Exemplo de resposta para uma oferta de cobrança única (`one_time`). Nesse caso
 
 <ResponseField name="checkout_url" type="string">
   URL direta de checkout para esta oferta. Pode ser compartilhada com clientes ou incorporada em botões de compra.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  Data e hora de criação da oferta no formato ISO 8601. Exemplo: `2024-03-15T14:35:00Z`.
 </ResponseField>
 
 ## Erros possíveis

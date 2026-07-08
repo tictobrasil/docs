@@ -1,7 +1,7 @@
 ---
-title: "Ciclo de vida do token da Ticto API"
+title: "Ciclo de vida e segurança dos tokens da Ticto API v2"
 sidebarTitle: "Ciclo de Vida"
-description: "Entenda como criar, revogar e rotacionar tokens da Ticto API v2 para manter sua integração segura."
+description: "Aprenda a criar, revogar e rotacionar tokens da Ticto API v2 sem interromper sua integração em produção. Boas práticas de segurança."
 ---
 
 Um token da Ticto API passa por estados bem definidos desde o momento em que é gerado até deixar de ser válido. Entender esse ciclo ajuda a manter sua integração segura: saber quando revogar, como rotacionar sem downtime e o que esperar quando um token expira são práticas essenciais para qualquer integração em produção.
@@ -53,7 +53,7 @@ Nunca revogue o token antigo antes de atualizar a integração — isso causaria
 
 ## Expiração automática
 
-Ao criar um token, você pode definir uma **data de expiração** (`expires_at`). Quando essa data é atingida, o token expira automaticamente e todas as requisições que o utilizarem passam a retornar `401 Unauthorized`.
+Ao criar um token, você pode definir uma **data de expiração**. Quando essa data é atingida, o token expira automaticamente e todas as requisições que o utilizarem passam a retornar `401 Unauthorized`.
 
 A expiração automática é recomendada para tokens de uso temporário — como integrações de teste, scripts pontuais ou acessos concedidos a terceiros com prazo definido.
 

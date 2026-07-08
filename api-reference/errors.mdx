@@ -1,7 +1,7 @@
 ---
-title: "Erros e códigos HTTP da Ticto API"
+title: "Referência de erros e códigos HTTP da Ticto API v2"
 sidebarTitle: "Erros"
-description: "Referência completa dos slugs de erro e status HTTP da Ticto API v2. Use o campo error para tratamento programático de erros."
+description: "Referência completa dos slugs de erro e status HTTP da Ticto API v2. Aprenda a tratar erros programaticamente em sua integração."
 ---
 
 Todos os erros da Ticto API v2 retornam um corpo JSON padronizado com slugs estáveis no campo `error`. Isso permite que sua integração trate erros de forma programática e confiável, independentemente de mudanças nas mensagens descritivas.
@@ -77,7 +77,7 @@ Quando a API retorna status `422`, o array `details` traz um objeto por campo co
 
 ## Lidando com rate limit
 
-Quando o limite de requisições é atingido, a API retorna status `429` com o header `Retry-After` indicando quantos segundos aguardar até o reset da cota. Não faça novas tentativas antes desse prazo — elas serão rejeitadas e não irão consumir a fila.
+Quando o limite de requisições é atingido, a API retorna status `429` com o header `Retry-After` indicando quantos segundos aguardar até o reset da cota. Não faça novas tentativas antes desse prazo — elas serão rejeitadas até que a janela de tempo seja renovada.
 
 ```json Exemplo de erro 429
 {
