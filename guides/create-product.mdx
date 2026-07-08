@@ -1,28 +1,33 @@
 ---
-title: "Como criar um produto na Ticto usando a API v2"
+title: "Criar um produto"
 sidebarTitle: "Criar Produto"
 description: "Guia completo para criar cursos, ebooks, assinaturas e outros tipos de produto na Ticto usando a API v2. Inclui payload, resposta e próximos passos."
 ---
 
-A API v2 da Ticto permite que você crie e gerencie produtos de forma programática, integrando sua plataforma diretamente ao seu fluxo de desenvolvimento ou ferramentas de automação. Com um único endpoint, você registra cursos, ebooks, assinaturas e muito mais — sem precisar acessar o painel para cada cadastro.
+A API v2 da Ticto permite que você crie e gerencie produtos de forma programática, integrando sua plataforma diretamente ao seu fluxo de desenvolvimento ou ferramentas de automação. Com um único endpoint, você registra cursos, ebooks, mentorias e muito mais, sem precisar acessar o painel para cada cadastro.
 
 ## Tipos de produto
 
 Antes de criar um produto, escolha o tipo que melhor descreve o que você está vendendo. O campo `type` define como a Ticto trata o produto internamente, incluindo quais métodos de pagamento e configurações são aplicados automaticamente.
 
-| Tipo           | Descrição                                    |
-| -------------- | -------------------------------------------- |
-| `course`       | Curso online com área de membros             |
-| `ebook`        | Livro digital ou material para download      |
-| `subscription` | Assinatura recorrente (SaaS, clube)          |
-| `software`     | Software ou aplicativo digital               |
-| `physical`     | Produto físico com entrega                   |
+| Tipo                      | Descrição                                    |
+| ------------------------- | -------------------------------------------- |
+| `course`                  | Curso online com área de membros             |
+| `ebook`                   | Livro digital ou material para download      |
+| `consultancy`             | Consultoria                                  |
+| `mentoring`               | Mentoria                                     |
+| `artificial_intelligence` | Produto de inteligência artificial           |
+| `other`                   | Outro produto digital                        |
+
+<Note>
+  A v2 cobre apenas produtos **digitais**. Físico e evento (que exigem frete/lote) ficam no painel. Cobrança **recorrente** não é um tipo de produto. Ela é definida na oferta, com `charge_type: recurring`.
+</Note>
 
 ## Criando um produto digital
 
 <Steps>
   <Step title="Prepare o payload">
-    Monte o corpo da requisição com o nome e o tipo do produto. Para produtos digitais, apenas esses campos básicos são necessários — a Ticto preenche automaticamente os métodos de pagamento e outras configurações padrão.
+    Monte o corpo da requisição com o nome e o tipo do produto. Para produtos digitais, apenas esses campos básicos são necessários. A Ticto preenche automaticamente os métodos de pagamento e outras configurações padrão.
 
     ```json
     {
@@ -38,7 +43,7 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
 
     ```bash
     curl --request POST \
-      --url https://api.ticto.com.br/api/v2/products \
+      --url https://api.ticto.cloud/api/v2/products \
       --header "Authorization: Bearer ticto_live_..." \
       --header "Content-Type: application/json" \
       --header "Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000" \
@@ -51,7 +56,7 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
   </Step>
 
   <Step title="Verifique a resposta">
-    Uma resposta `201 Created` confirma que o produto foi registrado. Anote o campo `hash` — você vai precisar dele para criar ofertas vinculadas a este produto.
+    Uma resposta `201 Created` confirma que o produto foi registrado. Anote o campo `hash`, você vai precisar dele para criar ofertas vinculadas a este produto.
 
     ```json
     {
@@ -78,7 +83,7 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
 </ParamField>
 
 <ParamField body="type" type="string" required>
-  Tipo do produto. Valores aceitos: `course`, `ebook`, `subscription`, `software`, `physical`. Define as configurações padrão aplicadas automaticamente pela Ticto.
+  Tipo do produto. Valores aceitos: `course`, `ebook`, `consultancy`, `mentoring`, `artificial_intelligence`, `other`. Define as configurações padrão aplicadas automaticamente pela Ticto.
 </ParamField>
 
 <ParamField body="description" type="string">
@@ -91,7 +96,7 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
 
 ## Próximos passos
 
-Com o produto criado e o `hash` em mãos, o próximo passo é configurar uma oferta — que define o preço e as condições de pagamento que seus clientes verão no checkout.
+Com o produto criado e o `hash` em mãos, o próximo passo é configurar uma oferta, que define o preço e as condições de pagamento que seus clientes verão no checkout.
 
 <CardGroup cols={2}>
   <Card title="Criar Oferta Única" icon="tag" href="/guides/create-offer">

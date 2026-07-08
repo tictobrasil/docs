@@ -1,10 +1,10 @@
 ---
-title: "Autenticação Bearer na Ticto API v2 — tokens de acesso"
+title: "Autenticação"
 sidebarTitle: "Visão Geral"
 description: "Saiba como gerar tokens Bearer no painel da Ticto, incluí-los corretamente nas requisições e tratar erros de autenticação da API v2."
 ---
 
-A Ticto API v2 utiliza **Bearer tokens** para autenticar todas as requisições. Cada chamada deve incluir um token válido no cabeçalho `Authorization` — sem ele, a API rejeitará a requisição imediatamente. Os tokens são gerados diretamente no painel da Ticto e carregam as permissões (escopos) que você definir no momento da criação.
+A Ticto API v2 utiliza **Bearer tokens** para autenticar todas as requisições. Cada chamada deve incluir um token válido no cabeçalho `Authorization`. Sem ele, a API rejeita a requisição imediatamente. Os tokens são gerados diretamente no painel da Ticto e carregam as permissões (escopos) que você definir no momento da criação.
 
 ## Como gerar um token
 
@@ -18,7 +18,7 @@ A Ticto API v2 utiliza **Bearer tokens** para autenticar todas as requisições.
   <Step title="Selecione os escopos necessários">
     Marque apenas os escopos que a sua integração realmente precisa. Seguir o princípio de menor privilégio reduz o impacto caso o token seja comprometido. Consulte a página de [Escopos](/authentication/scopes) para saber quais escopos cada endpoint exige.
   </Step>
-  <Step title="Copie o token — exibido uma única vez">
+  <Step title="Copie o token (exibido uma única vez)">
     Após confirmar, o token será exibido **uma única vez**. Copie-o imediatamente e armazene-o em local seguro. Não será possível visualizá-lo novamente.
   </Step>
 </Steps>
@@ -28,7 +28,7 @@ A Ticto API v2 utiliza **Bearer tokens** para autenticar todas as requisições.
 Inclua o token no cabeçalho `Authorization` de **todas** as requisições à API, utilizando o esquema `Bearer`:
 
 ```bash
-curl https://api.ticto.com.br/api/v2/products \
+curl https://api.ticto.cloud/api/v2/products \
   -H "Authorization: Bearer ticto_live_SEU_TOKEN_AQUI"
 ```
 

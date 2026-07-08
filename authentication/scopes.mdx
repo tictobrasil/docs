@@ -1,10 +1,10 @@
 ---
-title: "Escopos de acesso da Ticto API v2 — lista e permissões"
+title: "Escopos"
 sidebarTitle: "Escopos"
 description: "Configure permissões granulares no seu token da Ticto API v2. Veja quais escopos cada endpoint exige e como lidar com erros de escopo insuficiente."
 ---
 
-Escopos definem exatamente o que um token pode fazer. Ao criar um token, você escolhe um conjunto de escopos — e o token só poderá acessar os endpoints cobertos por essas permissões. Essa granularidade segue o **princípio de menor privilégio**: um token que só precisa ler produtos nunca deve ter permissão para criá-los. Isso limita o raio de impacto em caso de vazamento e facilita a auditoria de acessos.
+Escopos definem exatamente o que um token pode fazer. Ao criar um token, você escolhe um conjunto de escopos, e o token só pode acessar os endpoints cobertos por essas permissões. Essa granularidade segue o **princípio de menor privilégio**: um token que só precisa ler produtos nunca deve ter permissão para criá-los. Isso limita o raio de impacto em caso de vazamento e facilita a auditoria de acessos.
 
 ## Escopos disponíveis
 
@@ -14,6 +14,13 @@ Escopos definem exatamente o que um token pode fazer. Ao criar um token, você e
 | `products:write` | Criar produtos |
 | `offers:read` | Listar e visualizar ofertas dos seus produtos |
 | `offers:write` | Criar ofertas |
+| `orders:read` | Listar, resumir e visualizar seus pedidos |
+| `subscriptions:read` | Listar, resumir e visualizar suas assinaturas |
+| `cashouts:read` | Listar, resumir e visualizar seus saques (dado financeiro) |
+
+<Note>
+  `cashouts:read` dá acesso a dado financeiro (saques). Conceda-o apenas a tokens que realmente precisem, de preferência em um token separado dos demais.
+</Note>
 
 ## Quais escopos cada endpoint exige
 
@@ -23,11 +30,14 @@ Escopos definem exatamente o que um token pode fazer. Ao criar um token, você e
 | `/products/{hash}` | `GET` | `products:read` |
 | `/products` | `POST` | `products:write` |
 | `/products/{hash}/offers` | `GET` | `offers:read` |
-| `/products/{hash}/offers/{id}` | `GET` | `offers:read` |
+| `/products/{hash}/offers/{code}` | `GET` | `offers:read` |
 | `/products/{hash}/offers` | `POST` | `offers:write` |
+| `/orders/history` · `/orders/summary` · `/orders/{hash}` | `GET` | `orders:read` |
+| `/subscriptions/history` · `/subscriptions/summary` · `/subscriptions/{id}` | `GET` | `subscriptions:read` |
+| `/cashouts/history` · `/cashouts/summary` · `/cashouts/{id}` | `GET` | `cashouts:read` |
 
 <Tip>
-  Crie tokens separados para leitura e escrita. Se o token de leitura vazar, sua conta não corre risco de criação fraudulenta de produtos — ele simplesmente não tem essa permissão.
+  Crie tokens separados para leitura e escrita. Se o token de leitura vazar, sua conta não corre risco de criação fraudulenta de produtos, ele simplesmente não tem essa permissão.
 </Tip>
 
 ## Erro de escopo insuficiente
@@ -37,7 +47,7 @@ Quando um token válido tenta acessar um endpoint para o qual não possui o esco
 ```json
 {
   "error": "insufficient_scope",
-  "message": "O token utilizado não possui o escopo necessário para acessar este recurso.",
+  "message": "Token is missing the required ability: orders:read.",
   "request_id": "req_xxx"
 }
 ```

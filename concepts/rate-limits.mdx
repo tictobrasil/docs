@@ -1,5 +1,5 @@
 ---
-title: "Rate limits da Ticto API v2 — limites e boas práticas"
+title: "Rate limits"
 sidebarTitle: "Rate Limits"
 description: "A Ticto API permite 150 requisições a cada 5 minutos por token. Saiba como lidar com o erro 429 e implementar retry com backoff."
 ---
@@ -106,7 +106,7 @@ async function requestWithRetry(url, options, maxRetries = 4) {
 
 // Exemplo de uso
 const response = await requestWithRetry(
-  "https://api.ticto.com.br/api/v2/products/PROD-ABC123/offers",
+  "https://api.ticto.cloud/api/v2/products/PROD-ABC123/offers",
   {
     method: "POST",
     headers: {
@@ -127,5 +127,5 @@ console.log(data);
 ```
 
 <Note>
-  O limite é por token de API. Você pode usar múltiplos tokens para integrar sistemas diferentes — por exemplo, um token para o seu CRM e outro para seu sistema de automação — sem que compartilhem a mesma cota de requisições.
+  O limite é por token de API. Você pode usar múltiplos tokens para integrar sistemas diferentes, como um token para o seu CRM e outro para o seu sistema de automação, sem que compartilhem a mesma cota de requisições.
 </Note>

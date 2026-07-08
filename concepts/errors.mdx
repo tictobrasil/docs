@@ -1,5 +1,5 @@
 ---
-title: "Tratamento de erros e códigos HTTP da Ticto API v2"
+title: "Erros"
 sidebarTitle: "Erros"
 description: "Referência completa de códigos de status HTTP e slugs de erro da Ticto API v2, com o formato do envelope de erro e exemplos de validação."
 ---
@@ -11,7 +11,7 @@ Todos os erros da Ticto API v2 seguem um envelope JSON consistente, com um **slu
 ```json
 {
   "error": "validation_failed",
-  "message": "O preço mínimo é R$ 5,00.",
+  "message": "O preço mínimo é R\$ 5,00.",
   "request_id": "req_a1b2c3",
   "details": [
     { "field": "price", "code": "min" }
@@ -22,7 +22,7 @@ Todos os erros da Ticto API v2 seguem um envelope JSON consistente, com um **slu
 | Campo | Tipo | Descrição |
 |---|---|---|
 | `error` | `string` | Slug estável e machine-readable que identifica o tipo do erro. Use este campo na lógica de tratamento. |
-| `message` | `string` | Mensagem em português para exibição ou logs. Pode mudar sem aviso prévio — **não programe contra ela**. |
+| `message` | `string` | Mensagem em português para exibição ou logs. Pode mudar sem aviso prévio, então **não programe contra ela**. |
 | `request_id` | `string` | Identificador único da requisição. Informe ao suporte para diagnóstico rápido. |
 | `details` | `array` | Lista de erros por campo. Presente apenas em erros de validação (`400` / `422`). Pode ser omitido em outros erros. |
 
@@ -30,18 +30,18 @@ Todos os erros da Ticto API v2 seguem um envelope JSON consistente, com um **slu
 
 | Status | Slug | Quando ocorre |
 |---|---|---|
-| `201` | — | Recurso criado com sucesso |
+| `201` | (nenhum) | Recurso criado com sucesso |
 | `400` | `validation_failed` | Dados inválidos no corpo da requisição |
 | `401` | `unauthorized` | Token ausente, inválido, expirado ou revogado |
 | `403` | `insufficient_scope` | Token não possui o escopo exigido pela rota |
 | `404` | `not_found` | Recurso não encontrado ou não pertence à sua conta |
 | `409` | `idempotency_conflict` | `Idempotency-Key` já usada para outra operação |
 | `422` | `unprocessable_entity` | Dados semanticamente inválidos |
-| `429` | `rate_limit_exceeded` | Muitas requisições — aguarde antes de tentar novamente |
+| `429` | `rate_limit_exceeded` | Muitas requisições, aguarde antes de tentar novamente |
 | `503` | `service_unavailable` | Serviço temporariamente indisponível |
 
 <Note>
-  O slug `error` é estável e machine-readable — programe sua lógica de tratamento de erro contra ele. O campo `message` pode mudar sem aviso e não deve ser usado como base para decisões programáticas.
+  O slug `error` é estável e legível por máquina, então programe sua lógica de tratamento de erro contra ele. O campo `message` pode mudar sem aviso e não deve ser usado como base para decisões programáticas.
 </Note>
 
 <Tip>

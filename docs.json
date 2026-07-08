@@ -1,11 +1,23 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "luma",
+  "theme": "mint",
   "name": "Ticto API",
   "colors": {
-    "primary": "#ef7025",
-    "light": "#eec9bc",
-    "dark": "#4fa1ab"
+    "primary": "#FF2689",
+    "light": "#FF66A8",
+    "dark": "#C41E6B"
+  },
+  "appearance": {
+    "default": "dark"
+  },
+  "background": {
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#0B0B0E"
+    }
+  },
+  "fonts": {
+    "family": "Space Grotesk"
   },
   "favicon": "/favicon.svg",
   "logo": {
@@ -37,7 +49,8 @@
             "pages": [
               "concepts/environments",
               "concepts/idempotency",
-              "concepts/errors"
+              "concepts/errors",
+              "concepts/rate-limits"
             ]
           },
           {
@@ -52,31 +65,7 @@
       },
       {
         "tab": "API Reference",
-        "groups": [
-          {
-            "group": "Produtos",
-            "pages": [
-              "api-reference/products/list",
-              "api-reference/products/get",
-              "api-reference/products/create"
-            ]
-          },
-          {
-            "group": "Ofertas",
-            "pages": [
-              "api-reference/offers/list",
-              "api-reference/offers/get",
-              "api-reference/offers/create"
-            ]
-          },
-          {
-            "group": "Referência",
-            "pages": [
-              "api-reference/errors",
-              "api-reference/rate-limits"
-            ]
-          }
-        ]
+        "openapi": "/api-reference/openapi.json"
       }
     ]
   },
@@ -84,13 +73,13 @@
     "links": [
       {
         "label": "Suporte",
-        "href": "mailto:suporte@ticto.com.br"
+        "href": "https://help.ticto.com.br"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Painel",
-      "href": "https://app.ticto.com.br"
+      "href": "https://dash.ticto.com.br"
     }
   },
   "footer": {
