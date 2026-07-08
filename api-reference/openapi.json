@@ -1,0 +1,488 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Ticto API v2",
+    "version": "2.0.0",
+    "description": "API pública da Ticto para criar produtos e ofertas e ler pedidos, assinaturas e saques. Autenticação por token Bearer com escopos granulares. Todo acesso é isolado ao produtor dono do token — por construção, não por checagem por endpoint."
+  },
+  "servers": [
+    { "url": "https://api.ticto.cloud", "description": "Produção (tokens ticto_live_)" },
+    { "url": "https://sandbox.ticto.cloud", "description": "Sandbox (tokens ticto_test_)" }
+  ],
+  "security": [{ "bearerAuth": [] }],
+  "tags": [
+    { "name": "Produtos", "description": "Criação e leitura de produtos." },
+    { "name": "Ofertas", "description": "Criação e leitura de ofertas de um produto." },
+    { "name": "Pedidos", "description": "Leitura de pedidos (paridade com a API v1)." },
+    { "name": "Assinaturas", "description": "Leitura de assinaturas (paridade com a API v1)." },
+    { "name": "Saques", "description": "Leitura de saques/cashouts (paridade com a API v1)." }
+  ],
+  "paths": {
+    "/api/v2/products": {
+      "get": {
+        "tags": ["Produtos"],
+        "summary": "Listar produtos",
+        "description": "Lista os produtos do produtor autenticado, paginados. Escopo: `products:read`.",
+        "operationId": "listProducts",
+        "security": [{ "bearerAuth": ["products:read"] }],
+        "parameters": [
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 30, "maximum": 100 }, "description": "Itens por página (máx. 100)." }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de produtos.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProductList" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      },
+      "post": {
+        "tags": ["Produtos"],
+        "summary": "Criar produto",
+        "description": "Cria um produto. O produto nasce como **rascunho** (`draft`) e deve ser ativado no painel. Escopo: `products:write`. Exige `Idempotency-Key`.",
+        "operationId": "createProduct",
+        "security": [{ "bearerAuth": ["products:write"] }],
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateProduct" },
+              "example": { "name": "Curso de Marketing Digital", "type": "course", "description": "Curso completo de marketing digital do zero ao avançado.", "category": "Marketing" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Produto criado (rascunho).",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Product" } } }
+          },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/v2/products/{hash}": {
+      "get": {
+        "tags": ["Produtos"],
+        "summary": "Buscar produto",
+        "description": "Retorna um produto pelo seu `hash`. Escopo: `products:read`. Retorna `404` se o produto não for do produtor autenticado.",
+        "operationId": "getProduct",
+        "security": [{ "bearerAuth": ["products:read"] }],
+        "parameters": [{ "$ref": "#/components/parameters/ProductHash" }],
+        "responses": {
+          "200": { "description": "Produto.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Product" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/offers": {
+      "get": {
+        "tags": ["Ofertas"],
+        "summary": "Listar ofertas",
+        "description": "Lista as ofertas de um produto. Escopo: `offers:read`.",
+        "operationId": "listOffers",
+        "security": [{ "bearerAuth": ["offers:read"] }],
+        "parameters": [{ "$ref": "#/components/parameters/ProductHash" }],
+        "responses": {
+          "200": { "description": "Lista de ofertas.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OfferList" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      },
+      "post": {
+        "tags": ["Ofertas"],
+        "summary": "Criar oferta",
+        "description": "Cria uma oferta para um produto. Você envia apenas o essencial; a Ticto preenche os ~80 campos internos com padrões seguros a partir de um preset. Escopo: `offers:write`. Exige `Idempotency-Key`.",
+        "operationId": "createOffer",
+        "security": [{ "bearerAuth": ["offers:write"] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/ProductHash" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateOffer" },
+              "examples": {
+                "pagamento-unico": {
+                  "summary": "Pagamento único",
+                  "value": { "name": "Oferta padrão", "price": 19900, "charge_type": "one_time", "payment_methods": ["credit_card", "pix", "boleto"] }
+                },
+                "recorrente": {
+                  "summary": "Assinatura mensal com trial",
+                  "value": { "name": "Plano Mensal", "price": 4990, "charge_type": "recurring", "recurrence": { "interval": "monthly", "trial_days": 7 }, "payment_methods": ["credit_card"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Oferta criada.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Offer" } } } },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/offers/{code}": {
+      "get": {
+        "tags": ["Ofertas"],
+        "summary": "Buscar oferta",
+        "description": "Retorna uma oferta pelo seu `code`, dentro de um produto. Escopo: `offers:read`.",
+        "operationId": "getOffer",
+        "security": [{ "bearerAuth": ["offers:read"] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/ProductHash" },
+          { "name": "code", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Código da oferta (ex.: `O709D4B48`)." }
+        ],
+        "responses": {
+          "200": { "description": "Oferta.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Offer" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v2/orders/history": {
+      "get": {
+        "tags": ["Pedidos"],
+        "summary": "Listar pedidos",
+        "description": "Histórico de pedidos do produtor, paginado. Escopo: `orders:read`.",
+        "operationId": "listOrders",
+        "security": [{ "bearerAuth": ["orders:read"] }],
+        "parameters": [
+          { "name": "paginate", "in": "query", "schema": { "type": "integer", "default": 100, "maximum": 1000 }, "description": "Itens por página." }
+        ],
+        "responses": {
+          "200": {
+            "description": "Histórico de pedidos.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OrderList" } } }
+          },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v2/orders/summary": {
+      "get": {
+        "tags": ["Pedidos"],
+        "summary": "Resumo de pedidos",
+        "description": "Totais consolidados dos pedidos do produtor. Escopo: `orders:read`.",
+        "operationId": "ordersSummary",
+        "security": [{ "bearerAuth": ["orders:read"] }],
+        "responses": {
+          "200": {
+            "description": "Totais de pedidos.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OrdersSummary" },
+                "example": { "total": 3, "total_items": 3, "bump_total": 0, "upsell_total": 0, "commission_sum": 27156 }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v2/orders/{hash}": {
+      "get": {
+        "tags": ["Pedidos"],
+        "summary": "Buscar pedido",
+        "description": "Retorna um pedido pelo seu `hash`. Escopo: `orders:read`. Retorna `404` se o pedido não for do produtor autenticado — o isolamento é garantido por construção.",
+        "operationId": "getOrder",
+        "security": [{ "bearerAuth": ["orders:read"] }],
+        "parameters": [
+          { "name": "hash", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Hash do pedido (ex.: `TOP0106WOC15DK`)." }
+        ],
+        "responses": {
+          "200": { "description": "Detalhe do pedido.", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v2/subscriptions/history": {
+      "get": {
+        "tags": ["Assinaturas"],
+        "summary": "Listar assinaturas",
+        "description": "Histórico de assinaturas do produtor, paginado. Escopo: `subscriptions:read`.",
+        "operationId": "listSubscriptions",
+        "security": [{ "bearerAuth": ["subscriptions:read"] }],
+        "parameters": [
+          { "name": "paginate", "in": "query", "schema": { "type": "integer", "default": 30, "maximum": 1000 }, "description": "Itens por página." }
+        ],
+        "responses": {
+          "200": { "description": "Histórico de assinaturas.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedList" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v2/subscriptions/summary": {
+      "get": {
+        "tags": ["Assinaturas"],
+        "summary": "Resumo de assinaturas",
+        "description": "Totais consolidados das assinaturas do produtor. Escopo: `subscriptions:read`.",
+        "operationId": "subscriptionsSummary",
+        "security": [{ "bearerAuth": ["subscriptions:read"] }],
+        "responses": {
+          "200": { "description": "Totais de assinaturas.", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v2/subscriptions/{id}": {
+      "get": {
+        "tags": ["Assinaturas"],
+        "summary": "Buscar assinatura",
+        "description": "Retorna uma assinatura pelo seu `id`. Escopo: `subscriptions:read`. Retorna `404` se não for do produtor autenticado.",
+        "operationId": "getSubscription",
+        "security": [{ "bearerAuth": ["subscriptions:read"] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" }, "description": "ID da assinatura." }
+        ],
+        "responses": {
+          "200": { "description": "Detalhe da assinatura.", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v2/cashouts/history": {
+      "get": {
+        "tags": ["Saques"],
+        "summary": "Listar saques",
+        "description": "Histórico de saques (cashouts) do produtor, paginado. Escopo: `cashouts:read` (dado financeiro — escopo próprio, opt-in).",
+        "operationId": "listCashouts",
+        "security": [{ "bearerAuth": ["cashouts:read"] }],
+        "parameters": [
+          { "name": "status", "in": "query", "schema": { "type": "string" }, "description": "Filtra por status." },
+          { "name": "created_after", "in": "query", "schema": { "type": "string", "format": "date" } },
+          { "name": "created_before", "in": "query", "schema": { "type": "string", "format": "date" } },
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15, "maximum": 100 } }
+        ],
+        "responses": {
+          "200": { "description": "Histórico de saques.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedList" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v2/cashouts/summary": {
+      "get": {
+        "tags": ["Saques"],
+        "summary": "Resumo de saques",
+        "description": "Totais consolidados dos saques do produtor. Escopo: `cashouts:read`.",
+        "operationId": "cashoutsSummary",
+        "security": [{ "bearerAuth": ["cashouts:read"] }],
+        "responses": {
+          "200": { "description": "Totais de saques.", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v2/cashouts/{id}": {
+      "get": {
+        "tags": ["Saques"],
+        "summary": "Buscar saque",
+        "description": "Retorna um saque pelo seu `id`. Escopo: `cashouts:read`. Retorna `404` se não for do produtor autenticado.",
+        "operationId": "getCashout",
+        "security": [{ "bearerAuth": ["cashouts:read"] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" }, "description": "ID do saque." }
+        ],
+        "responses": {
+          "200": { "description": "Detalhe do saque.", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token opaco no formato `ticto_live_...` (produção) ou `ticto_test_...` (sandbox). Enviado como `Authorization: Bearer <token>`."
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" },
+        "description": "UUID v4 único por operação. Garante que retries não criem recursos duplicados."
+      },
+      "ProductHash": {
+        "name": "hash",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" },
+        "description": "Hash do produto (identificador canônico da API, ex.: `PABC123`)."
+      }
+    },
+    "schemas": {
+      "CreateProduct": {
+        "type": "object",
+        "required": ["name", "type", "description"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 255, "description": "Nome do produto." },
+          "type": { "type": "string", "enum": ["course", "ebook", "consultancy", "mentoring", "artificial_intelligence", "other"], "description": "Tipo do produto (apenas digitais na v2). Recorrência é definida na oferta (`charge_type: recurring`), não no tipo." },
+          "description": { "type": "string", "minLength": 3, "maxLength": 1000 },
+          "category": { "type": "string", "maxLength": 120, "description": "Categoria (opcional)." }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "object": { "type": "string", "example": "product" },
+          "id": { "type": "string", "description": "Hash do produto — identificador canônico da API.", "example": "PABC123" },
+          "reference_id": { "type": "integer", "description": "ID numérico legado (reconcilia com a dashboard). Não é fronteira de segurança.", "example": 42 },
+          "name": { "type": "string", "example": "Curso de Marketing Digital" },
+          "type": { "type": "string", "example": "course" },
+          "status": { "type": "string", "example": "draft" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ProductList": {
+        "type": "object",
+        "properties": {
+          "object": { "type": "string", "example": "list" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Product" } },
+          "meta": { "$ref": "#/components/schemas/Meta" }
+        }
+      },
+      "CreateOffer": {
+        "type": "object",
+        "required": ["name", "price", "charge_type"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 255 },
+          "price": { "type": "integer", "minimum": 500, "description": "Preço em centavos (mín. 500 = R$5,00)." },
+          "charge_type": { "type": "string", "enum": ["one_time", "recurring"] },
+          "recurrence": {
+            "type": "object",
+            "description": "Obrigatório quando `charge_type=recurring`; proibido quando `one_time`.",
+            "properties": {
+              "interval": { "type": "string", "enum": ["monthly", "quarterly", "semiannually", "annually"] },
+              "trial_days": { "type": "integer", "minimum": 0, "maximum": 365 },
+              "cycles": { "type": "integer", "minimum": 1, "nullable": true, "description": "Número de cobranças; null = infinito." }
+            }
+          },
+          "payment_methods": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["credit_card", "pix", "boleto"] },
+            "description": "Métodos aceitos. Padrão: todos."
+          }
+        }
+      },
+      "Offer": {
+        "type": "object",
+        "properties": {
+          "object": { "type": "string", "example": "offer" },
+          "id": { "type": "string", "description": "Código da oferta — identificador canônico da API.", "example": "O709D4B48" },
+          "reference_id": { "type": "integer", "example": 11 },
+          "product_id": { "type": "string", "description": "Hash do produto pai.", "example": "PABC123" },
+          "price": { "type": "integer", "description": "Preço em centavos.", "example": 19900 },
+          "is_active": { "type": "boolean", "example": true },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "OfferList": {
+        "type": "object",
+        "properties": {
+          "object": { "type": "string", "example": "list" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Offer" } },
+          "meta": { "$ref": "#/components/schemas/Meta" }
+        }
+      },
+      "OrderList": {
+        "type": "object",
+        "description": "Lista paginada de pedidos. Cada item traz comissão, transação e oferta.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "integer" },
+                "producer_id": { "type": "integer" },
+                "producer_name": { "type": "string" },
+                "commission": { "type": "integer", "description": "Valor em centavos." },
+                "order_id": { "type": "integer" },
+                "transaction": { "type": "object", "description": "Dados da transação (status, método, valor pago, etc.)." },
+                "offer": { "type": "object", "description": "Oferta comprada (code, name, price...)." }
+              }
+            }
+          },
+          "meta": { "$ref": "#/components/schemas/Meta" }
+        }
+      },
+      "OrdersSummary": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer" },
+          "total_items": { "type": "integer" },
+          "bump_total": { "type": "integer" },
+          "upsell_total": { "type": "integer" },
+          "commission_sum": { "type": "integer", "description": "Soma das comissões em centavos." }
+        }
+      },
+      "PaginatedList": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "type": "object" } },
+          "links": { "type": "object", "properties": { "first": { "type": "string" }, "last": { "type": "string" }, "prev": { "type": "string", "nullable": true }, "next": { "type": "string", "nullable": true } } },
+          "meta": { "$ref": "#/components/schemas/Meta" }
+        }
+      },
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "current_page": { "type": "integer" },
+          "per_page": { "type": "integer" },
+          "total": { "type": "integer" },
+          "last_page": { "type": "integer" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "example": "insufficient_scope" },
+          "message": { "type": "string", "example": "Token is missing the required ability: orders:read." },
+          "request_id": { "type": "string", "nullable": true }
+        }
+      },
+      "ValidationErrorBody": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string", "example": "validation_failed" },
+          "message": { "type": "string", "example": "The request payload is invalid." },
+          "request_id": { "type": "string", "nullable": true },
+          "details": { "type": "array", "items": { "type": "string" }, "example": ["The name field is required."] }
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Token ausente, inválido ou expirado.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" }, "example": { "error": "unauthorized", "message": "Invalid or expired token.", "request_id": null } } }
+      },
+      "Forbidden": {
+        "description": "O token não tem o escopo exigido.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" }, "example": { "error": "insufficient_scope", "message": "Token is missing the required ability: orders:read.", "request_id": null } } }
+      },
+      "NotFound": {
+        "description": "Recurso inexistente ou que não pertence ao produtor autenticado (o isolamento não confirma a existência de recursos de terceiros).",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" }, "example": { "error": "not_found", "message": "Resource not found.", "request_id": null } } }
+      },
+      "ValidationError": {
+        "description": "Payload inválido.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorBody" } } }
+      }
+    }
+  }
+}

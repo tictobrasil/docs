@@ -1,10 +1,10 @@
 ---
-title: "Como criar uma oferta de pagamento único na Ticto"
+title: "Criar uma oferta"
 sidebarTitle: "Criar Oferta"
 description: "Crie ofertas de pagamento único para seus produtos na Ticto API v2. Defina preço em centavos, configure o checkout e obtenha o link de venda."
 ---
 
-Uma oferta é um plano de precificação vinculado a um produto. Ela define quanto o cliente paga, como paga e em quais condições. Um mesmo produto pode ter múltiplas ofertas — por exemplo, um preço promocional para lançamento e um preço cheio permanente. Este guia cobre a criação de ofertas de **pagamento único**, onde o cliente é cobrado uma única vez no momento da compra.
+Uma oferta é um plano de precificação vinculado a um produto. Ela define quanto o cliente paga, como paga e em quais condições. Um mesmo produto pode ter múltiplas ofertas, como um preço promocional para lançamento e um preço cheio permanente. Este guia cobre a criação de ofertas de **pagamento único**, onde o cliente é cobrado uma única vez no momento da compra.
 
 ## Criando uma oferta de pagamento único
 
@@ -28,7 +28,7 @@ Uma oferta é um plano de precificação vinculado a um produto. Ela define quan
     }
     ```
 
-    O valor `19700` representa **R$ 197,00**. O preço mínimo aceito é `500` (R$ 5,00).
+    O valor `19700` representa **R\$ 197,00**. O preço mínimo aceito é `500` (R\$ 5,00).
   </Step>
 
   <Step title="Envie a requisição">
@@ -36,7 +36,7 @@ Uma oferta é um plano de precificação vinculado a um produto. Ela define quan
 
     ```bash
     curl --request POST \
-      --url https://api.ticto.com.br/api/v2/products/prd_a1b2c3d4e5f6/offers \
+      --url https://api.ticto.cloud/api/v2/products/prd_a1b2c3d4e5f6/offers \
       --header "Authorization: Bearer ticto_live_..." \
       --header "Content-Type: application/json" \
       --header "Idempotency-Key: 7c9e6679-7425-40de-944b-e07fc1f90ae7" \
@@ -65,7 +65,7 @@ Uma oferta é um plano de precificação vinculado a um produto. Ela define quan
     }
     ```
 
-    Diferente dos produtos — que iniciam como `draft` — as ofertas já nascem com `status: "active"` e podem ser usadas imediatamente.
+    Diferente dos produtos, que iniciam como `draft`, as ofertas já nascem com `status: "active"` e podem ser usadas imediatamente.
   </Step>
 </Steps>
 
@@ -76,7 +76,7 @@ Uma oferta é um plano de precificação vinculado a um produto. Ela define quan
 </ParamField>
 
 <ParamField body="price" type="integer" required>
-  Preço em centavos (inteiro). Mínimo: `500` (R$ 5,00). Exemplos: `19700` = R$ 197,00 · `9990` = R$ 99,90 · `50000` = R$ 500,00.
+  Preço em centavos (inteiro). Mínimo: `500` (R\$ 5,00). Exemplos: `19700` = R\$ 197,00 · `9990` = R\$ 99,90 · `50000` = R\$ 500,00.
 </ParamField>
 
 <ParamField body="charge_type" type="string" required>
@@ -84,12 +84,12 @@ Uma oferta é um plano de precificação vinculado a um produto. Ela define quan
 </ParamField>
 
 <Tip>
-  O campo `checkout_url` na resposta é o link de checkout pronto para compartilhar com seus clientes. Guarde-o na sua central após criar a oferta — você não precisará consultar a API novamente para obtê-lo.
+  O campo `checkout_url` na resposta é o link de checkout pronto para compartilhar com seus clientes. Guarde-o na sua central após criar a oferta, assim você não precisará consultar a API novamente para obtê-lo.
 </Tip>
 
 ## Métodos de pagamento padrão
 
-Para produtos digitais (`course`, `ebook`, `software`), a Ticto configura automaticamente os métodos de pagamento mais utilizados no mercado brasileiro. Nenhuma configuração adicional é necessária:
+Para produtos digitais (`course`, `ebook`, `mentoring` etc.), a Ticto configura automaticamente os métodos de pagamento mais utilizados no mercado brasileiro. Nenhuma configuração adicional é necessária:
 
 | Método              | Configuração padrão         |
 | ------------------- | --------------------------- |
@@ -103,7 +103,7 @@ A Ticto preenche automaticamente essas configurações para maximizar sua conver
   <Card title="Ofertas Recorrentes" icon="arrows-rotate" href="/guides/recurring-offers">
     Aprenda a configurar planos de assinatura com intervalo, trial gratuito e número de ciclos.
   </Card>
-  <Card title="Referência: Criar Oferta" icon="code" href="/api-reference/offers/create">
+  <Card title="Referência: Criar Oferta" icon="code" href="/api-reference/ofertas/criar-oferta">
     Veja todos os campos disponíveis e exemplos de resposta na referência completa do endpoint.
   </Card>
 </CardGroup>

@@ -1,10 +1,10 @@
 ---
-title: "Quickstart: sua primeira integração com a Ticto API v2"
+title: "Quickstart"
 sidebarTitle: "Quickstart"
 description: "Comece a integrar com a Ticto API v2: obtenha seu token Bearer, autentique suas requisições e crie um produto com oferta passo a passo."
 ---
 
-A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenciar produtos e ofertas de forma programática, integrando o ecossistema Ticto diretamente às suas ferramentas e fluxos de trabalho. Este guia mostra, passo a passo, como obter suas credenciais, autenticar suas requisições e criar seu primeiro produto com uma oferta associada — tudo em menos de 5 minutos.
+A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenciar produtos e ofertas de forma programática, integrando o ecossistema Ticto diretamente às suas ferramentas e fluxos de trabalho. Este guia mostra, passo a passo, como obter suas credenciais, autenticar suas requisições e criar seu primeiro produto com uma oferta associada, tudo em menos de 5 minutos.
 
 <Steps>
 
@@ -30,7 +30,7 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
 
     ```bash
     curl --request GET \
-      --url https://api.ticto.com.br/api/v2/products \
+      --url https://api.ticto.cloud/api/v2/products \
       --header "Authorization: Bearer ticto_live_VIHfM4Ynb0J8kQ2rXXXXXXXXXXXXXXXXXXXXXXXX" \
       --header "Accept: application/json"
     ```
@@ -57,11 +57,11 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
   </Step>
 
   <Step title="Crie um produto">
-    Para criar um produto, envie uma requisição `POST /products`. Todas as requisições POST exigem o cabeçalho `Idempotency-Key` com um UUID v4 único — isso garante que requisições repetidas (por exemplo, após uma falha de rede) não criem duplicatas.
+    Para criar um produto, envie uma requisição `POST /products`. Todas as requisições POST exigem o cabeçalho `Idempotency-Key` com um UUID v4 único. Isso garante que requisições repetidas (por exemplo, após uma falha de rede) não criem duplicatas.
 
     ```bash
     curl --request POST \
-      --url https://api.ticto.com.br/api/v2/products \
+      --url https://api.ticto.cloud/api/v2/products \
       --header "Authorization: Bearer ticto_live_VIHfM4Ynb0J8kQ2rXXXXXXXXXXXXXXXXXXXXXXXX" \
       --header "Content-Type: application/json" \
       --header "Accept: application/json" \
@@ -95,11 +95,11 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
   </Step>
 
   <Step title="Crie uma oferta">
-    Com o `hash` do produto criado no passo anterior, adicione uma oferta a ele. Preços são informados **em centavos** — por exemplo, `19700` equivale a R$&nbsp;197,00.
+    Com o `hash` do produto criado no passo anterior, adicione uma oferta a ele. Preços são informados **em centavos**. Por exemplo, `19700` equivale a R\$&nbsp;197,00.
 
     ```bash
     curl --request POST \
-      --url https://api.ticto.com.br/api/v2/products/mkt2024xyz789/offers \
+      --url https://api.ticto.cloud/api/v2/products/mkt2024xyz789/offers \
       --header "Authorization: Bearer ticto_live_VIHfM4Ynb0J8kQ2rXXXXXXXXXXXXXXXXXXXXXXXX" \
       --header "Content-Type: application/json" \
       --header "Accept: application/json" \
@@ -136,7 +136,7 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
 </Steps>
 
 <Note>
-  Tokens com prefixo `ticto_test_` apontam para o ambiente sandbox (`https://sandbox.ticto.com.br/api/v2`). Produtos e ofertas criados no sandbox são rascunhos descartáveis e **nunca geram cobranças reais** — use-os à vontade para testar integrações, validar payloads e simular fluxos sem nenhum risco financeiro.
+  Tokens com prefixo `ticto_test_` apontam para o ambiente sandbox (`https://sandbox.ticto.cloud/api/v2`). Produtos e ofertas criados no sandbox são rascunhos descartáveis e **nunca geram cobranças reais**. Use-os à vontade para testar integrações, validar payloads e simular fluxos sem nenhum risco financeiro.
 </Note>
 
 <CardGroup cols={2}>
@@ -146,10 +146,10 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
   <Card title="Criar Produto" icon="box" href="/guides/create-product">
     Guia detalhado sobre todos os campos, tipos de produto e opções de configuração disponíveis.
   </Card>
-  <Card title="Produtos" icon="list" href="/api-reference/products/list">
+  <Card title="Produtos" icon="list" href="/api-reference/produtos/listar-produtos">
     Referência completa do endpoint de listagem e criação de produtos.
   </Card>
-  <Card title="Ofertas" icon="tag" href="/api-reference/offers/list">
+  <Card title="Ofertas" icon="tag" href="/api-reference/ofertas/listar-ofertas">
     Referência completa do endpoint de listagem e criação de ofertas vinculadas a produtos.
   </Card>
 </CardGroup>

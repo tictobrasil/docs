@@ -1,5 +1,5 @@
 ---
-title: "Ticto API: crie produtos e ofertas via integração"
+title: "Introdução"
 sidebarTitle: "Introdução"
 description: "A Ticto API v2 permite criar e gerenciar produtos e ofertas programaticamente. Integre sua central, ERP ou plataforma diretamente à Ticto."
 ---
@@ -16,19 +16,23 @@ A Ticto API v2 é a interface de integração pública da Ticto que permite cria
   <Card title="Criar Produto" icon="box" href="/guides/create-product">
     Guia passo a passo para criar seu primeiro produto
   </Card>
-  <Card title="API Reference" icon="code" href="/api-reference/products/list">
+  <Card title="API Reference" icon="code" href="/api-reference/produtos/listar-produtos">
     Referência completa de todos os endpoints
   </Card>
 </CardGroup>
 
 ## O que você pode fazer
 
-A API v2 expõe dois recursos principais:
+**Escrita**, para criar recursos por código:
 
-- **Produtos** — crie cursos, ebooks, assinaturas, softwares e produtos físicos
-- **Ofertas** — defina preços, formas de cobrança (única ou recorrente) e condições de pagamento para cada produto
+- **Produtos**: cursos, ebooks, mentorias, consultorias e outros produtos digitais
+- **Ofertas**: preços, forma de cobrança (única ou recorrente) e métodos de pagamento de cada produto
 
-Com poucas linhas de código, você envia apenas os campos essenciais. O restante é preenchido automaticamente pelos padrões da Ticto com base no tipo de produto.
+**Leitura**, para consultar seus dados (paridade com a API v1, para quem está migrando):
+
+- **Pedidos**, **Assinaturas** e **Saques**: histórico, resumo e detalhe por recurso
+
+Na escrita, você envia apenas os campos essenciais. Os ~80 campos internos de uma oferta são preenchidos automaticamente pelos padrões da Ticto, a partir de um preset seguro por tipo de produto.
 
 ## Como funciona
 

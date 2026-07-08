@@ -1,10 +1,10 @@
 ---
-title: "Como criar ofertas recorrentes e assinaturas na Ticto"
+title: "Ofertas recorrentes"
 sidebarTitle: "Recorrência"
 description: "Configure assinaturas e planos recorrentes na Ticto API v2. Defina intervalo de cobrança, período trial e número de ciclos com exemplos prontos."
 ---
 
-Ofertas recorrentes permitem que você cobre seus clientes de forma automática em intervalos definidos — ideal para assinaturas de cursos com mensalidade, plataformas SaaS, clubes de conteúdo e qualquer modelo que dependa de receita previsível. Ao usar `charge_type: "recurring"`, a Ticto gerencia todo o ciclo de cobrança: tentativas automáticas, notificações ao assinante e cancelamentos.
+Ofertas recorrentes permitem que você cobre seus clientes de forma automática em intervalos definidos, ideal para assinaturas de cursos com mensalidade, plataformas SaaS, clubes de conteúdo e qualquer modelo que dependa de receita previsível. Ao usar `charge_type: "recurring"`, a Ticto gerencia todo o ciclo de cobrança: tentativas automáticas, notificações ao assinante e cancelamentos.
 
 ## O objeto recurrence
 
@@ -24,11 +24,11 @@ Quando `charge_type` é `"recurring"`, o campo `recurrence` é **obrigatório**.
 
 ## Exemplo: plano anual com trial
 
-O exemplo abaixo cria um plano anual de R$ 497,00 com 7 dias de acesso gratuito e sem limite de ciclos — a assinatura se renova anualmente até ser cancelada.
+O exemplo abaixo cria um plano anual de R\$ 497,00 com 7 dias de acesso gratuito e sem limite de ciclos. A assinatura se renova anualmente até ser cancelada.
 
 ```bash
 curl --request POST \
-  --url https://api.ticto.com.br/api/v2/products/prd_a1b2c3d4e5f6/offers \
+  --url https://api.ticto.cloud/api/v2/products/prd_a1b2c3d4e5f6/offers \
   --header "Authorization: Bearer ticto_live_..." \
   --header "Content-Type: application/json" \
   --header "Idempotency-Key: 3fa85f64-5717-4562-b3fc-2c963f66afa6" \
@@ -66,7 +66,7 @@ A resposta `201 Created` confirma a criação da oferta recorrente, já com stat
 
 ## Intervalos disponíveis
 
-Escolha o intervalo que melhor se adapta ao seu modelo de negócio. Você pode criar múltiplas ofertas para o mesmo produto com intervalos diferentes — por exemplo, um plano mensal e um anual com desconto.
+Escolha o intervalo que melhor se adapta ao seu modelo de negócio. Você pode criar múltiplas ofertas para o mesmo produto com intervalos diferentes, como um plano mensal e um anual com desconto.
 
 | Intervalo      | Cobrança     |
 | -------------- | ------------ |
@@ -92,11 +92,11 @@ Quando `trial_days` é maior que `0`, o cliente recebe acesso imediato ao produt
 }
 ```
 
-Nesse exemplo, o cliente tem 7 dias gratuitos e, em seguida, é cobrado R$ 97,00 todo mês até cancelar.
+Nesse exemplo, o cliente tem 7 dias gratuitos e, em seguida, é cobrado R\$ 97,00 todo mês até cancelar.
 
 ## Ciclos limitados
 
-Por padrão, assinaturas com `cycles: null` renovam indefinidamente até que o assinante ou o vendedor cancele. Quando você precisa de uma assinatura com prazo determinado — como um parcelamento ou um plano de 12 meses fixos — defina `cycles` como um inteiro positivo.
+Por padrão, assinaturas com `cycles: null` renovam indefinidamente até que o assinante ou o vendedor cancele. Quando você precisa de uma assinatura com prazo determinado, como um parcelamento ou um plano de 12 meses fixos, defina `cycles` como um inteiro positivo.
 
 ```json
 {
@@ -111,14 +111,14 @@ Por padrão, assinaturas com `cycles: null` renovam indefinidamente até que o a
 }
 ```
 
-Nesse exemplo, o cliente é cobrado 12 vezes de R$ 47,00 (totalizando R$ 564,00) e a assinatura é encerrada automaticamente após o último ciclo — sem necessidade de cancelamento manual.
+Nesse exemplo, o cliente é cobrado 12 vezes de R\$ 47,00 (totalizando R\$ 564,00) e a assinatura é encerrada automaticamente após o último ciclo, sem necessidade de cancelamento manual.
 
 <Note>
-  O `charge_type: "recurring"` está disponível para produtos do tipo `course`, `subscription` e `software`. Produtos do tipo `physical` não suportam cobrança recorrente e retornarão erro de validação caso esse campo seja utilizado.
+  A cobrança recorrente é uma configuração da **oferta** (`charge_type: "recurring"`), não do produto. Qualquer produto digital da v2 pode ter ofertas recorrentes. O intervalo aceito é `monthly`, `quarterly`, `semiannually` ou `annually`.
 </Note>
 
 <CardGroup cols={2}>
-  <Card title="Referência: Criar Oferta" icon="code" href="/api-reference/offers/create">
+  <Card title="Referência: Criar Oferta" icon="code" href="/api-reference/ofertas/criar-oferta">
     Veja todos os campos aceitos, validações e exemplos de resposta na documentação completa do endpoint.
   </Card>
   <Card title="Criar Oferta Única" icon="tag" href="/guides/create-offer">

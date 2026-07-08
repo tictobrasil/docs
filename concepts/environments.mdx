@@ -1,41 +1,57 @@
 ---
-title: "Ambientes da Ticto API v2: como usar sandbox e produção"
+title: "Ambientes"
 sidebarTitle: "Ambientes"
-description: "Use o ambiente sandbox da Ticto API para desenvolver e testar integrações sem gerar cobranças reais nem tornar produtos visíveis ao público."
+description: "Entenda a diferença entre o sandbox e a produção da Ticto API v2, como obter acesso a cada um e como migrar sua integração do teste para o mundo real."
 ---
 
-A Ticto API v2 oferece dois ambientes distintos: **sandbox** e **produção**. O ambiente sandbox permite que você desenvolva e teste sua integração de forma segura, utilizando tokens com prefixo `ticto_test_`, sem gerar cobranças reais nem tornar produtos visíveis ao público. O ambiente de produção é destinado a operações reais, utiliza tokens com prefixo `ticto_live_` e persiste dados permanentemente.
+A Ticto API v2 tem dois ambientes **independentes**: **sandbox** (testes) e **produção** (real). Eles têm o mesmo contrato: os mesmos endpoints, os mesmos campos, as mesmas respostas. A única diferença prática são a **base URL** e o **prefixo do token**. Você desenvolve inteiro no sandbox e, quando estiver pronto, troca duas coisas para ir ao ar.
 
-## Comparativo de ambientes
+## Sandbox vs. Produção
 
 |  | Sandbox | Produção |
 |---|---|---|
-| **Base URL** | `https://sandbox.ticto.com.br/api/v2` | `https://api.ticto.com.br/api/v2` |
+| **Base URL** | `https://sandbox.ticto.cloud` | `https://api.ticto.cloud` |
 | **Prefixo do token** | `ticto_test_` | `ticto_live_` |
-| **Cobranças reais** | Não | Sim |
-| **Produtos visíveis** | Não | Sim (quando ativados) |
-| **Dados persistidos** | Descartáveis | Permanentes |
-
-## Como usar o sandbox
-
-Para começar a usar o sandbox, gere um token `ticto_test_` no painel da Ticto — o fluxo é idêntico ao de produção. Em seguida, substitua a base URL das suas requisições pela URL do sandbox:
-
-```
-https://sandbox.ticto.com.br/api/v2
-```
-
-Todas as rotas disponíveis em produção estão espelhadas no sandbox. Você pode criar produtos, ofertas e realizar qualquer operação sem impacto real.
+| **Cobranças reais** | Não (dinheiro fictício) | Sim |
+| **Produtos visíveis ao público** | Não | Sim (após ativação no painel) |
+| **Dados** | Isolados e descartáveis | Permanentes |
 
 <Note>
-  Tokens de produção e sandbox são separados. Um token `ticto_live_` não funciona no endpoint sandbox, e vice-versa.
+  Os ambientes são separados de ponta a ponta. Um token `ticto_test_` só funciona em `sandbox.ticto.cloud` e um `ticto_live_` só funciona em `api.ticto.cloud`. Não há como um token de teste tocar dados reais.
 </Note>
 
-## Draft-by-default
+## Como obter acesso
 
-Todos os produtos criados via API — em ambos os ambientes — começam como **rascunhos** (draft). No sandbox, esses rascunhos são descartáveis e não têm visibilidade pública. Em produção, os produtos também surgem como rascunhos e precisam ser ativados manualmente no painel da Ticto antes de estarem disponíveis para venda.
+O fluxo de gerar o token é idêntico nos dois ambientes. Muda apenas onde você entra:
 
-Isso garante que nenhum produto seja exposto ao público acidentalmente por uma chamada de API.
+<Steps>
+  <Step title="Sandbox para desenvolver">
+    Acesse o **painel sandbox** da Ticto, vá em **Desenvolvedores → API v2** e gere um token. Ele virá com o prefixo `ticto_test_`. Use-o contra `https://sandbox.ticto.cloud`.
+  </Step>
+  <Step title="Produção para ir ao ar">
+    No **painel de produção**, no mesmo lugar (**Desenvolvedores → API v2**), gere um token `ticto_live_`. Use-o contra `https://api.ticto.cloud`.
+  </Step>
+</Steps>
+
+O prefixo é sua bússola: olhando o token você sabe na hora se está falando com teste ou com produção: em código, em logs e em variáveis de ambiente. O token completo é exibido **uma única vez** na criação; guarde-o com segurança.
+
+## Migrando do sandbox para a produção
+
+Como o contrato é o mesmo, ir ao ar é trocar **duas variáveis**:
+
+```diff
+- BASE_URL=https://sandbox.ticto.cloud
+- TICTO_TOKEN=ticto_test_xxxxxxxx
++ BASE_URL=https://api.ticto.cloud
++ TICTO_TOKEN=ticto_live_xxxxxxxx
+```
+
+Nenhuma mudança de payload, de rota ou de lógica. O que passou no sandbox passa em produção.
+
+## Rascunho por padrão
+
+Em **qualquer** ambiente, todo produto criado via API nasce como **rascunho** (`draft`) e não fica visível ao público até ser **ativado no painel**. No sandbox isso é só organização; em produção é uma trava de segurança que garante que uma chamada de API (ou um token vazado) nunca publique um produto à venda sem a sua aprovação.
 
 <Tip>
-  Sempre teste em sandbox antes de ir para produção. Crie o mesmo fluxo de integração nos dois ambientes para garantir que tudo funcione conforme esperado antes de afetar dados reais.
+  Recrie o mesmo fluxo de ponta a ponta no sandbox antes de virar a chave. Assim você valida token, escopos, criação e leitura sem risco, e a virada para produção vira só a troca das duas variáveis acima.
 </Tip>

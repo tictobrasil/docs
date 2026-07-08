@@ -1,0 +1,23 @@
+/* Ticto API — polish de marca sobre o Mintlify.
+   Restraint: só o essencial (fonte mono da marca + acentos magenta). A cor/fonte
+   principal vem do docs.json. Sem gradiente arco-íris, sem "cara de IA". */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+/* Código na fonte mono da marca (JetBrains Mono) */
+code,
+pre,
+kbd,
+tt {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Seleção de texto no magenta da marca */
+::selection {
+    background: rgba(255, 38, 137, 0.25);
+}
+
+/* Blocos de código: cantos um pouco mais suaves, alinhado ao DS Ticto */
+pre {
+    border-radius: 12px;
+}
