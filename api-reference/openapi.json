@@ -39,7 +39,7 @@
       "post": {
         "tags": ["Produtos"],
         "summary": "Criar produto",
-        "description": "Cria um produto. O produto nasce como **rascunho** (`draft`) e deve ser ativado no painel. Escopo: `products:write`. Exige `Idempotency-Key`.",
+        "description": "Cria um produto. O produto nasce com status **pré-aprovado** (`pre-approved`), o mesmo padrão do painel: já pode receber vendas e passa pela análise de compliance após a primeira venda. O `status` é definido pela plataforma e é **somente leitura** — não pode ser enviado nem alterado pela API. Use `is_active` (padrão `true`) para criar o produto já ativo ou inativo. Escopo: `products:write`. Exige `Idempotency-Key`.",
         "operationId": "createProduct",
         "security": [{ "bearerAuth": ["products:write"] }],
         "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
@@ -54,7 +54,7 @@
         },
         "responses": {
           "201": {
-            "description": "Produto criado (rascunho).",
+            "description": "Produto criado com status `pre-approved`.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Product" } } }
           },
           "422": { "$ref": "#/components/responses/ValidationError" },
@@ -333,7 +333,8 @@
           "name": { "type": "string", "maxLength": 255, "description": "Nome do produto." },
           "type": { "type": "string", "enum": ["course", "ebook", "consultancy", "mentoring", "artificial_intelligence", "other"], "description": "Tipo do produto (apenas digitais na v2). Recorrência é definida na oferta (`charge_type: recurring`), não no tipo." },
           "description": { "type": "string", "minLength": 3, "maxLength": 1000 },
-          "category": { "type": "string", "maxLength": 120, "description": "Categoria (opcional)." }
+          "category": { "type": "string", "maxLength": 120, "description": "Categoria (opcional)." },
+          "is_active": { "type": "boolean", "default": true, "description": "Define se o produto nasce ativo (disponível) ou inativo. Opcional; padrão `true`." }
         }
       },
       "Product": {
@@ -344,7 +345,8 @@
           "reference_id": { "type": "integer", "description": "ID numérico legado (reconcilia com a dashboard). Não é fronteira de segurança.", "example": 42 },
           "name": { "type": "string", "example": "Curso de Marketing Digital" },
           "type": { "type": "string", "example": "course" },
-          "status": { "type": "string", "example": "draft" },
+          "status": { "type": "string", "readOnly": true, "example": "pre-approved", "description": "Estado de compliance do produto, governado pela plataforma. Somente leitura: não pode ser enviado nem alterado pela API. Nasce como `pre-approved`." },
+          "is_active": { "type": "boolean", "example": true, "description": "Se o produto está ativo (disponível). Controlado pelo produtor via `is_active` na criação." },
           "created_at": { "type": "string", "format": "date-time" }
         }
       },

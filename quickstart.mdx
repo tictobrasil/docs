@@ -45,7 +45,8 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
           "hash": "abc123def456",
           "name": "Meu Curso Online",
           "type": "course",
-          "status": "active"
+          "status": "pre-approved",
+          "is_active": true
         }
       ],
       "meta": {
@@ -83,14 +84,15 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
         "name": "Curso de Marketing Digital",
         "type": "course",
         "description": "Aprenda estratégias avançadas de marketing digital do zero ao avançado.",
-        "status": "draft",
+        "status": "pre-approved",
+        "is_active": true,
         "created_at": "2024-07-15T10:30:00Z"
       }
     }
     ```
 
     <Info>
-      Produtos recém-criados via API sempre recebem o status `"draft"`. Consulte o passo **Ative seu produto** para disponibilizá-lo para venda.
+      O produto nasce com status `pre-approved` e já pode vender. O `status` é da plataforma (compliance) e não pode ser alterado pela API. Se quiser criar o produto indisponível, envie `"is_active": false` e ative depois pelo painel.
     </Info>
   </Step>
 
@@ -127,16 +129,16 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
     ```
   </Step>
 
-  <Step title="Ative seu produto">
-    Produtos criados via API entram no status `draft` e **não ficam disponíveis para compra** enquanto não forem ativados. Para ativar seu produto, acesse o painel da Ticto, localize o produto em **Produtos → Meus Produtos** e clique em **Ativar**.
+  <Step title="Disponibilidade do produto">
+    O produto nasce ativo (`is_active: true`) e com status `pre-approved`, então a `checkout_url` da oferta já fica acessível ao público para receber pagamentos reais. Após a primeira venda, o produto passa pela análise do time de compliance.
 
-    Após a ativação, o status do produto passa para `active` e a `checkout_url` gerada na oferta estará acessível ao público para receber pagamentos reais.
+    Se você criou o produto com `"is_active": false` (para configurar as ofertas antes de divulgar), ele fica indisponível para compra até você ativá-lo no painel, em **Produtos → Meus Produtos → Ativar**. O `status` de compliance é gerido pela plataforma e não muda por essa ação.
   </Step>
 
 </Steps>
 
 <Note>
-  Tokens com prefixo `ticto_test_` apontam para o ambiente sandbox (`https://sandbox.ticto.cloud/api/v2`). Produtos e ofertas criados no sandbox são rascunhos descartáveis e **nunca geram cobranças reais**. Use-os à vontade para testar integrações, validar payloads e simular fluxos sem nenhum risco financeiro.
+  Tokens com prefixo `ticto_test_` apontam para o ambiente sandbox (`https://sandbox.ticto.cloud/api/v2`). Produtos e ofertas criados no sandbox são descartáveis e **nunca geram cobranças reais**. Use-os à vontade para testar integrações, validar payloads e simular fluxos sem nenhum risco financeiro.
 </Note>
 
 <CardGroup cols={2}>

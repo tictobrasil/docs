@@ -60,19 +60,20 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
 
     ```json
     {
-      "id": 1042,
-      "hash": "prd_a1b2c3d4e5f6",
+      "object": "product",
+      "id": "PABC123",
+      "reference_id": 1042,
       "name": "Curso Completo de Marketing Digital",
       "type": "course",
-      "description": "Do zero ao avançado em estratégias de marketing digital para negócios online.",
-      "status": "draft",
+      "status": "pre-approved",
+      "is_active": true,
       "created_at": "2025-01-15T14:30:00Z"
     }
     ```
   </Step>
 
-  <Step title="Ative no painel">
-    Produtos criados via API sempre iniciam com `status: "draft"`. Para publicá-lo e permitir vendas, acesse o **painel da Ticto**, localize o produto na lista de rascunhos e clique em **Ativar**. Esse passo manual garante que nenhum produto seja publicado sem a sua aprovação.
+  <Step title="Pronto para vender">
+    O produto nasce com status `pre-approved` (pré-aprovado), o mesmo padrão do painel: já pode receber vendas. Após a primeira venda, ele passa pela análise do time de compliance. Se você quiser criar o produto já indisponível (por exemplo, para configurar as ofertas antes de divulgar), envie `is_active: false` na criação e ative depois pelo painel.
   </Step>
 </Steps>
 
@@ -90,8 +91,12 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
   Descrição detalhada do produto. Aparece na página de checkout e na área de membros. Opcional, mas recomendado para melhorar a conversão.
 </ParamField>
 
+<ParamField body="is_active" type="boolean" default="true">
+  Define se o produto nasce ativo (disponível) ou inativo. Opcional; padrão `true`. É o único campo de estado que você controla pela API, funciona como um interruptor de disponibilidade. Envie `false` para criar o produto oculto e ativá-lo depois pelo painel.
+</ParamField>
+
 <Note>
-  Todos os produtos criados via API começam como rascunho (`draft`). Isso garante que um token comprometido não publique produtos em seu nome imediatamente. Ative manualmente no painel quando estiver pronto.
+  O campo `status` é da plataforma, não seu. Ele reflete o estado de compliance do produto (`pre-approved` na criação, depois avança conforme a análise) e é **somente leitura**: não pode ser enviado nem alterado pela API. Enviar `status` no corpo retorna erro `422`. Para tornar um produto indisponível, use `is_active`.
 </Note>
 
 ## Próximos passos
