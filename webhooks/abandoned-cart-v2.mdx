@@ -1,0 +1,51 @@
+---
+title: "Carrinho Abandonado - Versão 2.0"
+description: "Atributos e payload do webhook de carrinho abandonado na versão 2.0."
+---
+
+## Atributos
+
+| Nome do parâmetro | Enviado para Afiliado ou Coprodutor | Descrição | Formato e tamanho suportado |
+| --- | --- | --- | --- |
+| status | Sim | Status do Evento | **Valor**<br/>**abandoned_cart:** Abandono de Carrinho |
+| product_name | Sim | Nome do produto | Números e letras de até 255 caracteres |
+| token | Sim | Um token único e essa é a principal garantia de que o post está sendo feito pela Ticto (Ultra Sigiloso). | Números e letras de até 255 caracteres |
+| product_id | Sim | ID do Produto | Número com até 20 dígitos |
+| offer_id | Sim | Identificador da Oferta | Números e letras de até 255 caracteres |
+| name | Sim | Nome da Oferta | Números e letras de até 255 caracteres |
+| email | Sim | Email do Comprador | Números e letras de até 255 caracteres |
+| document | Sim | Documento de Identificação do Comprador | Números e letras de até 255 caracteres |
+| phone | Sim | Número de Telefone do Comprador | Números e letras de até 255 caracteres |
+| created_at | Sim | Data e Hora do Evento | Números e letras de até 255 caracteres |
+| checkout_url | Sim | URL do checkout | (string) |
+| tracking | Sim | Dados de tracking (UTM e outros) | Objeto JSON com campos: utm_source, utm_medium, utm_campaign, utm_content, utm_term, src, sck, manychat_user_id |
+
+## Objeto de requisição
+
+Segue um exemplo do objeto da requisição:
+
+```json
+{
+  "status": "abandoned_cart",
+  "token": "1udD292eFtjU3XFIUsrFtzyjaG0r48BbIQcX7bO4rkX1NXB0JtLVhCe7yLzDHReOtec13spxAZnURYnqtnNFmHxSbAOgCC1wq",
+  "product_name": "PRODUTO EBOOK",
+  "product_id": 252,
+  "offer_id": 183,
+  "name": "Leonardo",
+  "email": "leonardo@ticto.com.br",
+  "document": "123456789",
+  "phone": "+55 (11) 99999-9999",
+  "created_at": "20/05/2024 13:37:34",
+  "checkout_url": "https://checkout.ticto.com.br/OF6D0764F",
+  "tracking": {
+    "utm_source": "google",
+    "utm_medium": "cpc",
+    "utm_campaign": "black_friday",
+    "utm_content": "banner_1",
+    "utm_term": "produto_digital",
+    "src": "facebook",
+    "sck": "campaign_123",
+    "manychat_user_id": "user_456"
+  }
+}
+```

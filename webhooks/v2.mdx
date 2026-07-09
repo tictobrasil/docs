@@ -1,0 +1,253 @@
+---
+title: "Versão 2.0"
+description: "Atributos e exemplo de payload do webhook (postback) versão 2.0, o formato recomendado."
+---
+
+## Atributos
+
+| Nome do parâmetro | Enviado para Afiliado ou Coprodutor | Descrição | Formato e tamanho suportado |
+| --- | --- | --- | --- |
+| version | Sim | Identificador da versão do postback | (string) `2.0` sempre |
+| commission_type | Sim | Tipo de comissão do postback | **Possíveis valores**<br/>**producer:** Produtor<br/>**coproducer:** Coprodutor<br/>**affiliate:** Afiliado<br/>**manager:** Gestor de Afiliados<br/>**provider:** Fornecedor de produto físico |
+| status | Sim | Status da compra | **Possíveis valores**<br/>**abandoned_cart:** Abandono de Carrinho<br/>**authorized:** Venda Realizada<br/>**bank_slip_delayed:** Boleto Atrasado<br/>**bank_slip_created:** Boleto Impresso<br/>**chargeback:** Chargeback<br/>**close:** Encerrado<br/>**claimed:** Reclamado<br/>**pix_created:** Pix Gerado<br/>**pix_expired:** Pix Expirado<br/>**refunded:** Reembolso<br/>**refused:** Venda Recusada<br/>**trial:** Tempo de Teste<br/>**waiting_payment:** Aguardando Pagamento<br/>**all_charges_paid:** [Assinatura] - Encerrada (Todas as Cobranças Finalizadas)<br/>**card_exchanged:** [Assinatura] - Cartão atualizado<br/>**extended:** [Assinatura] - Extendida<br/>**subscription_canceled:** [Assinatura] - Cancelada<br/>**subscription_delayed:** [Assinatura] - Atrasada<br/>**trial_started:** [Assinatura] - Período de Testes Iniciado<br/>**trial_ended:** [Assinatura] - Período de Testes Encerrado<br/>**uncanceled:** [Assinatura] - Retomada |
+| status_date | Sim | Dia e Hora do PostBack | Números e letras de até 255 caracteres |
+| token | Sim | Um token único e essa é a principal garantia de que o post está sendo feito pela Ticto (Ultra Sigiloso). | Números e letras de até 255 caracteres |
+| payment_method | Sim | Forma de pagamento do comprador | **Possíveis valores**<br/>**bank_slip:** Boleto Bancário<br/>**pix:** Pix<br/>**credit_card:** Cartão de Crédito |
+| url_params | Sim | Parâmetros da URL no ato da compra | Objeto: `{label:value}` |
+| tracking | Sim | Trackeamento de campanhas (utm). Se não possuir valor, será enviado **"Não Informado"** | Objeto:<br/>"utm_source": "valor",<br/>"utm_medium": "valor",<br/>"utm_campaign": "valor",<br/>"utm_content": "valor",<br/>"utm_term": "valor",<br/>"src": "valor",<br/>"sck": "valor",<br/>"manychat_user_id": "valor" |
+| checkout_url | Sim | URL do checkout | Números e letras de até 255 caracteres |
+| order.id | Sim | ID do pedido | inteiro |
+| order.hash | Sim | Código do pedido | Números e letras de até 255 caracteres |
+| order.transaction_hash | Sim | Código da transação | Números e letras de até 255 caracteres |
+| order.paid_amount | Sim | Preço da oferta no momento da compra | Inteiro |
+| order.installments | Sim | Quantidade de Parcelas | Número com até 2 dígitos |
+| order.order_date | Sim | Dia e Hora do Pedido | Números e letras de até 255 caracteres |
+| shipping.amount | Sim | Valor do Frete | inteiro |
+| shipping.type | Sim | Tipo do Frete | **Possíveis valores**<br/>**free:** Frete Grátis<br/>**fixed:** Valor Fixo<br/>**shipping_company:** Correios |
+| shipping.method | Sim | Método do Frete | Números e letras de até 255 caracteres |
+| shipping.delivery_days | Sim | Prazo de dias para entrega | Números com até 20 dígitos |
+| item.product_name | Sim | Nome do produto | Números e letras de até 255 caracteres |
+| item.product_id | Sim | ID do Produto | Número com até 20 dígitos |
+| item.refund_deadline | Sim | Prazo de reembolso do produto | Inteiro |
+| item.offer_name | Sim | Nome do produto que foi adquirido | Números e letras de até 255 caracteres |
+| item.offer_id | Sim | Identificador da oferta que foi adquirida | Números e letras de até 255 caracteres |
+| item.offer_code | Sim | Identificador da oferta que foi adquirida | Números e letras de até 255 caracteres |
+| item.coupon_id | Sim | Id do cupom (se utilizado) | Números e letras de até 255 caracteres |
+| item.coupon_name | Sim | Nome do cupom (se utilizado) | Números e letras de até 255 caracteres |
+| item.quantity | Sim | Quantidade de itens da oferta | Inteiro |
+| item.amount | Sim | Preço da unidade da oferta | Inteiro |
+| item.members_portal_id | Sim | Identificador do portal de membros | Inteiro |
+| item.members_classroom_id | Sim | Identificador da classe de membros | Inteiro |
+| item.days_of_access | Sim | Dias de acesso à área de membros | Inteiro |
+| item.trial_days | Sim | País | Letras 2 digitos. |
+| item.transfer_fixed_fee_to_buyer | Sim | Indica se a taxa fixa da plataforma foi transferida para o comprador | (boolean) |
+| bumps | Sim | Order Bumps (Só será enviado caso o produtor deseje enviar os bumps junto com o produto principal) | Array de Objetos |
+| bumps [indice] .product_id | Sim | ID do Produto | (string) |
+| bumps [indice] .product_name | Sim | Nome do Produto | (string) |
+| bumps [indice] .offer_id | Sim | ID da Oferta | Número com até 2 dígitos |
+| bumps [indice] .offer_name | Sim | Nome da Oferta | (string) |
+| bumps [indice] .offer_code | Sim | Code da Oferta | (string) |
+| bumps [indice] .offer_price | Sim | Valor da Oferta | Inteiro (centavos) |
+| bumps [indice] .product_support_email | Sim | Email de suporte do produto | (string) |
+| bumps [indice] .product_support_phone | Sim | Telefone de suporte do produto | (string) |
+| subscriptions | Sim | Assinaturas atreladas à venda | Array de objetos |
+| subscriptions [indice] .id | Sim | Código identificador da assinatura | Inteiro |
+| subscriptions [indice] .interval | Sim | Intervalo entre cobranças (Ex: 1 para um mês, 2 para dois meses, etc.) | Inteiro |
+| subscriptions [indice] .is_smart_installment | Sim | Indica se a assinatura é um parcelamento inteligente (1) ou não (0) | Inteiro |
+| subscriptions [indice] .successful_charges | Sim | Quantidade de cobranças pagas | Inteiro |
+| subscriptions [indice] .failed_charges | Sim | Quantidade de tentativas falhas | Inteiro |
+| subscriptions [indice] .change_card_url | Sim | URL de troca de cartão | (string) |
+| subscriptions [indice] .max_charges | Sim | Quantidade máxima de cobranças (se vazio, a assinatura é renovada automaticamente) | Inteiro |
+| subscriptions [indice] .next_charge | Sim | Data da próxima cobrança (se vazio, a assinatura está cancelada) | Datetime - Ex.: YYYY-MM-DD HH:MM:SS |
+| subscriptions [indice] .canceled_at | Sim | Data de cancelamento (se vazio, a assinatura está ativa) | Datetime - Ex.: YYYY-MM-DD HH:MM:SS |
+| transaction.hash | Sim | Código de identificação da transação | Números e letras de até 255 caracteres |
+| transaction.cards | Não | Array de cartões utilizados na compra (somente se for cartão) | Array |
+| transaction.cards [indice] .brand | Não | Bandeira do Cartão | (string) |
+| transaction.cards [indice] .holder | Não | Nome no Cartão | (string) |
+| transaction.cards [indice] .first_digits | Não | 6 Primeiros Dígitos do Cartão | (string) |
+| transaction.cards [indice] .last_digits | Não | 4 últimos dígitos do Cartão | (string) |
+| transaction.bank_slip_code | Sim | Código identificador de boleto (somente se for boleto) | (string) |
+| transaction.bank_slip_url | Sim | URL de download de boleto (somente se for boleto) | (string) |
+| transaction.bank_slip_pdf | Sim | URL de download de boleto PDF (somente se for boleto) | (string) |
+| transaction.pix_qr_code | Sim | Código de pagamento do pix (somente se for pix) | (string) |
+| customer.cpf | (Depende da configuração do produto de compartilhar informações) | CPF do comprador | (string) |
+| customer.cnpj | (Depende da configuração do produto de compartilhar informações) | CNPJ do comprador | (string) |
+| customer.name | (Depende da configuração do produto de compartilhar informações) | Nome completo do comprador | (string) |
+| customer.type | (Depende da configuração do produto de compartilhar informações) | Tipo jurídico do comprador | "person" ou "company" |
+| customer.email | (Depende da configuração do produto de compartilhar informações) | E-mail do comprador | (string) |
+| customer.phone.ddd | (Depende da configuração do produto de compartilhar informações) | DDD do comprador | Números e letras de até 255 caracteres (string) |
+| customer.phone.ddi | (Depende da configuração do produto de compartilhar informações) | DDI do comprador | Números e letras de até 255 caracteres (string) |
+| customer.phone.number | (Depende da configuração do produto de compartilhar informações) | Number do comprador | Números e letras de até 255 caracteres (string) |
+| customer.address.city | (Depende da configuração do produto de compartilhar informações) | Cidade do comprador | Números e letras de até 255 caracteres (string) |
+| customer.address.state | (Depende da configuração do produto de compartilhar informações) | Estado do comprador | Números e letras de até 255 caracteres (string) |
+| customer.address.street | (Depende da configuração do produto de compartilhar informações) | Rua ou avenida do comprador | Números e letras de até 255 caracteres (string) |
+| customer.address.country | (Depende da configuração do produto de compartilhar informações) | Cidade do comprador | Números e letras de até 255 caracteres (string) |
+| customer.address.zip_code | (Depende da configuração do produto de compartilhar informações) | CEP do comprador | Números e letras de até 255 caracteres (string) |
+| customer.address.complement | (Depende da configuração do produto de compartilhar informações) | Complemento de residência do comprador | Números e letras de até 255 caracteres (string) |
+| customer.address.neighborhood | (Depende da configuração do produto de compartilhar informações) | Bairro do comprador | Números e letras de até 255 caracteres (string) |
+| customer.address.street_number | (Depende da configuração do produto de compartilhar informações) | Número de residencia do comprador | Números e letras de até 255 caracteres (string) |
+| customer.is_foreign | (Depende da configuração do produto de compartilhar informações) | Boolean se o comprador é estrangeiro ou não | (boolean) |
+| customer.code | Sim | Identificador do comprador | Números e letras de até 255 caracteres |
+| telefone | (Depende da configuração do produto de compartilhar informações) | Número do telefone | Números e letras de até 20 caracteres - Ex.: 99999999 |
+| phone_local_code_customer | (Depende da configuração do produto de compartilhar informações) | Local Code do telefone | Números e letras de até 20 caracteres - Ex.: 99999999 |
+| phone_number_customer | (Depende da configuração do produto de compartilhar informações) | Número do telefone | Números e letras de até 20 caracteres - Ex.: 99999999 |
+| producer | Não | Produtor atrelado à venda | Objeto |
+| producer.id | Não | Código Identificador do Produtor | Inteiro |
+| producer.name | Não | Nome do Produtor | (string) |
+| producer.email | Não | Email do Produtor | (string) |
+| producer.phone | Não | Telefone do Produtor | (string) |
+| producer.amount | Não | Comissão do Produtor | Inteiro (centavos) |
+| producer.cms | Não | Comissão do produtor | (string) |
+| producer.document | Não | CPF ou CNPJ do produtor | (string) |
+| affiliates | Não | Afiliados atrelados à venda | Array de objetos |
+| affiliates [indice] .id | Não | Código Identificador do Afiliado | Inteiro |
+| affiliates [indice] .pid | Não | Código Identificador Externo do Afiliado | (string) |
+| affiliates [indice] .name | Não | Nome do Afiliado | (string) |
+| affiliates [indice] .email | Não | Email do Afiliado | (string) |
+| affiliates [indice] .phone | Não | Número de telefone do Afiliado | (string) |
+| affiliates [indice] .amount | Não | Comissão do Afiliado | Inteiro (centavos) |
+| affiliates [indice] .cms | Não | Comissão do Afiliado | (string) |
+| affiliates [indice] .document | Não | CPF ou CNPJ do Afiliado | (string) |
+| coproducers | Não | Coprodutores atrelados à venda | Array de objetos |
+| coproducers [indice] .id | Não | Código Identificador do Coprodutor | Inteiro |
+| coproducers [indice] .name | Não | Nome do Coprodutor | (string) |
+| coproducers [indice] .email | Não | Email do Coprodutor | (string) |
+| coproducers [indice] .phone | Não | Número de telefone do Coprodutor | (string) |
+| coproducers [indice] .amount | Não | Comissão do Coprodutor | Inteiro (centavos) |
+| coproducers [indice] .cms | Não | Comissão do Coprodutor | (string) |
+| coproducers [indice] .document | Não | CPF ou CNPJ do Coprodutor | (string) |
+| marketplace_commission | Não | Comissão da Ticto | Inteiro (centavos) |
+| direct_login_url | Não | URL para Login Direto | (string) |
+
+## Objeto de requisição
+
+Segue um exemplo do objeto da requisição:
+
+```json
+{
+  "version": "2.0",
+  "commission_type": "producer",
+  "status": "authorized",
+  "status_date": "2024-05-20 14:49:14",
+  "token": "1udD292eFtjU3XFIUsrFtzyjatnNFmHxSbAOgCC1wqzvZ",
+  "payment_method": "credit_card",
+  "direct_login_url": "https://teste.com.br",
+  "url_params": {
+    "query_params": {
+    "code": "O753B6D71",
+    "event": "InitiateCheckout"
+    }
+  },
+  "tracking": {
+    "utm_source": "Não Informado",
+    "utm_medium": "Não Informado",
+    "utm_campaign": "Não Informado",
+    "utm_content": "Não Informado",
+    "utm_term": "Não Informado",
+    "src": "Não Informado",
+    "sck": "Não Informado",
+    "manychat_user_id": "Não Informado"
+  },
+  "checkout_url": "https://checkout.ticto.com.br/O753B6D71",
+  "order": {
+    "id": 710,
+    "hash": "TOCE0E1122005PDB10HZ",
+    "transaction_hash": "TPC12CE162005BN72QGD",
+    "paid_amount": 10000,
+    "installments": 12,
+    "order_date": "2024-05-20 14:49:06"
+  },
+  "shipping": {
+    "amount": 2000,
+    "type": "shipping_company",
+    "method": "by_producer",
+    "delivery_days": 15
+  },
+  "item": {
+    "product_name": "PRODUTO TICTO",
+    "product_id": 268,
+    "refund_deadline": 30,
+    "offer_name": "OFERTA 01",
+    "offer_id": 262,
+    "offer_code": "O753B6D71",
+    "coupon_id": null,
+    "coupon_name": null,
+    "quantity": 1,
+    "amount": 10000,
+    "members_portal_id": null,
+    "members_classroom_id": null,
+    "days_of_access": null,
+    "trial_days": null,
+    "transfer_fixed_fee_to_buyer": false
+  },
+  "subscriptions": [
+    {
+      "id": 119,
+      "interval": 1,
+      "is_smart_installment": 0,
+      "next_charge": "2023-12-01 00:00:00",
+      "successful_charges": 1,
+      "failed_charges": 0,
+      "change_card_url": "https://dash.ticto.com.br/change-card/1234?orderCode=TOC139213AA123&email=teste@ticto.com.br",
+      "max_charges": null,
+      "next_charge": "2024-06-20 00:00:00",
+      "canceled_at": null
+    }
+  ],
+  "bumps": [
+    {
+      "product_id": 244,
+      "product_name": "PRODUTO TICTO BUMP",
+      "refund_deadline": 15,
+      "offer_id": 173,
+      "offer_name": "OFERTA BUMP",
+      "offer_code": "O712403A3",
+      "offer_price": "1000.00",
+      "product_support_email": "leonardo@ticto.com.br",
+      "product_support_phone": "1199999999"
+    }
+  ],
+  "transaction": {
+    "hash": "TPC12CE162005BN72QGD",
+    "cards": [
+      {
+        "brand": "visa",
+        "holder": "Leonardo",
+        "first_digits": "453962",
+        "last_digits": "2097"
+      }
+    ]
+  },
+  "customer": {
+    "cpf": "99999999999",
+    "cnpj": null,
+    "name": "Leonardo",
+    "type": "person",
+    "email": "leonardo@ticto.com.br",
+    "address": {
+      "city": "São Paulo",
+      "state": "SP",
+      "street": "Rua Brigadeiro Faria Lima",
+      "country": "Brasil",
+      "zip_code": "11700630",
+      "complement": "A",
+      "neighborhood": "Canto do Forte",
+      "street_number": "99"
+    },
+    "is_foreign": false,
+    "code": "UECA07378"
+  },
+  "producer": {
+    "id": 1,
+    "name": "CEO",
+    "email": "ceo@ticto.com.br",
+    "phone": "5511999999999",
+    "amount": 11052,
+    "cms": "110.52",
+    "document": "999999999999"
+  },
+  "affiliates": [],
+  "coproducers": [],
+  "marketplace_commission": 699
+}
+```

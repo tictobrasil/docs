@@ -66,6 +66,28 @@
       {
         "tab": "API Reference",
         "openapi": "/api-reference/openapi.json"
+      },
+      {
+        "tab": "Webhooks",
+        "groups": [
+          {
+            "group": "Introdução",
+            "pages": [
+              "webhooks/introduction",
+              "webhooks/testing-environment"
+            ]
+          },
+          {
+            "group": "Referência de eventos",
+            "pages": [
+              "webhooks/new-affiliation",
+              "webhooks/v1",
+              "webhooks/v2",
+              "webhooks/abandoned-cart-v1",
+              "webhooks/abandoned-cart-v2"
+            ]
+          }
+        ]
       }
     ]
   },

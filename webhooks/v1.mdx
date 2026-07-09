@@ -1,0 +1,219 @@
+---
+title: "Versão 1.0"
+description: "Atributos e exemplo de payload do webhook (postback) versão 1.0, o formato legado."
+---
+
+## Atributos
+
+| Nome do parâmetro | Enviado para Afiliado ou Coprodutor | Descrição | Formato e tamanho suportado |
+| --- | --- | --- | --- |
+| version | Sim | Identificador da versão do postback | (string) `1.0` sempre |
+| status | Sim | Status da compra | **Possíveis valores**<br/>**paid:** Compra Aprovada<br/>**refused:** Compra negada no cartão<br/>**claimed:** Reclamado<br/>**billet_printed:** Boleto Impresso<br/>**refunded:** Reembolso Efetuado<br/>**blocked:** Bloqueio de Anti-Fraude<br/>**chargeback:** Reembolso forçado no cartão de crédito<br/>**abandoned_cart:** Abandono de Carrinho<br/>**billet_delayed:** Boleto Atrasado<br/>**subscription_canceled:** Assinatura Cancelada |
+| token | Sim | Um token único e essa é a principal garantia de que o post está sendo feito pela Ticto (Ultra Sigiloso). | Números e letras de até 255 caracteres |
+| id_prod | Sim | Identificador do produto que foi adquirido | Somente números com até 20 dígitos |
+| name_prod | Sim | Nome do produto que foi adquirido | Números e letras de até 255 caracteres |
+| id_transaction | Não | Identificador do pedido da transação | Números e letras de até 255 caracteres |
+| id_order | Sim | Número do Pedido | Somente números com até 20 dígitos |
+| transaction_hash | Não | Identificador da transação | Números e letras de até 255 caracteres |
+| customer_code | Sim | Identificador do comprador | Números e letras de até 255 caracteres |
+| checkout_url | Sim | URL do checkout | (string) |
+| id_offer | Não | Identificador da oferta que foi adquirida | Números e letras de até 255 caracteres |
+| name_offer | Sim | Nome da oferta cadastrada na Ticto | Números e letras de até 255 caracteres |
+| transfer_fixed_fee_to_buyer | Sim | Indica se a taxa fixa da plataforma foi transferida para o comprador | (boolean) |
+| amount | Não | Quantidade de itens na venda. (Enviado no caso de produtos físicos) | Somente números com até 20 dígitos |
+| price_offer | Não | Preço da oferta no momento da compra | Número com duas casas decimais (Ex: 100.00) |
+| transaction_price | Não | Valor total da compra | Número decimal de 0.01 até 9999.99 |
+| paid_value | Sim | Valor pago pelo cliente final | Número com duas casas decimais (Ex: 100.00) |
+| cms_value | Sim | Comissão gerada para quem está recebendo o postback (Referente a qual notificação de comissão se refere) | Número com duas casas decimais (Ex: 100.00) |
+| cms_marketplace_value | Não | Tarifa de intermediação e processamento do pagamento | Número com duas casas decimais (Ex: 100.00) |
+| installments | Sim | Quantidade de Parcelas | Somente números com até 2 dígitos |
+| payment_type | Sim | Forma de pagamento do comprador | Possíveis valores: 'billet', 'credit_card' |
+| transaction_date | Sim | Data do pedido | Datetime - Ex.: YYYY-MM-DD HH:MM:SS |
+| product_support_email | Sim | Email de suporte do produtor | Números e letras de até 255 caracteres |
+| product_support_phone | Sim | Telefone de suporte do produtor | Números e letras de até 255 caracteres |
+| producer_name | Sim | Nome do produtor | Números e letras de até 255 caracteres |
+| producer_document | Sim | Cpf/Cnpj produtor | Números e letras de até 255 caracteres |
+| producer_email | Sim | Email produtor | Números e letras de até 255 caracteres |
+| refund_limit_date | Sim | Data de vencimento da garantia do produto adquirido | Date |
+| postback_type | Sim | Numero referente ao tipo de comissão recebida | Número inteiro de 1 dígito<br/>1=>afiliado<br/>2=>Produtor,<br/>3=>Gerente de afiliado<br/>4 => Co-Produtor |
+| occurence | Sim | Somente para assinaturas. Representa qual mensalidade foi transacionada. | Somente números com até 2 dígitos |
+| confirmation_purchase_date | Sim | Data de liberação da compra | Datetime - Ex.: YYYY-MM-DD HH:MM:SS |
+| cashout_release_date | Sim | Data em que essa comissão estará disponivel para saque. | Date - Ex.: YYYY-MM-DD |
+| code | Não | Identificador da oferta que foi adquirida | Números e letras de até 255 caracteres |
+| event | Não | Evento do envio | Números e letras de até 255 caracteres |
+| shipping_amount | Sim | Valor frete | Número decimal de 0.01 até 9999.99 |
+| shipping_type | Não | Tipo de frete | Possíveis Valores:<br/>free=>Frete Grátis<br/>fixed=>Frete com Valor fixo<br/>shipping_company=>Correios |
+| shipping_company | Não | Método de envio | Possíveis Valores:<br/>pac=>PC<br/>sedex=>Sedex<br/>by_producer => Envio pelo produtor |
+| shipping_delivery_days | Sim | Prazo de dias para entrega | Números com até 20 dígitos |
+| email_customer | (Depende da configuração do produto de compartilhar informações) | E-mail do comprador | Números e letras de até 255 caracteres |
+| name_customer | (Depende da configuração do produto de compartilhar informações) | Nome completo do comprador | Números e letras de até 255 caracteres |
+| phone_number_customer | (Depende da configuração do produto de compartilhar informações) | Número do telefone | Números e letras de até 20 caracteres - Ex.: 99999999 |
+| num_doc_customer | Não | Número do CPF/CNPJ usado na compra | Números e letras de até 20 caracteres - Ex.: 99999999999 |
+| address_customer | Não | Endereço | Números e letras de até 255 caracteres |
+| address_number_customer | Não | Número do endereço | Números e letras de até 255 caracteres |
+| address_district_customer | Não | Bairro | Números e letras de até 255 caracteres |
+| address_comp_customer | Não | Complemento do endereço | Números e letras de até 255 caracteres |
+| address_city_customer | Não | Cidade | Números e letras de até 255 caracteres |
+| address_state_customer | Não | Estado | Números e letras de até 255 caracteres |
+| address_zip_code_customer | Não | CEP | Números e letras de até 255 caracteres |
+| address_country_customer | Não | País | Letras 2 digitos. |
+| cms_vendor_value | Não | Comissão do produtor gerada nesta transação | Número com duas casas decimais (Ex: 100.00) |
+| billet_url | Sim | URL do boleto em navegador | (string) |
+| billet_typeable_barcode | Sim | Linha digitável do boleto | (string) |
+| billet_barcode | Sim | Código de Barras do boleto | (string) |
+| billet_expire_date | Sim | Data de Vencimento do boleto | Data: dd/mm/YYYY |
+| pixQrCode | Sim | Código de pagamento do Pix | (string) |
+| pix_qr_code | Sim | Código de pagamento do Pix | (string) |
+| pixUrl | Sim | URL do pix no navegador | (string) |
+| utm_content | Sim (Referente a notificação de comissão correspondente a essa comissão) | Identificador customizado pelo usuário. Pode ser definido no link de venda para ser recebido de volta | Números e letras de até 255 caracteres |
+| utm_medium | Sim (Referente a notificação de comissão correspondente a essa comissão) | Identificador customizado pelo usuário. Pode ser definido no link de venda para ser recebido de volta. | Números e letras de até 255 caracteres. |
+| utm_source | Sim (Referente a notificação de comissão correspondente a essa comissão) | Identificador customizado pelo usuário. Pode ser definido no link de venda para ser recebido de volta | Números e letras de até 255 caracteres |
+| utm_campaign | Sim (Referente a notificação de comissão correspondente a essa comissão) | Identificador customizado pelo usuário. Pode ser definido no link de venda para ser recebido de volta | Números e letras de até 255 caracteres |
+| utm_term | Sim (Referente a notificação de comissão correspondente a essa comissão) | Identificador customizado pelo usuário. Pode ser definido no link de venda para ser recebido de volta | Números e letras de até 255 caracteres |
+| src | Sim (Referente a notificação de comissão correspondente a essa comissão) | Código de até 6 caracteres. Pode ser customizado pelo usuário para rastrear origens das vendas | Números e letras de até 255 caracteres |
+| sck | Sim (Referente a notificação de comissão correspondente a essa comissão) | Código de até 6 caracteres. Pode ser customizado pelo usuário para rastrear origens das vendas | Números e letras de até 255 caracteres |
+| subscriptions | Sim | Assinaturas atreladas à venda | Array de objetos |
+| subscriptions [indice] .id | Sim | Código identificador da assinatura | Inteiro |
+| subscriptions [indice] .interval | Sim | Intervalo entre cobranças (Ex: 1 para um mês, 2 para dois meses, etc.) | Inteiro |
+| subscriptions [indice] .successful_charges | Sim | Quantidade de cobranças pagas | Inteiro |
+| subscriptions [indice] .failed_charges | Sim | Quantidade de tentativas falhas | Inteiro |
+| subscriptions [indice] .change_card_url | Sim | URL de troca de cartão | (string) |
+| subscriptions [indice] .max_charges | Sim | Quantidade máxima de cobranças (se vazio, a assinatura é renovada automaticamente) | Inteiro |
+| subscriptions [indice] .next_charge | Sim | Data da próxima cobrança (se vazio, a assinatura está cancelada) | Datetime - Ex.: YYYY-MM-DD HH:MM:SS |
+| subscriptions [indice] .canceled_at | Sim | Data de cancelamento (se vazio, a assinatura está ativa) | Datetime - Ex.: YYYY-MM-DD HH:MM:SS |
+| affiliates | Sim | Afiliados atrelados à venda | Array de objetos |
+| affiliates [indice] .id | Sim | Código Identificador do Afiliado | Inteiro |
+| affiliates [indice] .pid | Não | Código Identificador Externo do Afiliado | (string) |
+| affiliates [indice] .name | Sim | Nome do Afiliado | String |
+| affiliates [indice] .email | Sim | Email do Afiliado | String |
+| affiliates [indice] .phone | Sim | Número de telefone do Afiliado | String |
+| affiliates [indice] .cms | Sim | Comissão do Afiliado | Número com duas casas decimais (Ex: 100.00) |
+| affiliates [indice] .document | Sim | Documento do Afiliado | String |
+| coproducers | Sim | Coprodutores atrelados à venda | Array de objetos |
+| coproducers [indice] .id | Sim | Código Identificador do Coprodutor | Inteiro |
+| coproducers [indice] .name | Sim | Nome do Coprodutor | String |
+| coproducers [indice] .email | Sim | Email do Coprodutor | String |
+| coproducers [indice] .phone | Sim | Número de telefone do Coprodutor | String |
+| coproducers [indice] .cms | Sim | Comissão do Coprodutor | Número com duas casas decimais (Ex: 100.00) |
+| coproducers [indice] .document | Sim | Documento do Coprodutor | String |
+| direct_login_url | Não | URL para Login Direto | (string) |
+
+## Objeto de requisição
+
+Segue um exemplo do objeto da requisição:
+
+```json
+{
+  "status": "abandoned_cart",
+  "customer_code":"U2AFBFD47",
+  "token": "8hstl468b2kdha78stldj55sgtsdjdhtslyb",
+  "id_prod": 9999,
+  "name_prod": "Seu Produto Aqui",
+  "direct_login_url": "https://teste.com.br",
+  "price_offer": 19900,
+  "paid_value": 19900,
+  "id_offer": "45VCHS4O",
+  "name_offer": "Nome da Oferta Aqui",
+  "transfer_fixed_fee_to_buyer": false,
+  "num_doc_customer": "99999999999",
+  "address_customer": "Rua de Teste",
+  "address_number_customer": "1888",
+  "address_district_customer": "Bairro Aqui",
+  "address_comp_customer": "Complemento aqui",
+  "address_city_customer": "Cidade em String",
+  "address_state_customer": "SP",
+  "address_zip_code_customer": "07144170",
+  "address_country_customer": "BR",
+  "cms_marketplace_value": 1394,
+  "cms_vendor_value": 14804,
+  "transaction_price": 199,
+  "pixQrCode": "00020101021226850014br.gov.bcb.pix2563api-h.ticto.com/pix/v2/E926FFDA-D47E-4590-A183-D6C05071670F27600016BR.COM.ticto0136E926FFDA-D47E-4590-A183-D6C05071670F520479945303986540810000.005802BR5921TICTO TECNOLOGIA LTDA6008CAMPINAS62070503***6304A6B6",
+  "pix_qr_code": "00020101021226850014br.gov.bcb.pix2563api-h.ticto.com/pix/v2/E926FFDA-D47E-4590-A183-D6C05071670F27600016BR.COM.ticto0136E926FFDA-D47E-4590-A183-D6C05071670F520479945303986540810000.005802BR5921TICTO TECNOLOGIA LTDA6008CAMPINAS62070503***6304A6B6",
+  "pixUrl": "https://checkout.ticto.com.br/thanks/TOP30SDKADJ5512U2L35BG",
+  "amount": 1,
+  "shipping_amount": 0,
+  "shipping_type": "",
+  "shipping_company": "",
+  "shipping_delivery_days": 10,
+  "postback_type": "2",
+  "email_customer": "email@docliente.com.br",
+  "name_customer": "Nome do Cliente Aqui",
+  "phone_number_customer": "1199999999",
+  "id_transaction": "TOC953699652ZDTK",
+  "transaction_hash": "TPCMA2102N0999965214CAK",
+  "checkout_url": "https://checkout.ticto.com.br/O73C8F973",
+  "id_order": 3149991,
+  "payment_type": "credit_card",
+  "cms_value": 14804,
+  "transaction_date": "2022-02-21 14:28:20",
+  "utm_content": "",
+  "utm_medium": "",
+  "utm_source": "",
+  "utm_campaign": "",
+  "src": "RASTREIO_AQUI",
+  "confirmation_purchase_date": "2022-02-21 14:28:22",
+  "producer_name": "Nome do Produtor",
+  "producer_document": "49999994000171",
+  "producer_email": "emaildoprodutor@gmail.com",
+  "refund_limit_date": "2022-02-28",
+  "cashout_release_date": "2022-03-23 14:28:22",
+  "installments": 3,
+  "subscriptons": [
+    {
+      "id": 1,
+      "interval": 1,
+      "next_charge": "2023-12-01 00:00:00",
+      "change_card_url": "https://dash.ticto.com.br/change-card/1234?orderCode=TOC139213AA123&email=teste@ticto.com.br",
+      "successful_charges": 1,
+      "failed_charges": 0,
+      "max_charges": "",
+      "canceled_at": ""
+    },
+    {
+      "id": 2,
+      "interval": 1,
+      "next_charge": "",
+      "successful_charges": 6,
+      "failed_charges": 0,
+      "max_charges": 6,
+      "canceled_at": "2023-12-01 00:00:00"
+    }
+  ],
+  "affiliates": [
+    {
+      "id": 1,
+      "name": "Nome do Afiliado 1",
+      "phone": "258139121334567",
+      "email": "emaildoafiliado8@provedor.com.br",
+      "cms": 4000,
+      "document": "00000000000"
+    },
+    {
+      "id": 2,
+      "name": "Nome do Afiliado 2",
+      "phone": "258139121334567",
+      "email": "emaildoafiliado8@provedor.com.br",
+      "cms": 4000,
+      "document": "00000000000"
+    }
+  ],
+  "coproducers": [
+    {
+      "id": 1,
+      "name": "Nome do coprodutor 1",
+      "phone": "258139121334567",
+      "email": "emaildocoprodutor8@provedor.com.br",
+      "cms": 4000,
+      "document": "696.891.960-57"
+    },
+    {
+      "id": 2,
+      "name": "Nome do coprodutor 2",
+      "phone": "258139121334567",
+      "email": "emaildocoprodutor8@provedor.com.br",
+      "cms": 4000,
+      "document": "696.891.960-57"
+    }
+  ]
+}
+```
