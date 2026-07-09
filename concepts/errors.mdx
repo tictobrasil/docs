@@ -11,10 +11,11 @@ Todos os erros da Ticto API v2 seguem um envelope JSON consistente, com um **slu
 ```json
 {
   "error": "validation_failed",
-  "message": "O preço mínimo é R\$ 5,00.",
+  "message": "The request payload is invalid.",
   "request_id": "req_a1b2c3",
   "details": [
-    { "field": "price", "code": "min" }
+    "The name field is required.",
+    "The price must be at least 500."
   ]
 }
 ```
@@ -22,23 +23,26 @@ Todos os erros da Ticto API v2 seguem um envelope JSON consistente, com um **slu
 | Campo | Tipo | Descrição |
 |---|---|---|
 | `error` | `string` | Slug estável e machine-readable que identifica o tipo do erro. Use este campo na lógica de tratamento. |
-| `message` | `string` | Mensagem em português para exibição ou logs. Pode mudar sem aviso prévio, então **não programe contra ela**. |
-| `request_id` | `string` | Identificador único da requisição. Informe ao suporte para diagnóstico rápido. |
-| `details` | `array` | Lista de erros por campo. Presente apenas em erros de validação (`400` / `422`). Pode ser omitido em outros erros. |
+| `message` | `string` | Mensagem legível (em inglês) para exibição ou logs. Pode mudar sem aviso prévio, então **não programe contra ela**. |
+| `request_id` | `string \| null` | Eco do header `X-Request-Id` que você enviou. Informe ao suporte para diagnóstico rápido. `null` se você não enviou o header. |
+| `details` | `array` | Lista de mensagens de validação (strings), uma por regra que falhou. Presente apenas no erro `422 validation_failed`. Ausente nos demais erros. |
 
 ## Códigos HTTP
 
-| Status | Slug | Quando ocorre |
+| Status | Slug (`error`) | Quando ocorre |
 |---|---|---|
-| `201` | (nenhum) | Recurso criado com sucesso |
-| `400` | `validation_failed` | Dados inválidos no corpo da requisição |
-| `401` | `unauthorized` | Token ausente, inválido, expirado ou revogado |
+| `201` | — | Recurso criado com sucesso |
+| `400` | `idempotency_key_required` | `POST` sem o header `Idempotency-Key` |
+| `401` | `unauthorized` | Token ausente, inválido ou expirado |
 | `403` | `insufficient_scope` | Token não possui o escopo exigido pela rota |
-| `404` | `not_found` | Recurso não encontrado ou não pertence à sua conta |
-| `409` | `idempotency_conflict` | `Idempotency-Key` já usada para outra operação |
-| `422` | `unprocessable_entity` | Dados semanticamente inválidos |
-| `429` | `rate_limit_exceeded` | Muitas requisições, aguarde antes de tentar novamente |
-| `503` | `service_unavailable` | Serviço temporariamente indisponível |
+| `404` | `not_found` | Recurso não encontrado ou que não pertence à sua conta |
+| `422` | `validation_failed` | Payload inválido — detalhes no array `details` |
+| `429` | — | Rate limit atingido. Corpo `{ "message": "Too Many Attempts." }` + header `Retry-After` (não usa o envelope `error`) |
+| `503` | `upstream_unavailable` | Motor de relatórios (endpoints de leitura) temporariamente indisponível |
+
+<Note>
+  Reenviar uma escrita com a mesma `Idempotency-Key` **não** gera erro: a API devolve a resposta original com o header `Idempotent-Replay: true` (veja [Idempotência](/concepts/idempotency)). Erros do canal interno na escrita são repassados (`400`/`404`/`422`); indisponibilidade do motor de escrita retorna `502` com `error: upstream_error`.
+</Note>
 
 <Note>
   O slug `error` é estável e legível por máquina, então programe sua lógica de tratamento de erro contra ele. O campo `message` pode mudar sem aviso e não deve ser usado como base para decisões programáticas.
@@ -50,24 +54,21 @@ Todos os erros da Ticto API v2 seguem um envelope JSON consistente, com um **slu
 
 ## Erros de validação
 
-Quando a API retorna `400` ou `422`, o campo `details` traz um array com erros específicos por campo. Cada item possui:
+Quando a API retorna `422 validation_failed`, o campo `details` traz um array de **mensagens de texto**, uma por regra de validação que falhou (o mesmo formato do validador do Laravel).
 
-- `field`: o caminho do campo que falhou na validação (ex.: `"price"`, `"offers[0].name"`)
-- `code`: um código de regra de validação (ex.: `"min"`, `"required"`, `"invalid_format"`)
-
-### Exemplo com múltiplos erros de campo
+### Exemplo com múltiplos erros
 
 ```json
 {
   "error": "validation_failed",
-  "message": "Alguns campos estão inválidos. Verifique os detalhes.",
+  "message": "The request payload is invalid.",
   "request_id": "req_d4e5f6",
   "details": [
-    { "field": "name", "code": "required" },
-    { "field": "price", "code": "min" },
-    { "field": "offers[0].checkout_url", "code": "invalid_format" }
+    "The name field is required.",
+    "The price must be at least 500.",
+    "The type field is required."
   ]
 }
 ```
 
-Itere sobre o array `details` para exibir mensagens de erro contextuais ao usuário ou para registrar quais campos precisam de correção antes de reenviar a requisição.
+Itere sobre o array `details` para exibir as mensagens ao usuário ou registrar o que precisa ser corrigido antes de reenviar a requisição.

@@ -1,18 +1,20 @@
 ---
 title: "Rate limits"
 sidebarTitle: "Rate Limits"
-description: "A Ticto API permite 150 requisições a cada 5 minutos por token. Saiba como lidar com o erro 429 e implementar retry com backoff."
+description: "A Ticto API v2 permite 120 leituras e 30 escritas por minuto, por token. Saiba como lidar com o 429 e implementar retry com backoff."
 ---
 
 A Ticto API aplica limites de requisições por token para garantir estabilidade e desempenho para todas as integrações. Monitore os headers de rate limit em cada resposta para antecipar quando a cota está próxima de ser esgotada.
 
 ## Limites de requisições
 
-| Limite       | Valor                     |
-|--------------|---------------------------|
-| Requisições  | 150 por token / 5 minutos |
-| Escopo       | Por token de API          |
-| Reset        | A cada 5 minutos          |
+Os limites são **por minuto** e **por token**, com cotas separadas para leitura e escrita:
+
+| Operação        | Limite               |
+|-----------------|----------------------|
+| Leitura (`GET`) | 120 req/min por token |
+| Escrita (`POST`)| 30 req/min por token  |
+| Escopo          | Por token de API      |
 
 ## Headers de rate limit
 
@@ -20,27 +22,22 @@ Toda resposta da API inclui headers informativos sobre o estado atual da cota do
 
 | Header                  | Exemplo   | Descrição                                                                              |
 |-------------------------|-----------|----------------------------------------------------------------------------------------|
-| `X-RateLimit-Limit`     | `150`     | Número total de requisições permitidas na janela de 5 minutos.                         |
+| `X-RateLimit-Limit`     | `120`     | Máximo de requisições na janela de 1 minuto (120 para leitura, 30 para escrita).       |
 | `X-RateLimit-Remaining` | `87`      | Número de requisições ainda disponíveis na janela atual.                               |
-| `Retry-After`           | `47`      | Presente apenas em respostas `429`. Indica os segundos restantes até o reset da cota.  |
+| `Retry-After`           | `12`      | Presente apenas em respostas `429`. Segundos a aguardar antes de tentar de novo.       |
 
 ### Exemplo de resposta 429
 
-Quando a cota é esgotada, a API retorna o seguinte envelope de erro:
+Ao estourar a cota, a API retorna `429` com o corpo padrão do framework (esta resposta **não** usa o envelope `error` das demais falhas) e o header `Retry-After`:
 
 ```json Resposta 429
 {
-  "error": "too_many_requests",
-  "message": "Você atingiu o limite de requisições. Aguarde antes de tentar novamente.",
-  "request_id": "req_9a1d05c3e72f",
-  "details": []
+  "message": "Too Many Attempts."
 }
 ```
 
-Com o header:
-
 ```
-Retry-After: 47
+Retry-After: 12
 ```
 
 ## Boas práticas
@@ -106,7 +103,7 @@ async function requestWithRetry(url, options, maxRetries = 4) {
 
 // Exemplo de uso
 const response = await requestWithRetry(
-  "https://api.ticto.cloud/api/v2/products/PROD-ABC123/offers",
+  "https://api.ticto.cloud/api/v2/products/PABC123/offers",
   {
     method: "POST",
     headers: {

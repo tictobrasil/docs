@@ -39,7 +39,7 @@
       "post": {
         "tags": ["Produtos"],
         "summary": "Criar produto",
-        "description": "Cria um produto. O produto nasce como **rascunho** (`draft`) e deve ser ativado no painel. Escopo: `products:write`. Exige `Idempotency-Key`.",
+        "description": "Cria um produto. O produto nasce com status **pré-aprovado** (`pre-approved`), o mesmo padrão do painel: já pode receber vendas e passa pela análise de compliance após a primeira venda. O `status` é definido pela plataforma e é **somente leitura** — não pode ser enviado nem alterado pela API. Use `is_active` (padrão `true`) para criar o produto já ativo ou inativo. Escopo: `products:write`. Exige `Idempotency-Key`.",
         "operationId": "createProduct",
         "security": [{ "bearerAuth": ["products:write"] }],
         "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
@@ -54,9 +54,10 @@
         },
         "responses": {
           "201": {
-            "description": "Produto criado (rascunho).",
+            "description": "Produto criado com status `pre-approved`.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Product" } } }
           },
+          "400": { "$ref": "#/components/responses/IdempotencyRequired" },
           "422": { "$ref": "#/components/responses/ValidationError" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/Forbidden" }
@@ -122,6 +123,7 @@
         },
         "responses": {
           "201": { "description": "Oferta criada.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Offer" } } } },
+          "400": { "$ref": "#/components/responses/IdempotencyRequired" },
           "422": { "$ref": "#/components/responses/ValidationError" },
           "404": { "$ref": "#/components/responses/NotFound" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
@@ -229,7 +231,7 @@
         "operationId": "subscriptionsSummary",
         "security": [{ "bearerAuth": ["subscriptions:read"] }],
         "responses": {
-          "200": { "description": "Totais de assinaturas.", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "200": { "description": "Totais de assinaturas.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SubscriptionsSummary" }, "example": { "active_subscriptions": 12, "active_subscriptions_sum": 148800, "delayed_subscriptions": 2, "delayed_subscriptions_sum": 9980, "canceled_subscriptions": 3, "canceled_subscriptions_sum": 0 } } } },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
@@ -278,7 +280,7 @@
         "operationId": "cashoutsSummary",
         "security": [{ "bearerAuth": ["cashouts:read"] }],
         "responses": {
-          "200": { "description": "Totais de saques.", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "200": { "description": "Totais de saques.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CashoutsSummary" }, "example": { "total": 158780, "total_available": 148800, "total_under_review": 9980, "total_pending": 0, "total_reserved": 0 } } } },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
@@ -333,7 +335,8 @@
           "name": { "type": "string", "maxLength": 255, "description": "Nome do produto." },
           "type": { "type": "string", "enum": ["course", "ebook", "consultancy", "mentoring", "artificial_intelligence", "other"], "description": "Tipo do produto (apenas digitais na v2). Recorrência é definida na oferta (`charge_type: recurring`), não no tipo." },
           "description": { "type": "string", "minLength": 3, "maxLength": 1000 },
-          "category": { "type": "string", "maxLength": 120, "description": "Categoria (opcional)." }
+          "category": { "type": "string", "maxLength": 120, "description": "Categoria (opcional)." },
+          "is_active": { "type": "boolean", "default": true, "description": "Define se o produto nasce ativo (disponível) ou inativo. Opcional; padrão `true`." }
         }
       },
       "Product": {
@@ -344,7 +347,8 @@
           "reference_id": { "type": "integer", "description": "ID numérico legado (reconcilia com a dashboard). Não é fronteira de segurança.", "example": 42 },
           "name": { "type": "string", "example": "Curso de Marketing Digital" },
           "type": { "type": "string", "example": "course" },
-          "status": { "type": "string", "example": "draft" },
+          "status": { "type": "string", "readOnly": true, "example": "pre-approved", "description": "Estado de compliance do produto, governado pela plataforma. Somente leitura: não pode ser enviado nem alterado pela API. Nasce como `pre-approved`." },
+          "is_active": { "type": "boolean", "example": true, "description": "Se o produto está ativo (disponível). Controlado pelo produtor via `is_active` na criação." },
           "created_at": { "type": "string", "format": "date-time" }
         }
       },
@@ -353,7 +357,7 @@
         "properties": {
           "object": { "type": "string", "example": "list" },
           "data": { "type": "array", "items": { "$ref": "#/components/schemas/Product" } },
-          "meta": { "$ref": "#/components/schemas/Meta" }
+          "meta": { "$ref": "#/components/schemas/ListMeta" }
         }
       },
       "CreateOffer": {
@@ -381,71 +385,176 @@
       },
       "Offer": {
         "type": "object",
+        "description": "Retorno de uma oferta. É o corpo devolvido ao criar (`POST`) e ao consultar (`GET`) — a resposta é a mesma. Campos como nome, tipo de cobrança e recorrência são de entrada (`CreateOffer`) e não são ecoados na resposta.",
         "properties": {
           "object": { "type": "string", "example": "offer" },
           "id": { "type": "string", "description": "Código da oferta — identificador canônico da API.", "example": "O709D4B48" },
-          "reference_id": { "type": "integer", "example": 11 },
+          "reference_id": { "type": "integer", "description": "ID numérico legado (reconcilia com a dashboard). Não é fronteira de segurança.", "example": 11 },
           "product_id": { "type": "string", "description": "Hash do produto pai.", "example": "PABC123" },
           "price": { "type": "integer", "description": "Preço em centavos.", "example": 19900 },
           "is_active": { "type": "boolean", "example": true },
+          "checkout_url": { "type": "string", "description": "Link de checkout pronto para compartilhar. Formato: base do checkout da Ticto + código da oferta.", "example": "https://checkout.ticto.app/O709D4B48" },
           "created_at": { "type": "string", "format": "date-time" }
         }
       },
       "OfferList": {
         "type": "object",
+        "description": "Lista de ofertas de um produto. Não é paginada e não traz `meta`.",
         "properties": {
           "object": { "type": "string", "example": "list" },
-          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Offer" } },
-          "meta": { "$ref": "#/components/schemas/Meta" }
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Offer" } }
         }
       },
       "OrderList": {
         "type": "object",
-        "description": "Lista paginada de pedidos. Cada item traz comissão, transação e oferta.",
+        "description": "Histórico de pedidos, paginado (paridade 1:1 com o relatório de comissões da v1). Envelope do paginador: `data` + `links` + `meta`.",
         "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": { "type": "integer" },
-                "producer_id": { "type": "integer" },
-                "producer_name": { "type": "string" },
-                "commission": { "type": "integer", "description": "Valor em centavos." },
-                "order_id": { "type": "integer" },
-                "transaction": { "type": "object", "description": "Dados da transação (status, método, valor pago, etc.)." },
-                "offer": { "type": "object", "description": "Oferta comprada (code, name, price...)." }
-              }
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/CommissionItem" } },
+          "links": { "$ref": "#/components/schemas/PaginatorLinks" },
+          "meta": { "$ref": "#/components/schemas/PaginatorMeta" }
+        }
+      },
+      "CommissionItem": {
+        "type": "object",
+        "description": "Um item do histórico de pedidos (uma comissão). Espelha o relatório de comissões da v1.",
+        "properties": {
+          "id": { "type": "integer" },
+          "type": { "type": "string", "description": "Tipo do item (main, bump, upsell).", "example": "main" },
+          "commissioned_id": { "type": "integer" },
+          "commissioned_name": { "type": "string" },
+          "commission": { "type": "integer", "description": "Valor da comissão em centavos." },
+          "producer_id": { "type": "integer" },
+          "producer_name": { "type": "string" },
+          "producer_email": { "type": "string" },
+          "producer_document": { "type": "string" },
+          "value": { "type": "integer", "description": "Valor do item em centavos." },
+          "order_id": { "type": "integer" },
+          "affiliates": { "type": "array", "items": { "type": "object" } },
+          "transaction": { "type": "object", "description": "Dados da transação (status, método, histórico)." },
+          "offer": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "code": { "type": "string" },
+              "name": { "type": "string" },
+              "description": { "type": "string", "nullable": true },
+              "price": { "type": "integer", "description": "Em centavos." },
+              "is_subscription": { "type": "boolean" },
+              "interval": { "type": "integer", "nullable": true },
+              "trial_days": { "type": "integer", "nullable": true },
+              "first_charge_price": { "type": "integer", "nullable": true }
             }
           },
-          "meta": { "$ref": "#/components/schemas/Meta" }
+          "product": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "is_subscription": { "type": "boolean" },
+              "type": { "type": "string" },
+              "refund_deadline": { "type": "integer" },
+              "has_invoice_integration": { "type": "boolean" }
+            }
+          },
+          "customer": { "type": "object", "description": "Dados do comprador (anonimizados quando o afiliado não tem acesso aos dados do cliente)." },
+          "order": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "hash": { "type": "string" },
+              "has_bump": { "type": "boolean" },
+              "from_mozart": { "type": "boolean" },
+              "is_upsell": { "type": "boolean" },
+              "type": { "type": "string" }
+            }
+          },
+          "order_item": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "amount": { "type": "integer" },
+              "status": { "type": "string" },
+              "quantity": { "type": "integer" }
+            }
+          },
+          "has_two_cards": { "type": "boolean" },
+          "bounced_email": { "type": "boolean", "nullable": true },
+          "subscription_id": { "type": "integer", "nullable": true },
+          "is_smart_installment": { "type": "boolean" },
+          "approved_date": { "type": "string", "format": "date-time", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
         }
       },
       "OrdersSummary": {
         "type": "object",
         "properties": {
-          "total": { "type": "integer" },
+          "total": { "type": "integer", "description": "Total de pedidos (sem bumps)." },
           "total_items": { "type": "integer" },
           "bump_total": { "type": "integer" },
           "upsell_total": { "type": "integer" },
           "commission_sum": { "type": "integer", "description": "Soma das comissões em centavos." }
         }
       },
-      "PaginatedList": {
+      "SubscriptionsSummary": {
         "type": "object",
         "properties": {
-          "data": { "type": "array", "items": { "type": "object" } },
-          "links": { "type": "object", "properties": { "first": { "type": "string" }, "last": { "type": "string" }, "prev": { "type": "string", "nullable": true }, "next": { "type": "string", "nullable": true } } },
-          "meta": { "$ref": "#/components/schemas/Meta" }
+          "active_subscriptions": { "type": "integer" },
+          "active_subscriptions_sum": { "type": "integer", "description": "Em centavos." },
+          "delayed_subscriptions": { "type": "integer" },
+          "delayed_subscriptions_sum": { "type": "integer", "description": "Em centavos." },
+          "canceled_subscriptions": { "type": "integer" },
+          "canceled_subscriptions_sum": { "type": "integer", "description": "Em centavos." }
         }
       },
-      "Meta": {
+      "CashoutsSummary": {
         "type": "object",
         "properties": {
-          "current_page": { "type": "integer" },
+          "total": { "type": "integer", "description": "Saldo total em centavos (disponível + em análise + pendente + reservado)." },
+          "total_available": { "type": "integer", "description": "Em centavos." },
+          "total_under_review": { "type": "integer", "description": "Em centavos." },
+          "total_pending": { "type": "integer", "description": "Em centavos." },
+          "total_reserved": { "type": "integer", "description": "Em centavos." }
+        }
+      },
+      "PaginatedList": {
+        "type": "object",
+        "description": "Envelope do paginador (paridade com a v1). Os itens de `data` espelham o relatório correspondente da v1.",
+        "properties": {
+          "data": { "type": "array", "items": { "type": "object" } },
+          "links": { "$ref": "#/components/schemas/PaginatorLinks" },
+          "meta": { "$ref": "#/components/schemas/PaginatorMeta" }
+        }
+      },
+      "ListMeta": {
+        "type": "object",
+        "description": "Paginação das listas nativas da v2 (produtos).",
+        "properties": {
+          "page": { "type": "integer" },
           "per_page": { "type": "integer" },
+          "total": { "type": "integer" }
+        }
+      },
+      "PaginatorLinks": {
+        "type": "object",
+        "properties": {
+          "first": { "type": "string", "nullable": true },
+          "last": { "type": "string", "nullable": true },
+          "prev": { "type": "string", "nullable": true },
+          "next": { "type": "string", "nullable": true }
+        }
+      },
+      "PaginatorMeta": {
+        "type": "object",
+        "description": "Metadados de paginação dos endpoints de leitura (paginador do Laravel, paridade com a v1).",
+        "properties": {
+          "current_page": { "type": "integer" },
+          "from": { "type": "integer", "nullable": true },
+          "to": { "type": "integer", "nullable": true },
+          "per_page": { "type": "integer" },
+          "last_page": { "type": "integer" },
           "total": { "type": "integer" },
-          "last_page": { "type": "integer" }
+          "path": { "type": "string" }
         }
       },
       "Error": {
@@ -482,6 +591,10 @@
       "ValidationError": {
         "description": "Payload inválido.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationErrorBody" } } }
+      },
+      "IdempotencyRequired": {
+        "description": "Operação de escrita sem o header `Idempotency-Key`.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" }, "example": { "error": "idempotency_key_required", "message": "POST requests must include an Idempotency-Key header.", "request_id": null } } }
       }
     }
   }

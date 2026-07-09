@@ -13,7 +13,7 @@ A Ticto API v2 tem dois ambientes **independentes**: **sandbox** (testes) e **pr
 | **Base URL** | `https://sandbox.ticto.cloud` | `https://api.ticto.cloud` |
 | **Prefixo do token** | `ticto_test_` | `ticto_live_` |
 | **Cobranças reais** | Não (dinheiro fictício) | Sim |
-| **Produtos visíveis ao público** | Não | Sim (após ativação no painel) |
+| **Produtos visíveis ao público** | Não | Sim, por padrão (`is_active: false` adia a publicação) |
 | **Dados** | Isolados e descartáveis | Permanentes |
 
 <Note>
@@ -26,10 +26,10 @@ O fluxo de gerar o token é idêntico nos dois ambientes. Muda apenas onde você
 
 <Steps>
   <Step title="Sandbox para desenvolver">
-    Acesse o **painel sandbox** da Ticto, vá em **Desenvolvedores → API v2** e gere um token. Ele virá com o prefixo `ticto_test_`. Use-o contra `https://sandbox.ticto.cloud`.
+    Acesse o **painel sandbox** da Ticto, vá em **Integrações → API v2** e gere um token. Ele virá com o prefixo `ticto_test_`. Use-o contra `https://sandbox.ticto.cloud`.
   </Step>
   <Step title="Produção para ir ao ar">
-    No **painel de produção**, no mesmo lugar (**Desenvolvedores → API v2**), gere um token `ticto_live_`. Use-o contra `https://api.ticto.cloud`.
+    No **painel de produção**, no mesmo lugar (**Integrações → API v2**), gere um token `ticto_live_`. Use-o contra `https://api.ticto.cloud`.
   </Step>
 </Steps>
 
@@ -48,9 +48,9 @@ Como o contrato é o mesmo, ir ao ar é trocar **duas variáveis**:
 
 Nenhuma mudança de payload, de rota ou de lógica. O que passou no sandbox passa em produção.
 
-## Rascunho por padrão
+## Disponibilidade por padrão
 
-Em **qualquer** ambiente, todo produto criado via API nasce como **rascunho** (`draft`) e não fica visível ao público até ser **ativado no painel**. No sandbox isso é só organização; em produção é uma trava de segurança que garante que uma chamada de API (ou um token vazado) nunca publique um produto à venda sem a sua aprovação.
+Em **qualquer** ambiente, todo produto criado via API nasce com status `pre-approved` (pré-aprovado) e **ativo** (`is_active: true`), pronto para vender: após a primeira venda ele passa pela análise de compliance. O `status` é da plataforma e não pode ser definido pela API. Se você quiser preparar o produto antes de divulgá-lo, crie-o com `is_active: false` e ative-o depois no painel.
 
 <Tip>
   Recrie o mesmo fluxo de ponta a ponta no sandbox antes de virar a chave. Assim você valida token, escopos, criação e leitura sem risco, e a virada para produção vira só a troca das duas variáveis acima.
