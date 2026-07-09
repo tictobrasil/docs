@@ -13,7 +13,7 @@ Uma oferta é um plano de precificação vinculado a um produto. Ela define quan
     Você precisa do `hash` do produto ao qual deseja vincular a oferta. Esse valor está disponível no campo `hash` da resposta ao [criar um produto](/guides/create-product) via `POST /products`, ou pode ser consultado na listagem de produtos pelo painel ou pela API.
 
     ```
-    hash: "prd_a1b2c3d4e5f6"
+    hash: "PABC123"
     ```
   </Step>
 
@@ -36,7 +36,7 @@ Uma oferta é um plano de precificação vinculado a um produto. Ela define quan
 
     ```bash
     curl --request POST \
-      --url https://api.ticto.cloud/api/v2/products/prd_a1b2c3d4e5f6/offers \
+      --url https://api.ticto.cloud/api/v2/products/PABC123/offers \
       --header "Authorization: Bearer ticto_live_..." \
       --header "Content-Type: application/json" \
       --header "Idempotency-Key: 7c9e6679-7425-40de-944b-e07fc1f90ae7" \
@@ -53,19 +53,18 @@ Uma oferta é um plano de precificação vinculado a um produto. Ela define quan
 
     ```json
     {
-      "id": 308,
-      "reference_id": "ofr_x9y8z7w6v5u4",
-      "name": "Plano Básico",
+      "object": "offer",
+      "id": "O709D4B48",
+      "reference_id": 308,
+      "product_id": "PABC123",
       "price": 19700,
-      "charge_type": "one_time",
-      "recurrence": null,
-      "status": "active",
-      "checkout_url": "https://pay.ticto.com.br/checkout/ofr_x9y8z7w6v5u4",
+      "is_active": true,
+      "checkout_url": "https://checkout.ticto.app/O709D4B48",
       "created_at": "2025-01-15T15:00:00Z"
     }
     ```
 
-    Diferente dos produtos, que iniciam como `draft`, as ofertas já nascem com `status: "active"` e podem ser usadas imediatamente.
+    O `id` da oferta (`O709D4B48`) é o `code`, o identificador canônico usado no `checkout_url`. A oferta nasce ativa (`is_active: true`) e pode ser usada imediatamente. Campos de entrada como `name` e `charge_type` não são repetidos na resposta.
   </Step>
 </Steps>
 

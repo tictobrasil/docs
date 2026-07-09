@@ -14,9 +14,9 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
     | Escopo           | O que permite                          |
     |------------------|----------------------------------------|
     | `products:read`  | Listar e consultar produtos            |
-    | `products:write` | Criar e atualizar produtos             |
+    | `products:write` | Criar produtos                         |
     | `offers:read`    | Listar e consultar ofertas             |
-    | `offers:write`   | Criar e atualizar ofertas              |
+    | `offers:write`   | Criar ofertas                          |
 
     Após confirmar, o token será exibido **uma única vez** em texto simples. Copie-o imediatamente e armazene em um local seguro (por exemplo, um gerenciador de segredos ou variável de ambiente). Tokens de produção começam com o prefixo `ticto_live_`; tokens de sandbox começam com `ticto_test_`.
 
@@ -39,18 +39,22 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
 
     ```json
     {
+      "object": "list",
       "data": [
         {
-          "id": 42,
-          "hash": "abc123def456",
+          "object": "product",
+          "id": "PABC123",
+          "reference_id": 42,
           "name": "Meu Curso Online",
           "type": "course",
           "status": "pre-approved",
-          "is_active": true
+          "is_active": true,
+          "created_at": "2024-07-15T10:30:00Z"
         }
       ],
       "meta": {
-        "current_page": 1,
+        "page": 1,
+        "per_page": 30,
         "total": 1
       }
     }
@@ -78,18 +82,18 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
 
     ```json
     {
-      "data": {
-        "id": 101,
-        "hash": "mkt2024xyz789",
-        "name": "Curso de Marketing Digital",
-        "type": "course",
-        "description": "Aprenda estratégias avançadas de marketing digital do zero ao avançado.",
-        "status": "pre-approved",
-        "is_active": true,
-        "created_at": "2024-07-15T10:30:00Z"
-      }
+      "object": "product",
+      "id": "PMKT2024",
+      "reference_id": 101,
+      "name": "Curso de Marketing Digital",
+      "type": "course",
+      "status": "pre-approved",
+      "is_active": true,
+      "created_at": "2024-07-15T10:30:00Z"
     }
     ```
+
+    O `id` (`PMKT2024`) é o identificador canônico da API, o mesmo que você usa na URL para criar ofertas. O `reference_id` é o ID numérico legado que reconcilia com o painel.
 
     <Info>
       O produto nasce com status `pre-approved` e já pode vender. O `status` é da plataforma (compliance) e não pode ser alterado pela API. Se quiser criar o produto indisponível, envie `"is_active": false` e ative depois pelo painel.
@@ -101,7 +105,7 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
 
     ```bash
     curl --request POST \
-      --url https://api.ticto.cloud/api/v2/products/mkt2024xyz789/offers \
+      --url https://api.ticto.cloud/api/v2/products/PMKT2024/offers \
       --header "Authorization: Bearer ticto_live_VIHfM4Ynb0J8kQ2rXXXXXXXXXXXXXXXXXXXXXXXX" \
       --header "Content-Type: application/json" \
       --header "Accept: application/json" \
@@ -113,20 +117,22 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
       }'
     ```
 
-    A resposta `201 Created` inclui o `id` da oferta e a `checkout_url` pronta para ser compartilhada com seus clientes:
+    A resposta `201 Created` traz o `id` da oferta (o `code`) e a `checkout_url` pronta para compartilhar com seus clientes:
 
     ```json
     {
-      "data": {
-        "id": 55,
-        "name": "Acesso Completo",
-        "price": 19700,
-        "charge_type": "one_time",
-        "checkout_url": "https://pay.ticto.com.br/mkt2024xyz789/acesso-completo",
-        "created_at": "2024-07-15T10:35:00Z"
-      }
+      "object": "offer",
+      "id": "O709D4B48",
+      "reference_id": 55,
+      "product_id": "PMKT2024",
+      "price": 19700,
+      "is_active": true,
+      "checkout_url": "https://checkout.ticto.app/O709D4B48",
+      "created_at": "2024-07-15T10:35:00Z"
     }
     ```
+
+    A `checkout_url` é a base de checkout da Ticto seguida do `code` da oferta. Compartilhe esse link e comece a vender.
   </Step>
 
   <Step title="Disponibilidade do produto">

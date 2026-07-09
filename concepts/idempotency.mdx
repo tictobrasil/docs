@@ -11,7 +11,7 @@ Idempotência é a propriedade que garante que realizar a mesma operação múlt
 Toda requisição `POST` para a Ticto API exige o header `Idempotency-Key` contendo um **UUID v4**. O comportamento é o seguinte:
 
 - Na **primeira** chamada com uma chave, a API processa a requisição normalmente e armazena a resposta vinculada àquela chave.
-- Em chamadas **subsequentes** com a mesma chave, a API retorna exatamente a mesma resposta da primeira chamada bem-sucedida, com status `409`, sem processar a operação novamente.
+- Em chamadas **subsequentes** com a mesma chave, a API devolve exatamente a mesma resposta da primeira chamada (**o mesmo status**, `201` no caso de criação), acrescida do header `Idempotent-Replay: true`, sem reprocessar a operação. Não é um erro.
 - O escopo da chave é **por token**: chaves de outros produtores não interferem nas suas.
 
 ### Exemplo de requisição com Idempotency-Key
@@ -28,22 +28,31 @@ curl -X POST https://api.ticto.cloud/api/v2/products \
   }'
 ```
 
-## Comportamento de 409
+## Replay: reenvio com a mesma chave
 
-Quando a mesma `Idempotency-Key` é reenviada, a API responde com status `409` e o corpo da resposta original:
+Quando a mesma `Idempotency-Key` é reenviada, a API **não reprocessa** a operação: ela devolve a resposta armazenada da primeira chamada, com o **mesmo status** e o **mesmo corpo**, apenas acrescentando o header `Idempotent-Replay: true`. Um `POST` de criação replayado responde `201` com o recurso original, não um erro.
 
-```json
+```http
+HTTP/1.1 201 Created
+Idempotent-Replay: true
+Content-Type: application/json
+
 {
-  "error": "idempotency_conflict",
-  "message": "Esta requisição já foi processada.",
-  "request_id": "req_xxx"
+  "object": "product",
+  "id": "PMKT2024",
+  "reference_id": 101,
+  "name": "Curso de Marketing Digital",
+  "type": "course",
+  "status": "pre-approved",
+  "is_active": true,
+  "created_at": "2024-07-15T10:30:00Z"
 }
 ```
 
-Isso sinaliza que a operação original já foi concluída. Você pode usar os dados retornados na primeira chamada sem realizar nenhuma ação adicional.
+Detecte o replay pela presença do header `Idempotent-Replay: true` e trate a resposta como se fosse a original: o recurso já existe e nada novo foi criado.
 
 <Warning>
-  Use um UUID único por operação lógica. Reutilizar a mesma chave para operações **diferentes** pode fazer a API retornar um resultado inesperado: ela devolve a resposta armazenada da operação original, não da nova.
+  Use um UUID único por operação lógica. Reutilizar a mesma chave para uma requisição **diferente** faz a API devolver a resposta armazenada da operação **original**, não a da nova, sem processá-la. Nunca reaproveite a chave entre recursos distintos.
 </Warning>
 
 ## Boas práticas
