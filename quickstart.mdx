@@ -47,7 +47,7 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
           "reference_id": 42,
           "name": "Meu Curso Online",
           "type": "course",
-          "status": "pre-approved",
+          "status": "approved",
           "is_active": true,
           "created_at": "2024-07-15T10:30:00Z"
         }
@@ -87,7 +87,7 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
       "reference_id": 101,
       "name": "Curso de Marketing Digital",
       "type": "course",
-      "status": "pre-approved",
+      "status": "approved",
       "is_active": true,
       "created_at": "2024-07-15T10:30:00Z"
     }
@@ -96,7 +96,7 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
     O `id` (`PMKT2024`) é o identificador canônico da API, o mesmo que você usa na URL para criar ofertas. O `reference_id` é o ID numérico legado que reconcilia com o painel.
 
     <Info>
-      O produto nasce com status `pre-approved` e já pode vender. O `status` é da plataforma (compliance) e não pode ser alterado pela API. Se quiser criar o produto indisponível, envie `"is_active": false` e ative depois pelo painel.
+      O produto nasce **aprovado e ativo**, pronto para vender. O `status` é gerido pela plataforma e não pode ser enviado nem alterado pela API. Se quiser criar o produto indisponível, envie `"is_active": false` e ative depois pelo painel.
     </Info>
   </Step>
 
@@ -136,9 +136,9 @@ A Ticto API v2 é uma API REST que permite a produtores digitais criar e gerenci
   </Step>
 
   <Step title="Disponibilidade do produto">
-    O produto nasce ativo (`is_active: true`) e com status `pre-approved`, então a `checkout_url` da oferta já fica acessível ao público para receber pagamentos reais. Após a primeira venda, o produto passa pela análise do time de compliance.
+    O produto nasce **aprovado e ativo** (`is_active: true`), então a `checkout_url` da oferta já fica acessível ao público para receber pagamentos reais.
 
-    Se você criou o produto com `"is_active": false` (para configurar as ofertas antes de divulgar), ele fica indisponível para compra até você ativá-lo no painel, em **Produtos → Meus Produtos → Ativar**. O `status` de compliance é gerido pela plataforma e não muda por essa ação.
+    Se você criou o produto com `"is_active": false` (para configurar as ofertas antes de divulgar), ele fica indisponível para compra até você ativá-lo no painel, em **Produtos → Meus Produtos → Ativar**.
   </Step>
 
 </Steps>
