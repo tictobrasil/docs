@@ -201,7 +201,7 @@
           { "name": "hash", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Hash do pedido (ex.: `TOP0106WOC15DK`)." }
         ],
         "responses": {
-          "200": { "description": "Detalhe do pedido.", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "200": { "description": "Detalhe do pedido.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OrderDetail" } } } },
           "404": { "$ref": "#/components/responses/NotFound" },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
@@ -218,7 +218,7 @@
           { "name": "paginate", "in": "query", "schema": { "type": "integer", "default": 30, "maximum": 1000 }, "description": "Itens por página." }
         ],
         "responses": {
-          "200": { "description": "Histórico de assinaturas.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedList" } } } },
+          "200": { "description": "Histórico de assinaturas.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SubscriptionList" } } } },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
@@ -247,7 +247,7 @@
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" }, "description": "ID da assinatura." }
         ],
         "responses": {
-          "200": { "description": "Detalhe da assinatura.", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "200": { "description": "Detalhe da assinatura.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SubscriptionDetail" } } } },
           "404": { "$ref": "#/components/responses/NotFound" },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
@@ -267,7 +267,7 @@
           { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15, "maximum": 100 } }
         ],
         "responses": {
-          "200": { "description": "Histórico de saques.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedList" } } } },
+          "200": { "description": "Histórico de saques.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CashoutList" } } } },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
@@ -296,7 +296,7 @@
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" }, "description": "ID do saque." }
         ],
         "responses": {
-          "200": { "description": "Detalhe do saque.", "content": { "application/json": { "schema": { "type": "object" } } } },
+          "200": { "description": "Detalhe do saque.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CashoutDetail" } } } },
           "404": { "$ref": "#/components/responses/NotFound" },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
@@ -487,6 +487,22 @@
           "approved_date": { "type": "string", "format": "date-time", "nullable": true },
           "created_at": { "type": "string", "format": "date-time" },
           "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "example": {
+          "id": 54321, "type": "main", "commissioned_id": 8801, "commissioned_name": "João Produtor",
+          "commission": 19900, "producer_id": 8801, "producer_name": "João Produtor", "producer_email": "joao@exemplo.com",
+          "producer_document": "123.456.789-00", "value": 19900, "order_id": 90715, "affiliates": [],
+          "query_params": { "utm_source": "google", "utm_medium": "cpc", "utm_campaign": "black_friday", "code": "O709D4B48", "event": "InitiateCheckout" },
+          "tracking": { "event": "InitiateCheckout", "utm_source": "google", "utm_medium": "cpc", "utm_campaign": "black_friday", "utm_content": "Não Informado", "utm_term": "Não Informado", "src": "facebook", "sck": "facebook", "manychat_user_id": "Não Informado" },
+          "checkout_url": "https://checkout.ticto.app/O709D4B48",
+          "transaction": { "id": 123456, "hash": "TRX7K2P9QW", "status": "authorized", "payment_method": "credit_card", "paid_amount": 19900, "created_at": "01/06/2026 14:32:10" },
+          "offer": { "id": 11, "code": "O709D4B48", "name": "Plano Anual", "description": "Acesso por 12 meses", "price": 19900, "is_subscription": false, "interval": null, "trial_days": null, "first_charge_price": null },
+          "product": { "id": 305, "name": "Curso de Copywriting", "is_subscription": false, "type": "course", "refund_deadline": 7, "has_invoice_integration": false },
+          "customer": { "name": "Maria Souza", "email": "maria@exemplo.com", "cpf": "987.654.321-00" },
+          "order": { "id": 90715, "hash": "TOP0106WOC15DK", "has_bump": false, "from_mozart": false, "is_upsell": false, "type": "main" },
+          "order_item": { "id": 77120, "amount": 19900, "status": "authorized", "quantity": 1 },
+          "has_two_cards": false, "bounced_email": false, "subscription_id": null, "is_smart_installment": false,
+          "approved_date": "01/06/2026 14:32:12", "created_at": "01/06/2026 14:32:10", "updated_at": "01/06/2026 14:32:12"
         }
       },
       "Tracking": {
@@ -533,6 +549,187 @@
           "total_under_review": { "type": "integer", "description": "Em centavos." },
           "total_pending": { "type": "integer", "description": "Em centavos." },
           "total_reserved": { "type": "integer", "description": "Em centavos." }
+        }
+      },
+      "OrderDetail": {
+        "type": "object",
+        "description": "Detalhe de um pedido (`GET /orders/{hash}`). Espelha o relatório de pedido da v1 e inclui a atribuição de campanha (paridade com o webhook v2).",
+        "properties": {
+          "id": { "type": "integer" },
+          "hash": { "type": "string", "description": "Identificador canônico do pedido na API." },
+          "paid_amount": { "type": "integer", "description": "Valor pago em centavos." },
+          "freight_value": { "type": "integer", "description": "Frete em centavos.", "nullable": true },
+          "customer": { "type": "object", "properties": { "name": { "type": "string" }, "email": { "type": "string" } } },
+          "query_params": { "type": "object", "nullable": true, "description": "Parâmetros da URL do checkout no momento da compra." },
+          "tracking": { "allOf": [ { "$ref": "#/components/schemas/Tracking" } ], "description": "Atribuição de campanha normalizada (1:1 com o webhook v2)." },
+          "checkout_url": { "type": "string", "nullable": true, "description": "Link do checkout da oferta." },
+          "items": { "type": "array", "description": "Itens do pedido.", "items": { "type": "object" } },
+          "transactions": { "type": "array", "description": "Transações do pedido (tentativas de cobrança).", "items": { "type": "object" } },
+          "commissions": { "type": "array", "description": "Divisão de comissão do pedido.", "items": { "type": "object" } },
+          "created_at": { "type": "string", "description": "Formato d/m/Y H:i:s.", "example": "01/06/2026 14:32:10" },
+          "updated_at": { "type": "string", "example": "01/06/2026 14:32:12" }
+        },
+        "example": {
+          "id": 90715, "hash": "TOP0106WOC15DK", "paid_amount": 19900, "freight_value": 0,
+          "customer": { "name": "Maria Souza", "email": "maria@exemplo.com" },
+          "query_params": { "utm_source": "google", "utm_medium": "cpc", "utm_campaign": "black_friday", "code": "O709D4B48", "event": "InitiateCheckout" },
+          "tracking": { "event": "InitiateCheckout", "utm_source": "google", "utm_medium": "cpc", "utm_campaign": "black_friday", "utm_content": "Não Informado", "utm_term": "Não Informado", "src": "facebook", "sck": "facebook", "manychat_user_id": "Não Informado" },
+          "checkout_url": "https://checkout.ticto.app/O709D4B48",
+          "items": [ { "offer": { "id": 11, "code": "O709D4B48", "name": "Plano Anual" }, "coupon": { "name": null, "discount": null }, "amount": 19900, "status": "authorized", "type": "main", "members_classroom_id": null } ],
+          "transactions": [ { "id": 123456, "hash": "TRX7K2P9QW", "status": "authorized", "return_code": "00", "payment_method": "credit_card", "paid_amount": 19900, "is_card2": false, "invoice_sent": false, "is_free": false, "created_at": "01/06/2026 14:32:10", "updated_at": "01/06/2026 14:32:12" } ],
+          "commissions": [ { "type": "producer", "user_id": 8801, "name": "João Produtor", "value": 19900, "url_params": { "query_params": { "utm_source": "google", "code": "O709D4B48" } } } ],
+          "created_at": "01/06/2026 14:32:10", "updated_at": "01/06/2026 14:32:12"
+        }
+      },
+      "SubscriptionItem": {
+        "type": "object",
+        "description": "Um item do histórico de assinaturas (`GET /subscriptions/history`). Espelha o relatório de assinaturas da v1.",
+        "properties": {
+          "id": { "type": "integer" },
+          "price": { "type": "integer", "description": "Valor da recorrência em centavos." },
+          "affiliates": { "type": "array", "items": { "type": "object" } },
+          "first_charge_price": { "type": "integer", "nullable": true, "description": "Valor da 1ª cobrança em centavos (quando difere do preço recorrente)." },
+          "currency": { "type": "string", "example": "BRL" },
+          "interval": { "type": "integer", "description": "Intervalo em dias entre cobranças.", "example": 30 },
+          "next_charge": { "type": "string", "nullable": true, "description": "Data da próxima cobrança." },
+          "situation": { "type": "string", "description": "Situação da assinatura.", "example": "active" },
+          "best_day_to_charge": { "type": "integer", "nullable": true },
+          "free_days": { "type": "integer", "nullable": true },
+          "max_charges": { "type": "integer", "nullable": true, "description": "Nº máximo de cobranças; null = infinito." },
+          "successful_charges": { "type": "integer" },
+          "failed_charges": { "type": "integer" },
+          "is_smart_installment": { "type": "boolean" },
+          "installments": { "type": "integer", "nullable": true },
+          "cancellation_requested_at": { "type": "string", "nullable": true },
+          "canceled_at": { "type": "string", "nullable": true },
+          "canceled_by": { "type": "string", "nullable": true, "description": "Nome de quem cancelou." },
+          "payment_method": { "type": "string", "example": "credit_card" },
+          "offer": { "type": "object", "properties": { "id": { "type": "integer" }, "code": { "type": "string" }, "name": { "type": "string" } } },
+          "order": { "type": "object", "properties": { "id": { "type": "integer" }, "hash": { "type": "string" }, "created_at": { "type": "string" } } },
+          "product": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" }, "is_owner": { "type": "boolean" } } },
+          "customer": { "type": "object", "description": "Dados do comprador (nome, e-mail, documento, telefone, endereço)." },
+          "transactions": { "type": "array", "items": { "type": "object" } },
+          "histories": { "type": "array", "items": { "type": "object" } },
+          "created_at": { "type": "string", "example": "01/06/2026 14:32:10" },
+          "updated_at": { "type": "string", "example": "01/06/2026 14:32:12" }
+        },
+        "example": {
+          "id": 4410, "price": 12400, "affiliates": [], "first_charge_price": 0, "currency": "BRL", "interval": 30,
+          "next_charge": "01/07/2026", "situation": "active", "best_day_to_charge": null, "free_days": 0,
+          "max_charges": null, "successful_charges": 3, "failed_charges": 0, "is_smart_installment": false, "installments": null,
+          "cancellation_requested_at": null, "canceled_at": null, "canceled_by": null, "payment_method": "credit_card",
+          "offer": { "id": 21, "code": "O88AA1234", "name": "Mensalidade" },
+          "order": { "id": 90720, "hash": "TOP0106X1Y2Z3", "created_at": "01/04/2026 09:12:00" },
+          "product": { "id": 306, "name": "Comunidade Premium", "is_owner": true },
+          "customer": { "id": 9902, "name": "Maria Souza", "email": "maria@exemplo.com", "cpf": "987.654.321-00", "cnpj": null, "phones": [ { "ddd": "11", "ddi": "55", "number": "999998888" } ], "zipcode": "01310100", "street": "Av. Paulista", "street_number": "1000", "neighborhood": "Bela Vista", "complement": "", "city": "São Paulo", "state": "SP", "country": "BR" },
+          "transactions": [ { "id": 123999, "hash": "TRX9M3K1LP", "status": "authorized", "payment_method": "credit_card", "paid_amount": 12400, "created_at": "01/06/2026 09:12:05" } ],
+          "histories": [ { "id": 8801, "subscription_id": 4410, "type": "charge", "status": "paid", "reference_date": "Junho 2026", "metadata": null, "created_at": "01/06/2026 09:12:05" } ],
+          "created_at": "01/04/2026 09:12:00", "updated_at": "01/06/2026 09:12:05"
+        }
+      },
+      "SubscriptionList": {
+        "type": "object",
+        "description": "Histórico de assinaturas, paginado. Envelope do paginador: `data` + `links` + `meta`.",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/SubscriptionItem" } },
+          "links": { "$ref": "#/components/schemas/PaginatorLinks" },
+          "meta": { "$ref": "#/components/schemas/PaginatorMeta" }
+        }
+      },
+      "SubscriptionDetail": {
+        "type": "object",
+        "description": "Detalhe de uma assinatura (`GET /subscriptions/{id}`).",
+        "properties": {
+          "id": { "type": "integer" },
+          "price": { "type": "integer", "description": "Em centavos." },
+          "first_charge_price": { "type": "integer", "description": "Em centavos; cai para `price` quando não definido." },
+          "currency": { "type": "string", "example": "BRL" },
+          "interval": { "type": "integer", "description": "Intervalo em dias.", "example": 30 },
+          "next_charge": { "type": "string", "nullable": true },
+          "situation": { "type": "string", "example": "active" },
+          "best_day_to_charge": { "type": "integer", "nullable": true },
+          "free_days": { "type": "integer", "nullable": true },
+          "max_charges": { "type": "integer", "nullable": true },
+          "successful_charges": { "type": "integer" },
+          "failed_charges": { "type": "integer" },
+          "is_smart_installment": { "type": "boolean" },
+          "cancellation_requested_at": { "type": "string", "nullable": true },
+          "canceled_at": { "type": "string", "nullable": true },
+          "canceled_by": { "type": "string", "nullable": true },
+          "payment_method": { "type": "string", "example": "credit_card" },
+          "pix_recurring_cancellation": { "type": "object", "nullable": true, "description": "Preenchido só em Pix recorrente cancelado.", "properties": { "cancelled_by": { "type": "string" }, "cancellation_reason": { "type": "string", "nullable": true }, "cancelled_via_webhook": { "type": "boolean" } } },
+          "offer_code": { "type": "string", "nullable": true },
+          "offer_name": { "type": "string", "nullable": true },
+          "order": { "type": "object", "properties": { "id": { "type": "integer" }, "hash": { "type": "string" }, "created_at": { "type": "string" } } },
+          "product": { "type": "object", "properties": { "name": { "type": "string" }, "id": { "type": "integer" } } },
+          "customer": { "type": "object", "properties": { "id": { "type": "integer" }, "name": { "type": "string" }, "email": { "type": "string" }, "document": { "type": "string", "nullable": true }, "phone": { "type": "string", "nullable": true } } },
+          "card": { "type": "object", "properties": { "holder": { "type": "string", "nullable": true }, "brand": { "type": "string", "nullable": true } } },
+          "transactions": { "type": "array", "items": { "type": "object" } },
+          "histories": { "type": "array", "items": { "type": "object" } },
+          "created_at": { "type": "string", "example": "01/06/2026 14:32:10" },
+          "updated_at": { "type": "string", "example": "01/06/2026 14:32:12" }
+        },
+        "example": {
+          "id": 4410, "price": 12400, "first_charge_price": 12400, "currency": "BRL", "interval": 30, "next_charge": "01/07/2026",
+          "situation": "active", "best_day_to_charge": null, "free_days": 0, "max_charges": null, "successful_charges": 3, "failed_charges": 0,
+          "is_smart_installment": false, "cancellation_requested_at": null, "canceled_at": null, "canceled_by": null, "payment_method": "credit_card",
+          "pix_recurring_cancellation": null, "offer_code": "O88AA1234", "offer_name": "Mensalidade",
+          "order": { "id": 90720, "hash": "TOP0106X1Y2Z3", "created_at": "01/04/2026 09:12:00" },
+          "product": { "name": "Comunidade Premium", "id": 306 },
+          "customer": { "id": 9902, "name": "Maria Souza", "email": "maria@exemplo.com", "document": "987.654.321-00", "phone": "5511999998888" },
+          "card": { "holder": "MARIA SOUZA", "brand": "visa" },
+          "transactions": [ { "id": 123999, "hash": "TRX9M3K1LP", "status": "authorized", "payment_method": "credit_card", "paid_amount": 12400, "created_at": "01/06/2026 09:12:05" } ],
+          "histories": [ { "id": 8801, "subscription_id": 4410, "type": "charge", "status": "paid", "reference_date": "Junho 2026", "metadata": null, "created_at": "01/06/2026 09:12:05" } ],
+          "created_at": "01/04/2026 09:12:00", "updated_at": "01/06/2026 09:12:05"
+        }
+      },
+      "CashoutItem": {
+        "type": "object",
+        "description": "Um item do histórico de saques (`GET /cashouts/history`). Origem: Smaug (via Phoenix).",
+        "properties": {
+          "id": { "type": "integer" },
+          "code": { "type": "string", "nullable": true, "description": "Código público do saque." },
+          "status": { "type": "string", "description": "Situação do saque.", "example": "paid" },
+          "amount": { "type": "integer", "description": "Valor solicitado em centavos." },
+          "fee": { "type": "integer", "description": "Tarifa do saque em centavos." },
+          "net_value": { "type": "integer", "description": "Valor líquido creditado em centavos." },
+          "bank_account": { "type": "object", "nullable": true, "properties": { "bank_name": { "type": "string" }, "agency": { "type": "string" }, "account": { "type": "string" } } },
+          "created_at": { "type": "string", "example": "01/06/2026 10:00:00" },
+          "updated_at": { "type": "string", "example": "01/06/2026 18:20:00" }
+        },
+        "example": {
+          "id": 7781, "code": "CO25X9AB", "status": "paid", "amount": 148800, "fee": 367, "net_value": 148433,
+          "bank_account": { "bank_name": "Nubank", "agency": "0001", "account": "1234567-8" },
+          "created_at": "01/06/2026 10:00:00", "updated_at": "01/06/2026 18:20:00"
+        }
+      },
+      "CashoutList": {
+        "type": "object",
+        "description": "Histórico de saques, paginado. Envelope do paginador: `data` + `links` + `meta`.",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/CashoutItem" } },
+          "links": { "$ref": "#/components/schemas/PaginatorLinks" },
+          "meta": { "$ref": "#/components/schemas/PaginatorMeta" }
+        }
+      },
+      "CashoutDetail": {
+        "type": "object",
+        "description": "Detalhe de um saque (`GET /cashouts/{id}`).",
+        "properties": {
+          "id": { "type": "integer" },
+          "code": { "type": "string", "nullable": true },
+          "status": { "type": "string", "example": "paid" },
+          "amount": { "type": "integer", "description": "Em centavos." },
+          "fee": { "type": "integer", "description": "Em centavos." },
+          "net_value": { "type": "integer", "description": "Em centavos." },
+          "bank_account": { "type": "object", "nullable": true, "properties": { "bank_name": { "type": "string" }, "agency": { "type": "string" }, "account": { "type": "string" } } },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "example": {
+          "id": 7781, "code": "CO25X9AB", "status": "paid", "amount": 148800, "fee": 367, "net_value": 148433,
+          "bank_account": { "bank_name": "Nubank", "agency": "0001", "account": "1234567-8" },
+          "created_at": "2026-06-01T10:00:00-03:00", "updated_at": "2026-06-01T18:20:00-03:00"
         }
       },
       "PaginatedList": {
