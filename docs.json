@@ -17,7 +17,12 @@
     }
   },
   "fonts": {
-    "family": "Space Grotesk"
+    "heading": {
+      "family": "Bricolage Grotesque"
+    },
+    "body": {
+      "family": "Space Grotesk"
+    }
   },
   "favicon": "/favicon.svg",
   "logo": {
@@ -108,5 +113,8 @@
     "socials": {
       "x": "https://x.com/ticto"
     }
+  },
+  "icons": {
+    "library": "lucide"
   }
 }
