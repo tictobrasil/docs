@@ -15,7 +15,7 @@ mode: "wide"
 | token | Sim | Um token único e essa é a principal garantia de que o post está sendo feito pela Ticto (Ultra Sigiloso). | Números e letras de até 255 caracteres |
 | payment_method | Sim | Forma de pagamento do comprador | Ver os **valores possíveis** abaixo. |
 | url_params | Sim | Parâmetros da URL no ato da compra | Objeto: `{label:value}` |
-| tracking | Sim | Trackeamento de campanhas (utm). Se não possuir valor, será enviado **"Não Informado"** | Objeto:<br/>"utm_source": "valor",<br/>"utm_medium": "valor",<br/>"utm_campaign": "valor",<br/>"utm_content": "valor",<br/>"utm_term": "valor",<br/>"src": "valor",<br/>"sck": "valor",<br/>"manychat_user_id": "valor" |
+| tracking | Sim | Trackeamento de campanhas (utm). Se não possuir valor, será enviado **"Não Informado"** | Objeto JSON com os campos: utm_source, utm_medium, utm_campaign, utm_content, utm_term, src, sck, manychat_user_id |
 | checkout_url | Sim | URL do checkout | Números e letras de até 255 caracteres |
 | order.id | Sim | ID do pedido | inteiro |
 | order.hash | Sim | Código do pedido | Números e letras de até 255 caracteres |
