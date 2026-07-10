@@ -9,7 +9,7 @@ mode: "wide"
 | Nome do parâmetro | Enviado para Afiliado ou Coprodutor | Descrição | Formato e tamanho suportado |
 | --- | --- | --- | --- |
 | version | Sim | Identificador da versão do postback | (string) `1.0` sempre |
-| status | Sim | Status da compra | **Possíveis valores**<br/>**paid:** Compra Aprovada<br/>**refused:** Compra negada no cartão<br/>**claimed:** Reclamado<br/>**billet_printed:** Boleto Impresso<br/>**refunded:** Reembolso Efetuado<br/>**blocked:** Bloqueio de Anti-Fraude<br/>**chargeback:** Reembolso forçado no cartão de crédito<br/>**abandoned_cart:** Abandono de Carrinho<br/>**billet_delayed:** Boleto Atrasado<br/>**subscription_canceled:** Assinatura Cancelada |
+| status | Sim | Status da compra | Ver os **valores possíveis** abaixo. |
 | token | Sim | Um token único e essa é a principal garantia de que o post está sendo feito pela Ticto (Ultra Sigiloso). | Números e letras de até 255 caracteres |
 | id_prod | Sim | Identificador do produto que foi adquirido | Somente números com até 20 dígitos |
 | name_prod | Sim | Nome do produto que foi adquirido | Números e letras de até 255 caracteres |
@@ -98,6 +98,21 @@ mode: "wide"
 | coproducers [indice] .cms | Sim | Comissão do Coprodutor | Número com duas casas decimais (Ex: 100.00) |
 | coproducers [indice] .document | Sim | Documento do Coprodutor | String |
 | direct_login_url | Não | URL para Login Direto | (string) |
+
+## Valores possíveis
+
+### `status`
+
+*   **paid:** Compra Aprovada
+*   **refused:** Compra negada no cartão
+*   **claimed:** Reclamado
+*   **billet_printed:** Boleto Impresso
+*   **refunded:** Reembolso Efetuado
+*   **blocked:** Bloqueio de Anti-Fraude
+*   **chargeback:** Reembolso forçado no cartão de crédito
+*   **abandoned_cart:** Abandono de Carrinho
+*   **billet_delayed:** Boleto Atrasado
+*   **subscription_canceled:** Assinatura Cancelada
 
 ## Objeto de requisição
 
