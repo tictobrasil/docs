@@ -430,6 +430,9 @@
           "value": { "type": "integer", "description": "Valor do item em centavos." },
           "order_id": { "type": "integer" },
           "affiliates": { "type": "array", "items": { "type": "object" } },
+          "query_params": { "type": "object", "nullable": true, "description": "Parâmetros da URL do checkout no momento da compra (UTMs, código da oferta, evento do pixel). `null` quando a venda não carregou parâmetros.", "example": { "utm_source": "google", "utm_medium": "cpc", "utm_campaign": "black_friday", "code": "O709D4B48", "event": "InitiateCheckout" } },
+          "tracking": { "allOf": [ { "$ref": "#/components/schemas/Tracking" } ], "description": "Atribuição de campanha normalizada. Paridade 1:1 com o webhook v2 — campos ausentes vêm como `\"Não Informado\"` (nunca faltam)." },
+          "checkout_url": { "type": "string", "nullable": true, "description": "Link do checkout da oferta desta venda (base do checkout + código da oferta). `null` quando a oferta não tem código.", "example": "https://checkout.ticto.app/O709D4B48" },
           "transaction": { "type": "object", "description": "Dados da transação (status, método, histórico)." },
           "offer": {
             "type": "object",
@@ -484,6 +487,21 @@
           "approved_date": { "type": "string", "format": "date-time", "nullable": true },
           "created_at": { "type": "string", "format": "date-time" },
           "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Tracking": {
+        "type": "object",
+        "description": "Atribuição de campanha da venda, normalizada e idêntica à do webhook v2. Todos os campos são sempre devolvidos; quando a venda não carregou o dado, o valor é a string `\"Não Informado\"`.",
+        "properties": {
+          "event": { "type": "string", "description": "Evento do pixel no checkout.", "example": "InitiateCheckout" },
+          "utm_source": { "type": "string", "example": "google" },
+          "utm_medium": { "type": "string", "example": "cpc" },
+          "utm_campaign": { "type": "string", "example": "black_friday" },
+          "utm_content": { "type": "string", "example": "Não Informado" },
+          "utm_term": { "type": "string", "example": "Não Informado" },
+          "src": { "type": "string", "description": "Origem (parâmetro `src`).", "example": "facebook" },
+          "sck": { "type": "string", "description": "Sub-origem (`sck`); quando ausente, cai para o valor de `src`.", "example": "facebook" },
+          "manychat_user_id": { "type": "string", "description": "ID do usuário no ManyChat, quando a venda veio de um fluxo ManyChat.", "example": "Não Informado" }
         }
       },
       "OrdersSummary": {
