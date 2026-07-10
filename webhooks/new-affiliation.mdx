@@ -28,16 +28,28 @@ Esta é a descrição dos parâmetros enviados pelo webhook em resposta a determ
 
 ## Valores possíveis
 
-### `event`
+<AccordionGroup>
 
-*   **AFFILIATION_CREATED:** Afiliação Criada
-*   **AFFILIATION_REQUESTED:** Afiliação Solicitada
-*   **AFFILIATION_APPROVED:** Afiliação Aprovada.
+<Accordion title="event" description="Tipo de evento.">
 
-### `status`
+| Valor | Descrição |
+| --- | --- |
+| `AFFILIATION_CREATED` | Afiliação Criada |
+| `AFFILIATION_REQUESTED` | Afiliação Solicitada |
+| `AFFILIATION_APPROVED` | Afiliação Aprovada. |
 
-*   **approved:** Afiliação Aprovada
-*   **pending:** Afiliação Pendente.
+</Accordion>
+
+<Accordion title="status" description="Status da afiliação.">
+
+| Valor | Descrição |
+| --- | --- |
+| `approved` | Afiliação Aprovada |
+| `pending` | Afiliação Pendente. |
+
+</Accordion>
+
+</AccordionGroup>
 
 ## Objeto de requisição
 

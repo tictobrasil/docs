@@ -122,49 +122,69 @@ mode: "wide"
 
 ## Valores possíveis
 
-### `commission_type`
+<AccordionGroup>
 
-*   **producer:** Produtor
-*   **coproducer:** Coprodutor
-*   **affiliate:** Afiliado
-*   **manager:** Gestor de Afiliados
-*   **provider:** Fornecedor de produto físico
+<Accordion title="commission_type" description="Tipo de comissão do postback">
 
-### `status`
+| Valor | Descrição |
+| --- | --- |
+| `producer` | Produtor |
+| `coproducer` | Coprodutor |
+| `affiliate` | Afiliado |
+| `manager` | Gestor de Afiliados |
+| `provider` | Fornecedor de produto físico |
 
-*   **abandoned_cart:** Abandono de Carrinho
-*   **authorized:** Venda Realizada
-*   **bank_slip_delayed:** Boleto Atrasado
-*   **bank_slip_created:** Boleto Impresso
-*   **chargeback:** Chargeback
-*   **close:** Encerrado
-*   **claimed:** Reclamado
-*   **pix_created:** Pix Gerado
-*   **pix_expired:** Pix Expirado
-*   **refunded:** Reembolso
-*   **refused:** Venda Recusada
-*   **trial:** Tempo de Teste
-*   **waiting_payment:** Aguardando Pagamento
-*   **all_charges_paid:** [Assinatura] - Encerrada (Todas as Cobranças Finalizadas)
-*   **card_exchanged:** [Assinatura] - Cartão atualizado
-*   **extended:** [Assinatura] - Extendida
-*   **subscription_canceled:** [Assinatura] - Cancelada
-*   **subscription_delayed:** [Assinatura] - Atrasada
-*   **trial_started:** [Assinatura] - Período de Testes Iniciado
-*   **trial_ended:** [Assinatura] - Período de Testes Encerrado
-*   **uncanceled:** [Assinatura] - Retomada
+</Accordion>
 
-### `payment_method`
+<Accordion title="status" description="Status da compra">
 
-*   **bank_slip:** Boleto Bancário
-*   **pix:** Pix
-*   **credit_card:** Cartão de Crédito
+| Valor | Descrição |
+| --- | --- |
+| `abandoned_cart` | Abandono de Carrinho |
+| `authorized` | Venda Realizada |
+| `bank_slip_delayed` | Boleto Atrasado |
+| `bank_slip_created` | Boleto Impresso |
+| `chargeback` | Chargeback |
+| `close` | Encerrado |
+| `claimed` | Reclamado |
+| `pix_created` | Pix Gerado |
+| `pix_expired` | Pix Expirado |
+| `refunded` | Reembolso |
+| `refused` | Venda Recusada |
+| `trial` | Tempo de Teste |
+| `waiting_payment` | Aguardando Pagamento |
+| `all_charges_paid` | [Assinatura] - Encerrada (Todas as Cobranças Finalizadas) |
+| `card_exchanged` | [Assinatura] - Cartão atualizado |
+| `extended` | [Assinatura] - Extendida |
+| `subscription_canceled` | [Assinatura] - Cancelada |
+| `subscription_delayed` | [Assinatura] - Atrasada |
+| `trial_started` | [Assinatura] - Período de Testes Iniciado |
+| `trial_ended` | [Assinatura] - Período de Testes Encerrado |
+| `uncanceled` | [Assinatura] - Retomada |
 
-### `shipping.type`
+</Accordion>
 
-*   **free:** Frete Grátis
-*   **fixed:** Valor Fixo
-*   **shipping_company:** Correios
+<Accordion title="payment_method" description="Forma de pagamento do comprador">
+
+| Valor | Descrição |
+| --- | --- |
+| `bank_slip` | Boleto Bancário |
+| `pix` | Pix |
+| `credit_card` | Cartão de Crédito |
+
+</Accordion>
+
+<Accordion title="shipping.type" description="Tipo do Frete">
+
+| Valor | Descrição |
+| --- | --- |
+| `free` | Frete Grátis |
+| `fixed` | Valor Fixo |
+| `shipping_company` | Correios |
+
+</Accordion>
+
+</AccordionGroup>
 
 ## Objeto de requisição
 
