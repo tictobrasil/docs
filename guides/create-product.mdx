@@ -65,7 +65,7 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
       "reference_id": 1042,
       "name": "Curso Completo de Marketing Digital",
       "type": "course",
-      "status": "pre-approved",
+      "status": "approved",
       "is_active": true,
       "created_at": "2025-01-15T14:30:00Z"
     }
@@ -73,7 +73,7 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
   </Step>
 
   <Step title="Pronto para vender">
-    O produto nasce com status `pre-approved` (pré-aprovado), o mesmo padrão do painel: já pode receber vendas. Após a primeira venda, ele passa pela análise do time de compliance. Se você quiser criar o produto já indisponível (por exemplo, para configurar as ofertas antes de divulgar), envie `is_active: false` na criação e ative depois pelo painel.
+    O produto nasce **aprovado e ativo**, pronto para vender. Se você quiser criar o produto já indisponível (por exemplo, para configurar as ofertas antes de divulgar), envie `is_active: false` na criação e ative depois pelo painel.
   </Step>
 </Steps>
 
@@ -96,7 +96,7 @@ Antes de criar um produto, escolha o tipo que melhor descreve o que você está 
 </ParamField>
 
 <Note>
-  O campo `status` é da plataforma, não seu. Ele reflete o estado de compliance do produto (`pre-approved` na criação, depois avança conforme a análise) e é **somente leitura**: não pode ser enviado nem alterado pela API. Enviar `status` no corpo retorna erro `422`. Para tornar um produto indisponível, use `is_active`.
+  O campo `status` é gerido pela plataforma e é **somente leitura**: não pode ser enviado nem alterado pela API. Enviar `status` no corpo retorna erro `422`. Para tornar um produto indisponível, use `is_active`.
 </Note>
 
 ## Próximos passos

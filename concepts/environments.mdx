@@ -50,7 +50,7 @@ Nenhuma mudança de payload, de rota ou de lógica. O que passou no sandbox pass
 
 ## Disponibilidade por padrão
 
-Em **qualquer** ambiente, todo produto criado via API nasce com status `pre-approved` (pré-aprovado) e **ativo** (`is_active: true`), pronto para vender: após a primeira venda ele passa pela análise de compliance. O `status` é da plataforma e não pode ser definido pela API. Se você quiser preparar o produto antes de divulgá-lo, crie-o com `is_active: false` e ative-o depois no painel.
+Em **qualquer** ambiente, todo produto criado via API nasce **aprovado e ativo** (`is_active: true`), pronto para vender. O `status` é gerido pela plataforma e não pode ser definido pela API. Se você quiser preparar o produto antes de divulgá-lo, crie-o com `is_active: false` e ative-o depois no painel.
 
 <Tip>
   Recrie o mesmo fluxo de ponta a ponta no sandbox antes de virar a chave. Assim você valida token, escopos, criação e leitura sem risco, e a virada para produção vira só a troca das duas variáveis acima.

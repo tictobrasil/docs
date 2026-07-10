@@ -1,0 +1,50 @@
+---
+title: "Nova afiliação"
+description: "Atributos e exemplo de payload do webhook de nova afiliação (criada, solicitada, aprovada)."
+---
+
+## Atributos
+
+Esta é a descrição dos parâmetros enviados pelo webhook em resposta a determinado evento.
+
+| Nome do parâmetro | Descrição | Formato e tamanho suportado |
+| --- | --- | --- |
+| event | Tipo de evento. **Possíveis valores**<br/>**AFFILIATION_CREATED:** Afiliação Criada<br/>**AFFILIATION_REQUESTED:** Afiliação Solicitada<br/>**AFFILIATION_APPROVED:** Afiliação Aprovada. | String até 255 caracteres |
+| status | Status da afiliação. **Possíveis valores**<br/>**approved:** Afiliação Aprovada<br/>**pending:** Afiliação Pendente. | String até 255 caracteres |
+| from_auto_affiliation | Indica se a afiliação foi criada automaticamente. Possíveis valores: 0 (Não foi criada automaticamente). | Número inteiro |
+| creator_name | Nome do criador da afiliação | String até 255 caracteres |
+| creator_email | Email do criador da afiliação | String no formato de email |
+| code | Código da afiliação | String até 255 caracteres |
+| commission_percentage | Porcentagem de comissão | Número inteiro entre 0 e 100 |
+| product_id | Identificador do produto associado à afiliação | Número inteiro com até 20 dígitos |
+| product_name | Nome do produto associado à afiliação | String até 255 caracteres |
+| affiliate_id | Identificador do afiliado | Número inteiro com até 20 dígitos |
+| name | Nome do afiliado | String até 255 caracteres |
+| email | Email do afiliado | String no formato de email |
+| phone | Telefone do afiliado | String contendo números e caracteres especiais |
+| document | CPF do afiliado | String no formato de CPF |
+| affiliation_date | Data da afiliação | String no formato de data |
+
+## Objeto de requisição
+
+Segue um exemplo do objeto da requisição:
+
+```json
+{
+    "event": "AFFILIATION_CREATED",
+    "status": "approved",
+    "from_auto_affiliation": 0,
+    "creator_name": "Nome do criador da afiliação",
+    "creator_email": "emailcriadordafiliacao8@provedor.com.br",
+    "code": "AF79BE3C59",
+    "commission_percentage": 10,
+    "product_id": 48052,
+    "product_name": "Nome do produto",
+    "affiliate_id": 1212480,
+    "name": "Nome do afiliado",
+    "email": "emaildoafiliado8@provedor.com.br",
+    "phone": "258139121334567",
+    "document": "696.891.960-57",
+    "affiliation_date": "2023-12-01 00:00:00",
+}
+```
