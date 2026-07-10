@@ -1,6 +1,7 @@
 ---
 title: "Versão 1.0"
 description: "Atributos e exemplo de payload do webhook (postback) versão 1.0, o formato legado."
+mode: "wide"
 ---
 
 ## Atributos
@@ -8,7 +9,7 @@ description: "Atributos e exemplo de payload do webhook (postback) versão 1.0, 
 | Nome do parâmetro | Enviado para Afiliado ou Coprodutor | Descrição | Formato e tamanho suportado |
 | --- | --- | --- | --- |
 | version | Sim | Identificador da versão do postback | (string) `1.0` sempre |
-| status | Sim | Status da compra | **Possíveis valores**<br/>**paid:** Compra Aprovada<br/>**refused:** Compra negada no cartão<br/>**claimed:** Reclamado<br/>**billet_printed:** Boleto Impresso<br/>**refunded:** Reembolso Efetuado<br/>**blocked:** Bloqueio de Anti-Fraude<br/>**chargeback:** Reembolso forçado no cartão de crédito<br/>**abandoned_cart:** Abandono de Carrinho<br/>**billet_delayed:** Boleto Atrasado<br/>**subscription_canceled:** Assinatura Cancelada |
+| status | Sim | Status da compra | Ver os **valores possíveis** abaixo. |
 | token | Sim | Um token único e essa é a principal garantia de que o post está sendo feito pela Ticto (Ultra Sigiloso). | Números e letras de até 255 caracteres |
 | id_prod | Sim | Identificador do produto que foi adquirido | Somente números com até 20 dígitos |
 | name_prod | Sim | Nome do produto que foi adquirido | Números e letras de até 255 caracteres |
@@ -35,15 +36,15 @@ description: "Atributos e exemplo de payload do webhook (postback) versão 1.0, 
 | producer_document | Sim | Cpf/Cnpj produtor | Números e letras de até 255 caracteres |
 | producer_email | Sim | Email produtor | Números e letras de até 255 caracteres |
 | refund_limit_date | Sim | Data de vencimento da garantia do produto adquirido | Date |
-| postback_type | Sim | Numero referente ao tipo de comissão recebida | Número inteiro de 1 dígito<br/>1=>afiliado<br/>2=>Produtor,<br/>3=>Gerente de afiliado<br/>4 => Co-Produtor |
+| postback_type | Sim | Numero referente ao tipo de comissão recebida | Número inteiro de 1 dígito. Ver os **valores possíveis** abaixo. |
 | occurence | Sim | Somente para assinaturas. Representa qual mensalidade foi transacionada. | Somente números com até 2 dígitos |
 | confirmation_purchase_date | Sim | Data de liberação da compra | Datetime - Ex.: YYYY-MM-DD HH:MM:SS |
 | cashout_release_date | Sim | Data em que essa comissão estará disponivel para saque. | Date - Ex.: YYYY-MM-DD |
 | code | Não | Identificador da oferta que foi adquirida | Números e letras de até 255 caracteres |
 | event | Não | Evento do envio | Números e letras de até 255 caracteres |
 | shipping_amount | Sim | Valor frete | Número decimal de 0.01 até 9999.99 |
-| shipping_type | Não | Tipo de frete | Possíveis Valores:<br/>free=>Frete Grátis<br/>fixed=>Frete com Valor fixo<br/>shipping_company=>Correios |
-| shipping_company | Não | Método de envio | Possíveis Valores:<br/>pac=>PC<br/>sedex=>Sedex<br/>by_producer => Envio pelo produtor |
+| shipping_type | Não | Tipo de frete | Ver os **valores possíveis** abaixo. |
+| shipping_company | Não | Método de envio | Ver os **valores possíveis** abaixo. |
 | shipping_delivery_days | Sim | Prazo de dias para entrega | Números com até 20 dígitos |
 | email_customer | (Depende da configuração do produto de compartilhar informações) | E-mail do comprador | Números e letras de até 255 caracteres |
 | name_customer | (Depende da configuração do produto de compartilhar informações) | Nome completo do comprador | Números e letras de até 255 caracteres |
@@ -97,6 +98,60 @@ description: "Atributos e exemplo de payload do webhook (postback) versão 1.0, 
 | coproducers [indice] .cms | Sim | Comissão do Coprodutor | Número com duas casas decimais (Ex: 100.00) |
 | coproducers [indice] .document | Sim | Documento do Coprodutor | String |
 | direct_login_url | Não | URL para Login Direto | (string) |
+
+## Valores possíveis
+
+<AccordionGroup>
+
+<Accordion title="status" description="Status da compra">
+
+| Valor | Descrição |
+| --- | --- |
+| `paid` | Compra Aprovada |
+| `refused` | Compra negada no cartão |
+| `claimed` | Reclamado |
+| `billet_printed` | Boleto Impresso |
+| `refunded` | Reembolso Efetuado |
+| `blocked` | Bloqueio de Anti-Fraude |
+| `chargeback` | Reembolso forçado no cartão de crédito |
+| `abandoned_cart` | Abandono de Carrinho |
+| `billet_delayed` | Boleto Atrasado |
+| `subscription_canceled` | Assinatura Cancelada |
+
+</Accordion>
+
+<Accordion title="postback_type" description="Numero referente ao tipo de comissão recebida">
+
+| Valor | Descrição |
+| --- | --- |
+| `1` | afiliado |
+| `2` | Produtor |
+| `3` | Gerente de afiliado |
+| `4` | Co-Produtor |
+
+</Accordion>
+
+<Accordion title="shipping_type" description="Tipo de frete">
+
+| Valor | Descrição |
+| --- | --- |
+| `free` | Frete Grátis |
+| `fixed` | Frete com Valor fixo |
+| `shipping_company` | Correios |
+
+</Accordion>
+
+<Accordion title="shipping_company" description="Método de envio">
+
+| Valor | Descrição |
+| --- | --- |
+| `pac` | PC |
+| `sedex` | Sedex |
+| `by_producer` | Envio pelo produtor |
+
+</Accordion>
+
+</AccordionGroup>
 
 ## Objeto de requisição
 

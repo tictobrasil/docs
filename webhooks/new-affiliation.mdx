@@ -1,6 +1,7 @@
 ---
 title: "Nova afiliação"
 description: "Atributos e exemplo de payload do webhook de nova afiliação (criada, solicitada, aprovada)."
+mode: "wide"
 ---
 
 ## Atributos
@@ -9,8 +10,8 @@ Esta é a descrição dos parâmetros enviados pelo webhook em resposta a determ
 
 | Nome do parâmetro | Descrição | Formato e tamanho suportado |
 | --- | --- | --- |
-| event | Tipo de evento. **Possíveis valores**<br/>**AFFILIATION_CREATED:** Afiliação Criada<br/>**AFFILIATION_REQUESTED:** Afiliação Solicitada<br/>**AFFILIATION_APPROVED:** Afiliação Aprovada. | String até 255 caracteres |
-| status | Status da afiliação. **Possíveis valores**<br/>**approved:** Afiliação Aprovada<br/>**pending:** Afiliação Pendente. | String até 255 caracteres |
+| event | Tipo de evento. Ver os **valores possíveis** abaixo. | String até 255 caracteres |
+| status | Status da afiliação. Ver os **valores possíveis** abaixo. | String até 255 caracteres |
 | from_auto_affiliation | Indica se a afiliação foi criada automaticamente. Possíveis valores: 0 (Não foi criada automaticamente). | Número inteiro |
 | creator_name | Nome do criador da afiliação | String até 255 caracteres |
 | creator_email | Email do criador da afiliação | String no formato de email |
@@ -24,6 +25,31 @@ Esta é a descrição dos parâmetros enviados pelo webhook em resposta a determ
 | phone | Telefone do afiliado | String contendo números e caracteres especiais |
 | document | CPF do afiliado | String no formato de CPF |
 | affiliation_date | Data da afiliação | String no formato de data |
+
+## Valores possíveis
+
+<AccordionGroup>
+
+<Accordion title="event" description="Tipo de evento.">
+
+| Valor | Descrição |
+| --- | --- |
+| `AFFILIATION_CREATED` | Afiliação Criada |
+| `AFFILIATION_REQUESTED` | Afiliação Solicitada |
+| `AFFILIATION_APPROVED` | Afiliação Aprovada. |
+
+</Accordion>
+
+<Accordion title="status" description="Status da afiliação.">
+
+| Valor | Descrição |
+| --- | --- |
+| `approved` | Afiliação Aprovada |
+| `pending` | Afiliação Pendente. |
+
+</Accordion>
+
+</AccordionGroup>
 
 ## Objeto de requisição
 

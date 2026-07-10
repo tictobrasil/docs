@@ -1,6 +1,7 @@
 ---
 title: "Versão 2.0"
 description: "Atributos e exemplo de payload do webhook (postback) versão 2.0, o formato recomendado."
+mode: "wide"
 ---
 
 ## Atributos
@@ -8,13 +9,13 @@ description: "Atributos e exemplo de payload do webhook (postback) versão 2.0, 
 | Nome do parâmetro | Enviado para Afiliado ou Coprodutor | Descrição | Formato e tamanho suportado |
 | --- | --- | --- | --- |
 | version | Sim | Identificador da versão do postback | (string) `2.0` sempre |
-| commission_type | Sim | Tipo de comissão do postback | **Possíveis valores**<br/>**producer:** Produtor<br/>**coproducer:** Coprodutor<br/>**affiliate:** Afiliado<br/>**manager:** Gestor de Afiliados<br/>**provider:** Fornecedor de produto físico |
-| status | Sim | Status da compra | **Possíveis valores**<br/>**abandoned_cart:** Abandono de Carrinho<br/>**authorized:** Venda Realizada<br/>**bank_slip_delayed:** Boleto Atrasado<br/>**bank_slip_created:** Boleto Impresso<br/>**chargeback:** Chargeback<br/>**close:** Encerrado<br/>**claimed:** Reclamado<br/>**pix_created:** Pix Gerado<br/>**pix_expired:** Pix Expirado<br/>**refunded:** Reembolso<br/>**refused:** Venda Recusada<br/>**trial:** Tempo de Teste<br/>**waiting_payment:** Aguardando Pagamento<br/>**all_charges_paid:** [Assinatura] - Encerrada (Todas as Cobranças Finalizadas)<br/>**card_exchanged:** [Assinatura] - Cartão atualizado<br/>**extended:** [Assinatura] - Extendida<br/>**subscription_canceled:** [Assinatura] - Cancelada<br/>**subscription_delayed:** [Assinatura] - Atrasada<br/>**trial_started:** [Assinatura] - Período de Testes Iniciado<br/>**trial_ended:** [Assinatura] - Período de Testes Encerrado<br/>**uncanceled:** [Assinatura] - Retomada |
+| commission_type | Sim | Tipo de comissão do postback | Ver os **valores possíveis** abaixo. |
+| status | Sim | Status da compra | Ver os **valores possíveis** abaixo. |
 | status_date | Sim | Dia e Hora do PostBack | Números e letras de até 255 caracteres |
 | token | Sim | Um token único e essa é a principal garantia de que o post está sendo feito pela Ticto (Ultra Sigiloso). | Números e letras de até 255 caracteres |
-| payment_method | Sim | Forma de pagamento do comprador | **Possíveis valores**<br/>**bank_slip:** Boleto Bancário<br/>**pix:** Pix<br/>**credit_card:** Cartão de Crédito |
+| payment_method | Sim | Forma de pagamento do comprador | Ver os **valores possíveis** abaixo. |
 | url_params | Sim | Parâmetros da URL no ato da compra | Objeto: `{label:value}` |
-| tracking | Sim | Trackeamento de campanhas (utm). Se não possuir valor, será enviado **"Não Informado"** | Objeto:<br/>"utm_source": "valor",<br/>"utm_medium": "valor",<br/>"utm_campaign": "valor",<br/>"utm_content": "valor",<br/>"utm_term": "valor",<br/>"src": "valor",<br/>"sck": "valor",<br/>"manychat_user_id": "valor" |
+| tracking | Sim | Trackeamento de campanhas (utm). Se não possuir valor, será enviado **"Não Informado"** | Objeto JSON com os campos: utm_source, utm_medium, utm_campaign, utm_content, utm_term, src, sck, manychat_user_id |
 | checkout_url | Sim | URL do checkout | Números e letras de até 255 caracteres |
 | order.id | Sim | ID do pedido | inteiro |
 | order.hash | Sim | Código do pedido | Números e letras de até 255 caracteres |
@@ -23,7 +24,7 @@ description: "Atributos e exemplo de payload do webhook (postback) versão 2.0, 
 | order.installments | Sim | Quantidade de Parcelas | Número com até 2 dígitos |
 | order.order_date | Sim | Dia e Hora do Pedido | Números e letras de até 255 caracteres |
 | shipping.amount | Sim | Valor do Frete | inteiro |
-| shipping.type | Sim | Tipo do Frete | **Possíveis valores**<br/>**free:** Frete Grátis<br/>**fixed:** Valor Fixo<br/>**shipping_company:** Correios |
+| shipping.type | Sim | Tipo do Frete | Ver os **valores possíveis** abaixo. |
 | shipping.method | Sim | Método do Frete | Números e letras de até 255 caracteres |
 | shipping.delivery_days | Sim | Prazo de dias para entrega | Números com até 20 dígitos |
 | item.product_name | Sim | Nome do produto | Números e letras de até 255 caracteres |
@@ -118,6 +119,72 @@ description: "Atributos e exemplo de payload do webhook (postback) versão 2.0, 
 | coproducers [indice] .document | Não | CPF ou CNPJ do Coprodutor | (string) |
 | marketplace_commission | Não | Comissão da Ticto | Inteiro (centavos) |
 | direct_login_url | Não | URL para Login Direto | (string) |
+
+## Valores possíveis
+
+<AccordionGroup>
+
+<Accordion title="commission_type" description="Tipo de comissão do postback">
+
+| Valor | Descrição |
+| --- | --- |
+| `producer` | Produtor |
+| `coproducer` | Coprodutor |
+| `affiliate` | Afiliado |
+| `manager` | Gestor de Afiliados |
+| `provider` | Fornecedor de produto físico |
+
+</Accordion>
+
+<Accordion title="status" description="Status da compra">
+
+| Valor | Descrição |
+| --- | --- |
+| `abandoned_cart` | Abandono de Carrinho |
+| `authorized` | Venda Realizada |
+| `bank_slip_delayed` | Boleto Atrasado |
+| `bank_slip_created` | Boleto Impresso |
+| `chargeback` | Chargeback |
+| `close` | Encerrado |
+| `claimed` | Reclamado |
+| `pix_created` | Pix Gerado |
+| `pix_expired` | Pix Expirado |
+| `refunded` | Reembolso |
+| `refused` | Venda Recusada |
+| `trial` | Tempo de Teste |
+| `waiting_payment` | Aguardando Pagamento |
+| `all_charges_paid` | [Assinatura] - Encerrada (Todas as Cobranças Finalizadas) |
+| `card_exchanged` | [Assinatura] - Cartão atualizado |
+| `extended` | [Assinatura] - Extendida |
+| `subscription_canceled` | [Assinatura] - Cancelada |
+| `subscription_delayed` | [Assinatura] - Atrasada |
+| `trial_started` | [Assinatura] - Período de Testes Iniciado |
+| `trial_ended` | [Assinatura] - Período de Testes Encerrado |
+| `uncanceled` | [Assinatura] - Retomada |
+
+</Accordion>
+
+<Accordion title="payment_method" description="Forma de pagamento do comprador">
+
+| Valor | Descrição |
+| --- | --- |
+| `bank_slip` | Boleto Bancário |
+| `pix` | Pix |
+| `credit_card` | Cartão de Crédito |
+
+</Accordion>
+
+<Accordion title="shipping.type" description="Tipo do Frete">
+
+| Valor | Descrição |
+| --- | --- |
+| `free` | Frete Grátis |
+| `fixed` | Valor Fixo |
+| `shipping_company` | Correios |
+
+</Accordion>
+
+</AccordionGroup>
 
 ## Objeto de requisição
 
