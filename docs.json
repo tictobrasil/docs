@@ -36,10 +36,7 @@
         "groups": [
           {
             "group": "Introdução",
-            "pages": [
-              "introduction",
-              "quickstart"
-            ]
+            "pages": ["introduction", "quickstart"]
           },
           {
             "group": "Autenticação",
@@ -77,13 +74,11 @@
         "groups": [
           {
             "group": "Introdução",
-            "pages": [
-              "webhooks/introduction",
-              "webhooks/testing-environment"
-            ]
+            "pages": ["webhooks/introduction", "webhooks/testing-environment"]
           },
           {
             "group": "Referência de eventos",
+            "tag": "v2",
             "pages": [
               "webhooks/v2",
               "webhooks/abandoned-cart-v2",
@@ -92,17 +87,12 @@
           },
           {
             "group": "Migração",
-            "pages": [
-              "webhooks/migracao"
-            ]
+            "pages": ["webhooks/migracao"]
           },
           {
-            "group": "Descontinuado (1.0)",
-            "tag": "Descontinuado",
-            "pages": [
-              "webhooks/v1",
-              "webhooks/abandoned-cart-v1"
-            ]
+            "group": "Descontinuado",
+            "tag": "v1",
+            "pages": ["webhooks/v1", "webhooks/abandoned-cart-v1"]
           }
         ]
       }

@@ -4,7 +4,7 @@ description: "Como sair do webhook (postback) legado 1.0 para a versão 2.0 reco
 mode: "wide"
 ---
 
-A versão **1.0** continua funcionando e você não precisa migrar com pressa. Mas ela é o formato legado: não ganha novos recursos, e é para lá que a documentação aponta como descontinuada. Toda nova integração deve usar a **[2.0](/webhooks/v2)**.
+A versão **1.0** continua funcionando e você não precisa migrar com pressa. Ela é o formato legado (descontinuado): não ganha novos recursos. Toda nova integração deve usar a **versão 2.0** dos eventos.
 
 ## Por que migrar
 
@@ -26,7 +26,7 @@ A diferença principal é estrutural: a **1.0 é plana** (todos os campos no top
 
 ### Venda (postback principal)
 
-Estas são as mudanças de maior impacto. Para o payload completo da 2.0, consulte a página **[Versão 2.0](/webhooks/v2)** (vários campos passam a viver dentro de objetos).
+Estas são as mudanças de maior impacto. Para o payload completo da 2.0, consulte **[Eventos de Venda](/webhooks/v2)** (vários campos passam a viver dentro de objetos).
 
 | Na 1.0 (plano) | Na 2.0 |
 | --- | --- |
@@ -68,7 +68,7 @@ A versão é definida por webhook, no painel da Ticto. Recomendação:
     Aponte para o mesmo endpoint que você já usa (ou um novo) e selecione a versão **2.0**.
   </Step>
   <Step title="Ajuste seu recebedor">
-    Atualize o código que lê o payload seguindo o de-para acima e a referência da **[Versão 2.0](/webhooks/v2)**.
+    Atualize o código que lê o payload seguindo o de-para acima e as referências de **[Eventos de Venda](/webhooks/v2)** e **[Carrinho Abandonado](/webhooks/abandoned-cart-v2)**.
   </Step>
   <Step title="Valide em paralelo">
     Rode as duas versões lado a lado por um período, confira que a 2.0 chega correta, e só então desative a 1.0.
