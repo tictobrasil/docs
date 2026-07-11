@@ -1,0 +1,80 @@
+---
+title: "Migrar da 1.0 para a 2.0"
+description: "Como sair do webhook (postback) legado 1.0 para a versão 2.0 recomendada: o que muda, de-para dos campos e como trocar a versão."
+mode: "wide"
+---
+
+A versão **1.0** continua funcionando e você não precisa migrar com pressa. Ela é o formato legado (descontinuado): não ganha novos recursos. Toda nova integração deve usar a **versão 2.0** dos eventos.
+
+## Por que migrar
+
+<CardGroup cols={3}>
+  <Card title="Dados de campanha" icon="chart-line">
+    A 2.0 entrega o rastreamento (UTMs, `src`, `sck`) organizado no objeto `tracking`, além de `url_params` com os parâmetros da URL da compra.
+  </Card>
+  <Card title="Formato estruturado" icon="cube">
+    Em vez de dezenas de campos soltos com sufixo `_customer`, a 2.0 agrupa em objetos (`producer`, `tracking`, cliente, produto), mais fácil de ler e manter.
+  </Card>
+  <Card title="Novos recursos" icon="sparkles">
+    Melhorias e campos novos entram só na 2.0. A 1.0 fica congelada no que já existe.
+  </Card>
+</CardGroup>
+
+## O que muda no formato
+
+A diferença principal é estrutural: a **1.0 é plana** (todos os campos no topo, com nomes como `name_prod`, `email_customer`, `utm_source`), enquanto a **2.0 agrupa em objetos** e padroniza os nomes.
+
+### Venda (postback principal)
+
+Estas são as mudanças de maior impacto. Para o payload completo da 2.0, consulte **[Eventos de Venda](/webhooks/v2)** (vários campos passam a viver dentro de objetos).
+
+| Na 1.0 (plano) | Na 2.0 |
+| --- | --- |
+| `payment_type` | `payment_method` |
+| `postback_type` | `commission_type` |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`, `src`, `sck` (soltos) | objeto `tracking` (+ `url_params`) |
+| `producer_name`, `producer_email`, `producer_document` (soltos) | objeto `producer` |
+| `id_prod`, `name_prod`, `id_offer`, `name_offer`, `price_offer` (soltos) | agrupados no payload da 2.0 |
+| `name_customer`, `email_customer`, `num_doc_customer`, `phone_number_customer`, `address_*_customer` (soltos) | agrupados no payload da 2.0 |
+| `transaction_hash`, `transaction_date`, `transaction_price`, `paid_value` (soltos) | agrupados no payload da 2.0 |
+
+<Note>
+  `checkout_url`, `token`, `status`, `affiliates`, `coproducers` e `subscriptions` existem nas duas versões.
+</Note>
+
+### Carrinho abandonado
+
+Aqui o de-para é direto (as duas versões são planas):
+
+| Na 1.0 | Na 2.0 |
+| --- | --- |
+| `id_prod` | `product_id` |
+| `name_prod` | `product_name` |
+| `id_offer` | `offer_id` |
+| `name_offer` | não há campo equivalente na 2.0 |
+| `email_customer` | `email` |
+| `name_customer` | `name` |
+| `num_doc_customer` | `document` |
+| `phone_number_customer` | `phone` |
+| `tracking_data` | `tracking` |
+| `checkout_url`, `created_at`, `status`, `token` | mesmos nomes |
+
+## Como trocar a versão
+
+A versão é definida por webhook, no painel da Ticto. Recomendação:
+
+<Steps>
+  <Step title="Cadastre um webhook 2.0">
+    Aponte para o mesmo endpoint que você já usa (ou um novo) e selecione a versão **2.0**.
+  </Step>
+  <Step title="Ajuste seu recebedor">
+    Atualize o código que lê o payload seguindo o de-para acima e as referências de **[Eventos de Venda](/webhooks/v2)** e **[Carrinho Abandonado](/webhooks/abandoned-cart-v2)**.
+  </Step>
+  <Step title="Valide em paralelo">
+    Rode as duas versões lado a lado por um período, confira que a 2.0 chega correta, e só então desative a 1.0.
+  </Step>
+</Steps>
+
+<Warning>
+  Não desative a 1.0 antes de confirmar que a 2.0 está sendo recebida e processada corretamente. Assim você não perde nenhum evento na transição.
+</Warning>
