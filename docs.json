@@ -85,11 +85,23 @@
           {
             "group": "Referência de eventos",
             "pages": [
-              "webhooks/new-affiliation",
-              "webhooks/v1",
               "webhooks/v2",
-              "webhooks/abandoned-cart-v1",
-              "webhooks/abandoned-cart-v2"
+              "webhooks/abandoned-cart-v2",
+              "webhooks/new-affiliation"
+            ]
+          },
+          {
+            "group": "Migração",
+            "pages": [
+              "webhooks/migracao"
+            ]
+          },
+          {
+            "group": "Descontinuado (1.0)",
+            "tag": "Descontinuado",
+            "pages": [
+              "webhooks/v1",
+              "webhooks/abandoned-cart-v1"
             ]
           }
         ]
