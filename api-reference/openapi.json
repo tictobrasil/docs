@@ -253,6 +253,36 @@
         }
       }
     },
+    "/api/v2/subscriptions/{id}/cancel": {
+      "post": {
+        "tags": ["Assinaturas"],
+        "summary": "Cancelar assinatura",
+        "description": "Cancela uma assinatura. **Ação irreversível.**\n\nO `id` é o único ponto de cancelamento: não existe cancelar por cliente, por produto ou em lote.\n\nQuando o cancelamento passa a valer:\n\n| Situação da assinatura | `effective` | O que acontece |\n| --- | --- | --- |\n| Próxima cobrança no futuro | `end_of_paid_period` | O comprador mantém o acesso até o fim do período que já pagou. Nenhuma cobrança nova é feita. |\n| Assinatura vencida | `immediate` | O cancelamento vale na hora. |\n\nEscopo: `subscriptions:cancel`. Exige `Idempotency-Key`.\n\n<Warning>\n  O escopo `subscriptions:cancel` **não** é concedido por um token com escopo curinga. Ele precisa ser pedido nominalmente na emissão do token.\n</Warning>\n\nRestrições: assinaturas de parcelamento inteligente e de boleto parcelado não podem ser canceladas por aqui (`422`). Assinatura já cancelada também responde `422`.\n\nLimites desta rota, mais estreitos que os do resto da API: **5 requisições por minuto** e **50 por dia**. Além disso, um token que acumula muitas respostas `404` (busca por `id` que não existe ou não é seu) é bloqueado temporariamente nesta rota.",
+        "operationId": "cancelSubscription",
+        "security": [{ "bearerAuth": ["subscriptions:cancel"] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" }, "description": "ID da assinatura a cancelar." },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Assinatura cancelada.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SubscriptionCanceled" },
+                "example": { "id": 84213, "canceled_at": "2026-08-19T23:59:59-03:00", "effective": "end_of_paid_period" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/IdempotencyRequired" },
+          "422": { "$ref": "#/components/responses/ValidationError" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
     "/api/v2/cashouts/history": {
       "get": {
         "tags": ["Saques"],
@@ -683,6 +713,16 @@
           "created_at": "01/04/2026 09:12:00", "updated_at": "01/06/2026 09:12:05"
         }
       },
+      "SubscriptionCanceled": {
+        "type": "object",
+        "description": "Resultado do cancelamento (`POST /subscriptions/{id}/cancel`).",
+        "properties": {
+          "id": { "type": "integer", "description": "ID da assinatura cancelada." },
+          "canceled_at": { "type": "string", "nullable": true, "description": "Quando o cancelamento passa a valer, em ISO 8601." },
+          "effective": { "type": "string", "enum": ["immediate", "end_of_paid_period"], "description": "`immediate`: valeu na hora. `end_of_paid_period`: o comprador mantém o acesso até o fim do período já pago." }
+        },
+        "example": { "id": 84213, "canceled_at": "2026-08-19T23:59:59-03:00", "effective": "end_of_paid_period" }
+      },
       "CashoutItem": {
         "type": "object",
         "description": "Um item do histórico de saques (`GET /cashouts/history`). Origem: Smaug (via Phoenix).",
@@ -810,6 +850,10 @@
       "IdempotencyRequired": {
         "description": "Operação de escrita sem o header `Idempotency-Key`.",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" }, "example": { "error": "idempotency_key_required", "message": "POST requests must include an Idempotency-Key header.", "request_id": null } } }
+      },
+      "TooManyRequests": {
+        "description": "Limite excedido. O header `Retry-After` traz em quantos segundos tentar de novo. Também é a resposta quando o token é bloqueado por acumular buscas por `id` inexistente.",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" }, "example": { "error": "too_many_requests", "message": "Too many failed lookups on this endpoint. The token is temporarily blocked.", "request_id": null } } }
       }
     }
   }

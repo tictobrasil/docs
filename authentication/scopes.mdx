@@ -16,11 +16,24 @@ Escopos definem exatamente o que um token pode fazer. Ao criar um token, você e
 | `offers:write` | Criar ofertas |
 | `orders:read` | Listar, resumir e visualizar seus pedidos |
 | `subscriptions:read` | Listar, resumir e visualizar suas assinaturas |
+| `subscriptions:cancel` | **Cancelar assinaturas.** Destrutivo e irreversível |
 | `cashouts:read` | Listar, resumir e visualizar seus saques (dado financeiro) |
 
 <Note>
   `cashouts:read` dá acesso a dado financeiro (saques). Conceda-o apenas a tokens que realmente precisem, de preferência em um token separado dos demais.
 </Note>
+
+<Warning>
+  `subscriptions:cancel` é o único escopo destrutivo da API: ele cancela assinaturas de verdade, e não há como desfazer.
+
+  Por isso ele é tratado de forma diferente dos demais:
+
+  - **Nunca vem junto.** Um token com escopo amplo não recebe `subscriptions:cancel` por tabela. Ele precisa ser pedido nominalmente na criação do token.
+  - **Limites próprios.** A rota de cancelamento aceita 5 requisições por minuto e 50 por dia, bem abaixo do resto da API.
+  - **Proteção contra varredura.** Um token que acumula respostas `404` nessa rota (tentando `id` que não existe ou não é seu) é bloqueado temporariamente nela.
+
+  Recomendação: mantenha o cancelamento em um token separado, usado só por esse fluxo.
+</Warning>
 
 ## Quais escopos cada endpoint exige
 
@@ -34,6 +47,7 @@ Escopos definem exatamente o que um token pode fazer. Ao criar um token, você e
 | `/products/{hash}/offers` | `POST` | `offers:write` |
 | `/orders/history` · `/orders/summary` · `/orders/{hash}` | `GET` | `orders:read` |
 | `/subscriptions/history` · `/subscriptions/summary` · `/subscriptions/{id}` | `GET` | `subscriptions:read` |
+| `/subscriptions/{id}/cancel` | `POST` | `subscriptions:cancel` |
 | `/cashouts/history` · `/cashouts/summary` · `/cashouts/{id}` | `GET` | `cashouts:read` |
 
 <Tip>
