@@ -14,7 +14,24 @@ Os limites são **por minuto** e **por token**, com cotas separadas para leitura
 |-----------------|----------------------|
 | Leitura (`GET`) | 120 req/min por token |
 | Escrita (`POST`)| 30 req/min por token  |
+| Cancelamento de assinatura (`POST /subscriptions/{id}/cancel`) | 5 req/min **e** 50 req/dia por token |
 | Escopo          | Por token de API      |
+
+### Por que o cancelamento tem limite próprio
+
+Cancelar assinatura é irreversível, e o `id` da assinatura é o único parâmetro. Um limite folgado permitiria varrer `id` em busca de assinaturas de outras pessoas. Por isso a rota tem cota bem menor, com teto diário além do teto por minuto.
+
+Além da cota, existe uma proteção extra: um token que acumula respostas `404` nessa rota (tentando `id` que não existe ou não pertence a ele) é **bloqueado temporariamente na rota**, mesmo estando dentro do limite. Uma integração normal não é afetada, porque ela cancela assinaturas que ela mesma consultou antes.
+
+Nesse bloqueio a resposta usa o envelope padrão de erro da API:
+
+```json Resposta 429 por varredura de id
+{
+  "error": "too_many_requests",
+  "message": "Too many failed lookups on this endpoint. The token is temporarily blocked.",
+  "request_id": "req_xxx"
+}
+```
 
 ## Headers de rate limit
 
