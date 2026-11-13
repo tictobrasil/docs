@@ -30,6 +30,7 @@ Cada área tem uma permissão de leitura e, quando existe escrita, uma de escrit
 | **Assinaturas** | `subscriptions:read` | Lista, totais, detalhe e histórico de assinaturas, inclusive por produto (período e oferta) |
 | **Cancelar assinaturas** | `subscriptions:cancel` | Cancelar uma assinatura pelo id. Começa **desmarcado** e o agente confirma com você antes de cada cancelamento. |
 | **Produtos** | `products:read`, `products:write` | Produtos, ofertas, checkouts, cupons, funis e lotes |
+| **Excluir produtos, ofertas, cupons e checkouts** | `products:delete` | Exclusões. Começa **desmarcado** e o agente confirma com você antes de cada exclusão. |
 | **Relatórios** | `reports:read` | Dashboard, Smart Advanced e Smart Source |
 | **Financeiro** | `finance:read` | Saldo, extrato e saques dos últimos 3 meses |
 | **Webhooks** | `webhooks:read`, `webhooks:write` | Webhooks e pastas de webhooks |
@@ -58,6 +59,6 @@ Em Ferramentas MCP, as ferramentas de cada área ficam em três grupos, com o ri
 |---|---|---|
 | **Leitura** | Baixo | Listar produtos, ver detalhe do pedido, ver saldo |
 | **Criação e alteração** | Médio | Criar oferta, criar cupom, atualizar lote |
-| **Exclusão e ações irreversíveis** | Alto | Cancelar assinatura, excluir produto, publicar agente |
+| **Exclusão e ações irreversíveis** | Alto | Cancelar assinatura, excluir produto ou cupom, publicar agente |
 
 Ações irreversíveis exigem confirmação: o agente precisa perguntar a você antes e enviar `confirm=true`. Sem isso, o servidor não executa.

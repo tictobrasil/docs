@@ -11,11 +11,13 @@
   ],
   "security": [{ "bearerAuth": [] }],
   "tags": [
-    { "name": "Produtos", "description": "Criação e leitura de produtos." },
-    { "name": "Ofertas", "description": "Criação e leitura de ofertas de um produto." },
+    { "name": "Produtos", "description": "Criação, edição, análise, tags e exclusão de produtos." },
+    { "name": "Ofertas", "description": "Criação, edição, ordem e exclusão de ofertas de um produto." },
     { "name": "Pedidos", "description": "Leitura de pedidos (paridade com a API v1)." },
     { "name": "Assinaturas", "description": "Leitura de assinaturas (paridade com a API v1)." },
-    { "name": "Saques", "description": "Leitura de saques/cashouts (paridade com a API v1)." }
+    { "name": "Saques", "description": "Leitura de saques/cashouts (paridade com a API v1)." },
+    { "name": "Cupons", "description": "Cupons de desconto de um produto." },
+    { "name": "Checkouts", "description": "Templates de checkout de um produto." }
   ],
   "paths": {
     "/api/v2/products": {
@@ -65,6 +67,108 @@
       }
     },
     "/api/v2/products/{hash}": {
+      "put": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Atualiza o produto",
+        "description": "Atualiza o produto (nome e descrição só em rascunho ou correção pendente). body: o objeto COMPLETO (leia antes com o get e altere so o que precisa). Campos de afiliado são mantidos. Escopo: `products:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "updateProduct",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Exclui o produto",
+        "description": "Exclui o produto (só em rascunho; os demais: desative e oculte). Escopo: `products:delete` (destrutivo: nunca concedido pelo curinga). Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "deleteProduct",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:delete"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
       "get": {
         "tags": ["Produtos"],
         "summary": "Buscar produto",
@@ -132,6 +236,114 @@
       }
     },
     "/api/v2/products/{hash}/offers/{code}": {
+      "put": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Atualiza a oferta",
+        "description": "Atualiza a oferta. body: o objeto COMPLETO (leia antes com o get e altere so o que precisa). Afiliados e a turma vinculada são mantidos. Escopo: `offers:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "updateOffer",
+        "security": [
+          {
+            "bearerAuth": [
+              "offers:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/OfferCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Exclui a oferta",
+        "description": "Exclui a oferta. Escopo: `products:delete` (destrutivo: nunca concedido pelo curinga). Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "deleteOffer",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:delete"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/OfferCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
       "get": {
         "tags": ["Ofertas"],
         "summary": "Buscar oferta",
@@ -331,6 +543,1461 @@
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
+    },
+    "/api/v2/products/{hash}/toggle": {
+      "post": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Ativa/desativa o produto",
+        "description": "Ativa/desativa o produto. Escopo: `products:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "toggleProduct",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdempotencyRequired"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/toggle-hidden": {
+      "post": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Oculta/mostra o produto",
+        "description": "Oculta/mostra o produto. Escopo: `products:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "toggleProductHidden",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdempotencyRequired"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/review": {
+      "get": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Status da análise e motivo da reprovação",
+        "description": "Status da análise e motivo da reprovação. Escopo: `products:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "getProductReview",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Envia o produto para análise",
+        "description": "Envia o produto para análise. Escopo: `products:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "submitProductReview",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdempotencyRequired"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/dashboard": {
+      "get": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Métricas do produto",
+        "description": "Métricas do produto. Escopo: `products:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "getProductDashboard",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "Filtros (ex.: `filter[betweenDates]=dd/mm/aaaa,dd/mm/aaaa`).",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/api/v2/product-categories": {
+      "get": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Categorias aceitas no cadastro",
+        "description": "Categorias aceitas no cadastro. Escopo: `products:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "listProductCategories",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:read"
+            ]
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/api/v2/product-types": {
+      "get": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Tipos de produto aceitos no cadastro",
+        "description": "Tipos de produto aceitos no cadastro. Escopo: `products:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "listProductTypes",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:read"
+            ]
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/api/v2/product-tags": {
+      "get": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Tags de produto do produtor",
+        "description": "Tags de produto do produtor. Escopo: `products:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "listProductTags",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:read"
+            ]
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Cria tag",
+        "description": "Cria tag. body: name, color. Escopo: `products:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "createProductTag",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdempotencyRequired"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/product-tags/{tag}": {
+      "put": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Atualiza tag",
+        "description": "Atualiza tag. body: name, color. Escopo: `products:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "updateProductTag",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TagId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Produtos"
+        ],
+        "summary": "Exclui a tag",
+        "description": "Exclui a tag. Escopo: `products:delete` (destrutivo: nunca concedido pelo curinga). Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "deleteProductTag",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:delete"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TagId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/offers/order": {
+      "put": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Reordena as ofertas",
+        "description": "Reordena as ofertas. body: order = [reference_id das ofertas na ordem]. Escopo: `offers:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "reorderOffers",
+        "security": [
+          {
+            "bearerAuth": [
+              "offers:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/offers/{code}/toggle": {
+      "post": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Ativa/desativa a oferta",
+        "description": "Ativa/desativa a oferta. Escopo: `offers:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "toggleOffer",
+        "security": [
+          {
+            "bearerAuth": [
+              "offers:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/OfferCode"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdempotencyRequired"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/offers/{code}/hide": {
+      "post": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Oculta/mostra a oferta",
+        "description": "Oculta/mostra a oferta. Escopo: `offers:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "hideOffer",
+        "security": [
+          {
+            "bearerAuth": [
+              "offers:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/OfferCode"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdempotencyRequired"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/offers/{code}/history": {
+      "get": {
+        "tags": [
+          "Ofertas"
+        ],
+        "summary": "Histórico de alterações da oferta",
+        "description": "Histórico de alterações da oferta. Escopo: `offers:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "getOfferHistory",
+        "security": [
+          {
+            "bearerAuth": [
+              "offers:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/OfferCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/api/v2/coupons/usage": {
+      "get": {
+        "tags": [
+          "Cupons"
+        ],
+        "summary": "Uso de cupons do produto",
+        "description": "Uso de cupons do produto. query: product (hash), filter[betweenDates] (últimos 3 meses). Escopo: `coupons:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "getCouponsUsage",
+        "security": [
+          {
+            "bearerAuth": [
+              "coupons:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "Filtros (ex.: `filter[betweenDates]=dd/mm/aaaa,dd/mm/aaaa`).",
+            "schema": {
+              "type": "object"
+            }
+          },
+          {
+            "name": "product",
+            "in": "query",
+            "required": true,
+            "description": "Hash do produto.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/coupons": {
+      "get": {
+        "tags": [
+          "Cupons"
+        ],
+        "summary": "Lista os cupons do produto",
+        "description": "Lista os cupons do produto. Escopo: `coupons:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "listCoupons",
+        "security": [
+          {
+            "bearerAuth": [
+              "coupons:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "Filtros (ex.: `filter[betweenDates]=dd/mm/aaaa,dd/mm/aaaa`).",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cupons"
+        ],
+        "summary": "Cria cupom",
+        "description": "Cria cupom. body: name (código), discount (%) OU fixed_discount (centavos) + application_method, offer_ids (reference_id das ofertas), usage_limit, start e end (dd/MM/yyyy HH:mm:ss), is_active. Escopo: `coupons:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "createCoupon",
+        "security": [
+          {
+            "bearerAuth": [
+              "coupons:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdempotencyRequired"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/coupons/{coupon}": {
+      "get": {
+        "tags": [
+          "Cupons"
+        ],
+        "summary": "Detalhe do cupom",
+        "description": "Detalhe do cupom. Escopo: `coupons:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "getCoupon",
+        "security": [
+          {
+            "bearerAuth": [
+              "coupons:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/CouponId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Cupons"
+        ],
+        "summary": "Atualiza/ativa/desativa o cupom",
+        "description": "Atualiza/ativa/desativa o cupom. body: campos do cupom. Escopo: `coupons:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "updateCoupon",
+        "security": [
+          {
+            "bearerAuth": [
+              "coupons:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/CouponId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Cupons"
+        ],
+        "summary": "Exclui o cupom",
+        "description": "Exclui o cupom. Escopo: `products:delete` (destrutivo: nunca concedido pelo curinga). Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "deleteCoupon",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:delete"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/CouponId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/checkouts": {
+      "get": {
+        "tags": [
+          "Checkouts"
+        ],
+        "summary": "Lista os checkouts do produto",
+        "description": "Lista os checkouts do produto. Escopo: `checkouts:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "listCheckouts",
+        "security": [
+          {
+            "bearerAuth": [
+              "checkouts:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "Filtros (ex.: `filter[betweenDates]=dd/mm/aaaa,dd/mm/aaaa`).",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Checkouts"
+        ],
+        "summary": "Cria checkout",
+        "description": "Cria checkout. body: name, theme_settings, offers = [{id, name}] (cada oferta só em um checkout), bumps = [{product_id, offers: [{id}]}], upsell, opções de pedido de dados. Mais simples: duplicate_checkout e editar. Escopo: `checkouts:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "createCheckout",
+        "security": [
+          {
+            "bearerAuth": [
+              "checkouts:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdempotencyRequired"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/checkouts/{checkout}": {
+      "get": {
+        "tags": [
+          "Checkouts"
+        ],
+        "summary": "Detalhe do checkout",
+        "description": "Detalhe do checkout (config, bumps, upsell, tema). Escopo: `checkouts:read`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "getCheckout",
+        "security": [
+          {
+            "bearerAuth": [
+              "checkouts:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/CheckoutUuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Checkouts"
+        ],
+        "summary": "Atualiza o checkout",
+        "description": "Atualiza o checkout. body: o objeto COMPLETO (leia antes com o get e altere so o que precisa). Escopo: `checkouts:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "updateCheckout",
+        "security": [
+          {
+            "bearerAuth": [
+              "checkouts:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/CheckoutUuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Checkouts"
+        ],
+        "summary": "Exclui o checkout",
+        "description": "Exclui o checkout. Escopo: `products:delete` (destrutivo: nunca concedido pelo curinga). Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "deleteCheckout",
+        "security": [
+          {
+            "bearerAuth": [
+              "products:delete"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/CheckoutUuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/api/v2/products/{hash}/checkouts/{checkout}/duplicate": {
+      "post": {
+        "tags": [
+          "Checkouts"
+        ],
+        "summary": "Duplica o checkout",
+        "description": "Duplica o checkout. Escopo: `checkouts:write`. Retorna `404` se o recurso não for do produtor autenticado.",
+        "operationId": "duplicateCheckout",
+        "security": [
+          {
+            "bearerAuth": [
+              "checkouts:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductHash"
+          },
+          {
+            "$ref": "#/components/parameters/CheckoutUuid"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta da Ticto (mesmo formato do painel).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "400": {
+            "$ref": "#/components/responses/IdempotencyRequired"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -342,6 +2009,10 @@
       }
     },
     "parameters": {
+      "OfferCode": {"name": "code", "in": "path", "required": true, "description": "Código da oferta (ex.: `O7DD302CE`).", "schema": {"type": "string"}},
+      "CouponId": {"name": "coupon", "in": "path", "required": true, "description": "Id do cupom.", "schema": {"type": "integer"}},
+      "CheckoutUuid": {"name": "checkout", "in": "path", "required": true, "description": "UUID do checkout.", "schema": {"type": "string", "format": "uuid"}},
+      "TagId": {"name": "tag", "in": "path", "required": true, "description": "Id da tag de produto.", "schema": {"type": "integer"}},
       "IdempotencyKey": {
         "name": "Idempotency-Key",
         "in": "header",

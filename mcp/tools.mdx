@@ -4,10 +4,10 @@ sidebarTitle: "Catálogo de ferramentas"
 description: "Todas as tools do MCP da Ticto: as da API v2, que são o padrão, e as do painel, com o tipo e a permissão de cada uma."
 ---
 
-O MCP tem **44 tools** com **195 ações**, em dois grupos:
+O MCP tem **70 tools** com **190 ações**, em dois grupos:
 
-- **Tools da API v2** (16): produtos, ofertas, pedidos, assinaturas e saques. São o padrão: cada tool é um endpoint da [API v2](/introduction), executado pela Ticto com as permissões da sua conexão. O agente prefere estas quando elas resolvem o pedido.
-- **Tools do painel** (28): o resto do que você faz no painel (checkout, cupons, funis, eventos, relatórios Smart, financeiro, webhooks, integrações, área de membros e agentes de IA). Cada uma agrupa várias ações no argumento `action`. Elas saem do MCP à medida que a API v2 passa a cobrir cada área.
+- **Tools da API v2** (47): produtos, ofertas, cupons, checkouts, pedidos, assinaturas e saques. São o padrão: cada tool é um endpoint da [API v2](/introduction), executado pela Ticto com as permissões da sua conexão. O agente prefere estas quando elas resolvem o pedido.
+- **Tools do painel** (23): o que a API v2 ainda não cobre (funis, eventos, relatórios, financeiro, webhooks, integrações, área de membros, agentes de IA, e a criação de produto e oferta com tipos especiais). Cada uma agrupa várias ações no argumento `action`. Elas saem do MCP à medida que a API v2 passa a cobrir cada área.
 
 O agente só recebe as tools das áreas liberadas e das ações ligadas para aquela conexão em [Ferramentas MCP](/mcp/manage). A descrição completa de cada tool, com os campos aceitos, vem na própria tool, na lista que o servidor entrega ao agente.
 
@@ -29,9 +29,35 @@ Cada tool recebe os ids da rota (`hash`, `code`, `id`) como argumentos, os filtr
 | `list_products` | — | Listar produtos | Leitura | Produtos |
 | `get_product` | — | Ver detalhe do produto | Leitura | Produtos |
 | `create_product` | — | Criar produto | Criação e alteração | Produtos |
+| `update_product` | — | Atualizar produto | Irreversível (pede confirmação) | Produtos |
+| `toggle_product` | — | Ativar/desativar o produto | Criação e alteração | Produtos |
+| `toggle_product_hidden` | — | Ocultar/mostrar o produto | Criação e alteração | Produtos |
+| `get_product_review` | — | Ver status da análise e motivo da reprovação | Leitura | Produtos |
+| `submit_product_review` | — | Enviar o produto para análise | Criação e alteração | Produtos |
+| `get_product_dashboard` | — | Ver métricas do produto | Leitura | Produtos |
+| `delete_product` | — | Excluir o produto | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons e checkouts) |
+| `list_product_categories` | — | Ver categorias aceitas no cadastro | Leitura | Produtos |
+| `list_product_types` | — | Ver tipos de produto aceitos no cadastro | Leitura | Produtos |
+| `list_product_tags` | — | Ver tags de produto | Leitura | Produtos |
+| `create_product_tag` | — | Criar tag | Criação e alteração | Produtos |
+| `update_product_tag` | — | Atualizar tag | Criação e alteração | Produtos |
+| `delete_product_tag` | — | Excluir tag | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons e checkouts) |
+
+</Accordion>
+
+<Accordion title="Ofertas" icon="sparkles">
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
 | `list_offers` | — | Listar ofertas do produto | Leitura | Produtos |
 | `get_offer` | — | Ver detalhe da oferta | Leitura | Produtos |
 | `create_offer` | — | Criar oferta | Criação e alteração | Produtos |
+| `reorder_offers` | — | Reordenar ofertas | Criação e alteração | Produtos |
+| `update_offer` | — | Atualizar oferta | Irreversível (pede confirmação) | Produtos |
+| `toggle_offer` | — | Ativar/desativar a oferta | Criação e alteração | Produtos |
+| `hide_offer` | — | Ocultar/mostrar a oferta | Criação e alteração | Produtos |
+| `get_offer_history` | — | Ver histórico de alterações da oferta | Leitura | Produtos |
+| `delete_offer` | — | Excluir a oferta | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons e checkouts) |
 
 </Accordion>
 
@@ -66,6 +92,32 @@ Cada tool recebe os ids da rota (`hash`, `code`, `id`) como argumentos, os filtr
 
 </Accordion>
 
+<Accordion title="Cupons" icon="sparkles">
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `get_coupons_usage` | — | Ver uso de cupons | Leitura | Produtos |
+| `list_coupons` | — | Listar cupons | Leitura | Produtos |
+| `create_coupon` | — | Criar cupom | Criação e alteração | Produtos |
+| `get_coupon` | — | Ver detalhe do cupom | Leitura | Produtos |
+| `update_coupon` | — | Atualizar cupom | Irreversível (pede confirmação) | Produtos |
+| `delete_coupon` | — | Excluir o cupom | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons e checkouts) |
+
+</Accordion>
+
+<Accordion title="Checkouts" icon="sparkles">
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `list_checkouts` | — | Listar checkouts | Leitura | Produtos |
+| `create_checkout` | — | Criar checkout | Irreversível (pede confirmação) | Produtos |
+| `get_checkout` | — | Ver detalhe do checkout | Leitura | Produtos |
+| `update_checkout` | — | Atualizar checkout | Irreversível (pede confirmação) | Produtos |
+| `duplicate_checkout` | — | Duplicar o checkout | Criação e alteração | Produtos |
+| `delete_checkout` | — | Excluir o checkout | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons e checkouts) |
+
+</Accordion>
+
 </AccordionGroup>
 
 ## Tools do painel
@@ -84,23 +136,7 @@ Produtos do produtor: cadastro, status de análise, dashboard e tags. \{product\
 
 | Tool | `action` | O que faz | Tipo | Permissão |
 |---|---|---|---|---|
-| `products_read` | `list` | Listar produtos | Leitura | Produtos |
-| `products_read` | `options` | Listar produtos (resumo) | Leitura | Produtos |
-| `products_read` | `get` | Ver detalhe do produto | Leitura | Produtos |
-| `products_read` | `categories` | Ver categorias aceitas no cadastro | Leitura | Produtos |
-| `products_read` | `types` | Ver tipos de produto aceitos no cadastro | Leitura | Produtos |
-| `products_read` | `review_status` | Ver status da análise e motivo da reprovação | Leitura | Produtos |
-| `products_read` | `dashboard` | Ver métricas do produto | Leitura | Produtos |
-| `products_read` | `tags` | Ver tags de produto do produtor | Leitura | Produtos |
 | `products_write` | `create` | Criar produto | Criação e alteração | Produtos |
-| `products_write` | `update` | Atualizar produto | Irreversível (pede confirmação) | Produtos |
-| `products_write` | `toggle` | Ativar/desativar o produto | Criação e alteração | Produtos |
-| `products_write` | `submit_review` | Enviar o produto para análise | Criação e alteração | Produtos |
-| `products_write` | `toggle_hidden` | Ocultar/mostrar o produto | Criação e alteração | Produtos |
-| `products_write` | `delete` | Excluir o produto | Irreversível (pede confirmação) | Produtos |
-| `products_write` | `create_tag` | Criar tag | Criação e alteração | Produtos |
-| `products_write` | `update_tag` | Atualizar tag | Criação e alteração | Produtos |
-| `products_write` | `delete_tag` | Excluir tag | Irreversível (pede confirmação) | Produtos |
 
 </Accordion>
 
@@ -110,46 +146,8 @@ Ofertas (preço, parcelas, assinatura) de um produto. \{product\} = id do produt
 
 | Tool | `action` | O que faz | Tipo | Permissão |
 |---|---|---|---|---|
-| `offers_read` | `list` | Listar ofertas do produto | Leitura | Produtos |
-| `offers_read` | `get` | Ver detalhe da oferta | Leitura | Produtos |
-| `offers_read` | `history` | Ver histórico de alterações da oferta | Leitura | Produtos |
 | `offers_read` | `interest_preview` | Simular parcelas e juros no cartão | Leitura | Produtos |
 | `offers_write` | `create` | Criar oferta | Criação e alteração | Produtos |
-| `offers_write` | `update` | Atualizar oferta | Irreversível (pede confirmação) | Produtos |
-| `offers_write` | `toggle` | Ativar/desativar a oferta | Criação e alteração | Produtos |
-| `offers_write` | `hide` | Ocultar/mostrar a oferta | Criação e alteração | Produtos |
-| `offers_write` | `reorder` | Reordenar ofertas | Criação e alteração | Produtos |
-| `offers_write` | `delete` | Excluir a oferta | Irreversível (pede confirmação) | Produtos |
-
-</Accordion>
-
-<Accordion title="Checkouts" icon="wrench">
-
-Checkouts de um produto. \{product\} = id do produto, \{checkout\} = uuid do checkout.
-
-| Tool | `action` | O que faz | Tipo | Permissão |
-|---|---|---|---|---|
-| `checkouts_read` | `list` | Listar checkouts | Leitura | Produtos |
-| `checkouts_read` | `get` | Ver detalhe do checkout | Leitura | Produtos |
-| `checkouts_write` | `create` | Criar checkout | Irreversível (pede confirmação) | Produtos |
-| `checkouts_write` | `update` | Atualizar checkout | Irreversível (pede confirmação) | Produtos |
-| `checkouts_write` | `duplicate` | Duplicar o checkout | Criação e alteração | Produtos |
-| `checkouts_write` | `delete` | Excluir o checkout | Irreversível (pede confirmação) | Produtos |
-
-</Accordion>
-
-<Accordion title="Cupons" icon="wrench">
-
-Cupons de desconto de um produto. \{product\} = id do produto, \{coupon\} = id do cupom. usage_limit = limite de usos, used_times = usos já feitos (pedidos pagos ou aguardando pagamento), remaining = usos restantes. Cupom só vale no checkout: a cobrança direta da API não aplica cupom.
-
-| Tool | `action` | O que faz | Tipo | Permissão |
-|---|---|---|---|---|
-| `coupons_read` | `list` | Listar cupons | Leitura | Produtos |
-| `coupons_read` | `get` | Ver detalhe do cupom | Leitura | Produtos |
-| `coupons_read` | `usage` | Ver uso de cupons | Leitura | Produtos |
-| `coupons_write` | `create` | Criar cupom | Criação e alteração | Produtos |
-| `coupons_write` | `update` | Atualizar cupom | Irreversível (pede confirmação) | Produtos |
-| `coupons_write` | `delete` | Excluir o cupom | Irreversível (pede confirmação) | Produtos |
 
 </Accordion>
 
@@ -210,7 +208,7 @@ Relatório de vendas (comissões), pedidos e recuperação de vendas. Só leitur
 
 <Accordion title="Relatório de assinaturas" icon="wrench">
 
-Relatório de assinaturas dos compradores. Só leitura. \{subscription\} = id da assinatura. CANCELAR, TROCAR PLANO ou UPGRADE/DOWNGRADE não são feitos pelo MCP: oriente o produtor a usar a API Pública v2 da Ticto (cancelamento: POST /api/v2/subscriptions/\{id\}/cancel com token v2 de escopo subscriptions:cancel e header Idempotency-Key; tokens em Integrações → Tokens da API → API v2 no painel). Troca de plano/upgrade/downgrade ainda não têm endpoint na API: hoje o próprio assinante faz pelo link de gestão da assinatura. Reembolso nunca é feito pelo MCP.
+Assinaturas por produto (período e oferta). Lista, totais e detalhe de assinatura: tools subscriptions_history, subscriptions_summary e get_subscription. CANCELAR: tool cancel_subscription (permissão própria, confirm=true). TROCAR PLANO ou UPGRADE/DOWNGRADE não têm endpoint: o próprio assinante faz pelo link de gestão da assinatura. Reembolso nunca é feito pelo MCP.
 
 | Tool | `action` | O que faz | Tipo | Permissão |
 |---|---|---|---|---|
