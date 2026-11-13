@@ -34,11 +34,11 @@ Na escrita, valor mascarado nunca é gravado. Ao editar um registro completo (ex
 
 ## Ações irreversíveis
 
-Exclusões e ações que não dá para desfazer (ex.: excluir produto, publicar agente, convidar participante, enviar e-mail para todos) exigem `confirm=true`. O agente deve perguntar a você antes; sem a confirmação, o servidor não executa nada.
+Exclusões e ações que não dá para desfazer (ex.: cancelar assinatura, excluir produto, publicar agente, convidar participante, enviar e-mail para todos) exigem `confirm=true`. O agente deve perguntar a você antes; sem a confirmação, o servidor não executa nada.
 
 ## Seus dados, só os seus
 
-Cada id enviado pelo agente (produto, oferta, cupom, turma, webhook...) é conferido antes da ação: se não for da sua conta, a chamada é recusada antes de chegar ao painel. O agente também só age no time que você escolheu ao autorizar.
+Nas tools da API v2, o produtor vem da conexão e nunca do pedido: todo registro é buscado dentro da sua conta, e o que não for seu responde `404`. Nas tools do painel, cada id enviado pelo agente (produto, oferta, cupom, turma, webhook...) é conferido antes da ação: se não for da sua conta, a chamada é recusada antes de chegar ao painel.
 
 ## Política de Produtos Proibidos
 
@@ -52,9 +52,10 @@ Quando uma ação falha, a tool devolve o resultado com `isError: true` e a mens
 |---|---|
 | Sem permissão no painel | O mesmo `403` que o painel daria |
 | Ferramenta desligada por você | Aviso de que a ferramenta foi desligada em Ferramentas MCP |
-| MCP pausado por você | Aviso de que o MCP está pausado |
+| MCP ou o agente pausado por você | Aviso de que o MCP ou a conexão está pausada |
+| Agente desconectado por você | `401`: o agente precisa autorizar de novo |
 | MCP desligado pela Ticto (manutenção ou incidente) | "O MCP da Ticto está temporariamente desligado. Use o painel." |
-| Área não liberada | A tool não existe para o agente (`Unknown tool`) |
+| Área não liberada para o agente | A tool não existe para ele (`Unknown tool`) |
 
 ## Auditoria
 

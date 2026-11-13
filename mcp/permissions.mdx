@@ -1,20 +1,22 @@
 ---
 title: "Permissões do MCP"
 sidebarTitle: "Permissões"
-description: "Como as permissões do MCP funcionam: as áreas da tela de autorização, o controle fino em Ferramentas MCP e o limite do seu perfil no painel."
+description: "Como as permissões do MCP funcionam: cada agente conectado tem as próprias permissões, escolhidas na autorização e ajustadas em Ferramentas MCP."
 ---
 
-O acesso do agente passa por **três camadas**. Cada uma só restringe a anterior; nenhuma dá mais do que você pode fazer no painel.
+Cada agente que você conecta (Claude, ChatGPT, Cursor...) vira uma **conexão** com as **próprias permissões**. O que você libera para um agente não vale para os outros.
+
+O acesso de cada conexão passa por **três camadas**, e cada uma só restringe a anterior:
 
 <Steps>
-  <Step title="Seu perfil no painel (o teto)">
-    O agente age como **você**, no time escolhido. Se você é colaborador com acesso só a alguns produtos, o agente também só vê esses produtos. O que o painel nega, o MCP nega com o mesmo erro.
+  <Step title="O dono do time (o teto)">
+    Só o **dono do time** conecta agentes, e o agente age como ele. Colaboradores não conectam: a tela de autorização avisa e pede para o dono fazer a conexão.
   </Step>
-  <Step title="Áreas liberadas">
-    Na tela **Autorizar acesso** você escolhe as áreas. Depois, em **Ferramentas MCP**, pode liberar ou fechar áreas a qualquer momento, sem reconectar.
+  <Step title="Áreas liberadas para o agente">
+    Na tela **Autorizar acesso** você escolhe as áreas daquele agente. Depois, em **Ferramentas MCP**, pode liberar ou fechar áreas dele a qualquer momento, sem reconectar.
   </Step>
   <Step title="Ferramentas ligadas">
-    Dentro de cada área, em **Ferramentas MCP**, você liga e desliga ação por ação (ex.: deixa **Listar produtos** ligado e **Excluir o produto** desligado).
+    Dentro de cada área, em **Ferramentas MCP**, você liga e desliga ferramenta por ferramenta daquele agente (ex.: deixa **Listar produtos** ligado e **Excluir o produto** desligado).
   </Step>
 </Steps>
 
@@ -24,40 +26,38 @@ Cada área tem uma permissão de leitura e, quando existe escrita, uma de escrit
 
 | Área | Permissões | O que libera |
 |---|---|---|
-| **Pedidos** | `orders:read` | Vendas, pedidos e recuperação de vendas |
+| **Pedidos** | `orders:read` | Pedidos, vendas e recuperação de vendas |
 | **Assinaturas** | `subscriptions:read` | Lista, totais, detalhe e histórico de assinaturas, inclusive por produto (período e oferta) |
+| **Cancelar assinaturas** | `subscriptions:cancel` | Cancelar uma assinatura pelo id. Começa **desmarcado** e o agente confirma com você antes de cada cancelamento. |
 | **Produtos** | `products:read`, `products:write` | Produtos, ofertas, checkouts, cupons, funis e lotes |
 | **Relatórios** | `reports:read` | Dashboard, Smart Advanced e Smart Source |
-| **Financeiro** | `finance:read` | Saldo e extrato dos últimos 3 meses |
+| **Financeiro** | `finance:read` | Saldo, extrato e saques dos últimos 3 meses |
 | **Webhooks** | `webhooks:read`, `webhooks:write` | Webhooks e pastas de webhooks |
 | **Integrações** | `tools:read`, `tools:write` | Regras e segmentações das integrações já conectadas |
 | **Área de membros** | `members:read`, `members:write` | Portais, turmas, conteúdos, alunos e comentários |
 | **Agentes de IA** | `ai_agents:read`, `ai_agents:write` | Agentes, personas e conversas |
 
 <Note>
-  Uma área desmarcada some por inteiro: o agente não vê as ferramentas dela e, se tentar chamá-las, a chamada é recusada. Por exemplo, sem **Assinaturas** nenhuma ferramenta de assinatura funciona, nem a de assinaturas por produto.
+  Uma área desmarcada some por inteiro para aquele agente: ele não vê as ferramentas dela e, se tentar chamá-las, a chamada é recusada.
 </Note>
 
 ## Autorização e Ferramentas MCP conversam
 
-A tela de autorização define o **ponto de partida**. A tela **Ferramentas MCP** continua valendo depois:
+A tela de autorização define o **ponto de partida** de cada agente. A tela **Ferramentas MCP** continua valendo depois, agente por agente:
 
-- O que você **desmarcou na autorização** aparece **desligado** em Ferramentas MCP. Você pode ligar quando quiser, e a área passa a ser liberada na hora, sem reconectar o agente.
-- Se você **desligar todas as ações de uma área**, ela deixa de ser liberada.
-- Se você **autorizar de novo** marcando uma área que estava fechada, todas as ações dela voltam ligadas.
-
-<Warning>
-  As permissões são **por conta**, não por cliente. Se você conectou mais de um agente (ex.: Claude e Cursor), o que você liga ou desliga em Ferramentas MCP, e a última autorização que você der, valem para todos eles.
-</Warning>
+- O que você **desmarcou na autorização** aparece **desligado** para aquele agente em Ferramentas MCP. Você pode ligar quando quiser, e a área passa a ser liberada na hora, sem reconectar.
+- Se você **desligar todas as ferramentas de uma área**, ela deixa de ser liberada para aquele agente.
+- Se o agente **autorizar de novo**, as áreas que você marcar valem a partir dali; as ferramentas que você tinha desligado nele continuam desligadas.
+- Autorizar ou mudar as permissões de **um** agente nunca muda as dos outros.
 
 ## Tipos de ação
 
-Em Ferramentas MCP, as ações de cada área ficam em três grupos, com o risco indicado:
+Em Ferramentas MCP, as ferramentas de cada área ficam em três grupos, com o risco indicado:
 
 | Grupo | Risco | Exemplos |
 |---|---|---|
-| **Leitura** | Baixo | Listar produtos, ver detalhe da venda, ver saldo |
+| **Leitura** | Baixo | Listar produtos, ver detalhe do pedido, ver saldo |
 | **Criação e alteração** | Médio | Criar oferta, criar cupom, atualizar lote |
-| **Exclusão e ações irreversíveis** | Alto | Excluir produto, publicar agente, convidar participante |
+| **Exclusão e ações irreversíveis** | Alto | Cancelar assinatura, excluir produto, publicar agente |
 
 Ações irreversíveis exigem confirmação: o agente precisa perguntar a você antes e enviar `confirm=true`. Sem isso, o servidor não executa.

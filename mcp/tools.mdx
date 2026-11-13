@@ -1,33 +1,82 @@
 ---
 title: "Catálogo de ferramentas"
 sidebarTitle: "Catálogo de ferramentas"
-description: "Todas as tools do MCP da Ticto, com as ações de cada uma, o tipo e a permissão exigida."
+description: "Todas as tools do MCP da Ticto: as da API v2, que são o padrão, e as do painel, com o tipo e a permissão de cada uma."
 ---
 
-O MCP tem **32 tools** com **186 ações**. Cada recurso vira até duas tools: `{recurso}_read`, só com leitura, e `{recurso}_write`, com criação, alteração e exclusão. A ação vai no argumento `action`. Os ids (`product`, `offer`, `coupon`...) vão como argumentos com o mesmo nome.
+O MCP tem **44 tools** com **195 ações**, em dois grupos:
+
+- **Tools da API v2** (16): produtos, ofertas, pedidos, assinaturas e saques. São o padrão: cada tool é um endpoint da [API v2](/introduction), executado pela Ticto com as permissões da sua conexão. O agente prefere estas quando elas resolvem o pedido.
+- **Tools do painel** (28): o resto do que você faz no painel (checkout, cupons, funis, eventos, relatórios Smart, financeiro, webhooks, integrações, área de membros e agentes de IA). Cada uma agrupa várias ações no argumento `action`. Elas saem do MCP à medida que a API v2 passa a cobrir cada área.
+
+O agente só recebe as tools das áreas liberadas e das ações ligadas para aquela conexão em [Ferramentas MCP](/mcp/manage). A descrição completa de cada tool, com os campos aceitos, vem na própria tool, na lista que o servidor entrega ao agente.
+
+## Tools da API v2
+
+Cada tool recebe os ids da rota (`hash`, `code`, `id`) como argumentos, os filtros em `query` e, na criação, o corpo em `body`:
 
 ```json
-{ "name": "offers_read", "arguments": { "action": "list", "product": "46887" } }
+{ "name": "list_offers", "arguments": { "hash": "PA5DB5141" } }
+{ "name": "orders_history", "arguments": { "query": { "page": 2, "filter": { "status": "authorized" } } } }
 ```
-
-O agente só recebe as tools das áreas liberadas e das ações ligadas em [Ferramentas MCP](/mcp/manage). A descrição completa de cada ação, com os campos aceitos, vem na própria tool, na lista que o servidor entrega ao agente.
-
-<Info>
-  As quatro primeiras tools (`orders_summary`, `orders_history`, `subscriptions_summary`, `subscriptions_history`) são os resumos herdados da API v1 e recebem filtros diretos, sem `action`.
-</Info>
 
 <AccordionGroup>
 
-<Accordion title="Pedidos e assinaturas (resumo)" icon="wrench">
+<Accordion title="Produtos e ofertas" icon="sparkles">
 
 | Tool | `action` | O que faz | Tipo | Permissão |
 |---|---|---|---|---|
-| `orders_summary` | `—` | Resumo de vendas e comissões | Leitura | Pedidos |
-| `orders_history` | `—` | Histórico de pedidos | Leitura | Pedidos |
-| `subscriptions_summary` | `—` | Resumo de assinaturas | Leitura | Assinaturas |
-| `subscriptions_history` | `—` | Histórico de assinaturas | Leitura | Assinaturas |
+| `list_products` | — | Listar produtos | Leitura | Produtos |
+| `get_product` | — | Ver detalhe do produto | Leitura | Produtos |
+| `create_product` | — | Criar produto | Criação e alteração | Produtos |
+| `list_offers` | — | Listar ofertas do produto | Leitura | Produtos |
+| `get_offer` | — | Ver detalhe da oferta | Leitura | Produtos |
+| `create_offer` | — | Criar oferta | Criação e alteração | Produtos |
 
 </Accordion>
+
+<Accordion title="Pedidos" icon="sparkles">
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `orders_summary` | — | Resumo de vendas e comissões | Leitura | Pedidos |
+| `orders_history` | — | Histórico de pedidos | Leitura | Pedidos |
+| `get_order` | — | Ver detalhe do pedido | Leitura | Pedidos |
+
+</Accordion>
+
+<Accordion title="Assinaturas" icon="sparkles">
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `subscriptions_summary` | — | Resumo de assinaturas | Leitura | Assinaturas |
+| `subscriptions_history` | — | Histórico de assinaturas | Leitura | Assinaturas |
+| `get_subscription` | — | Ver detalhe da assinatura | Leitura | Assinaturas |
+| `cancel_subscription` | — | Cancelar assinatura | Irreversível (pede confirmação) | Cancelar assinaturas |
+
+</Accordion>
+
+<Accordion title="Saques" icon="sparkles">
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `cashouts_summary` | — | Resumo de saques | Leitura | Financeiro |
+| `cashouts_history` | — | Histórico de saques | Leitura | Financeiro |
+| `get_cashout` | — | Ver detalhe do saque | Leitura | Financeiro |
+
+</Accordion>
+
+</AccordionGroup>
+
+## Tools do painel
+
+Recurso com leitura vira `{recurso}_read`; com escrita, `{recurso}_write`. A ação vai em `action`:
+
+```json
+{ "name": "coupons_read", "arguments": { "action": "list", "product": "46887" } }
+```
+
+<AccordionGroup>
 
 <Accordion title="Produtos" icon="wrench">
 
@@ -165,9 +214,6 @@ Relatório de assinaturas dos compradores. Só leitura. \{subscription\} = id da
 
 | Tool | `action` | O que faz | Tipo | Permissão |
 |---|---|---|---|---|
-| `subscriptions_read` | `list` | Listar assinaturas | Leitura | Assinaturas |
-| `subscriptions_read` | `totals` | Ver totais das assinaturas | Leitura | Assinaturas |
-| `subscriptions_read` | `get` | Ver detalhe da assinatura | Leitura | Assinaturas |
 | `subscriptions_read` | `by_period` | Ver assinaturas do produto por período | Leitura | Assinaturas |
 | `subscriptions_read` | `by_offer` | Ver assinaturas do produto por oferta | Leitura | Assinaturas |
 

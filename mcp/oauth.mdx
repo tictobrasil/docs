@@ -98,7 +98,8 @@ https://<painel>/oauth/authorize
 ```
 
 - `scope` é opcional: sem ele, a tela oferece todas as [permissões](/mcp/permissions). Escopos que o MCP não conhece (ex.: `openid`, `offline_access`) são ignorados.
-- O usuário pode desmarcar áreas; o token sai só com o que ele marcou.
+- Só o dono do time autoriza. Colaborador recebe `403` com `error=owner_only` na tela.
+- O usuário pode desmarcar áreas. O que ele marcar vira a **conexão do seu cliente** (identificada pelo `client_id`), com permissões próprias. O claim `scp` do token mostra o que foi marcado na autorização; o que vale em cada chamada é a conexão, que o usuário pode ajustar depois em Ferramentas MCP.
 - Se o usuário negar, o retorno é `error=access_denied` com o `state`.
 - Erro de `client_id` ou `redirect_uri` nunca redireciona: a tela mostra o erro.
 
@@ -127,4 +128,4 @@ Renove com `grant_type=refresh_token`. Cada renovação devolve um `refresh_toke
 
 ## Revogação
 
-O usuário desconecta pelo painel, em [Ferramentas MCP](/mcp/manage). Todos os tokens emitidos até ali, inclusive os de renovação, param de valer na hora; o cliente recebe `401` e precisa iniciar a autorização de novo.
+O usuário desconecta o seu cliente pelo painel, em [Ferramentas MCP](/mcp/manage) → **Gerenciar conexões**. Os tokens do seu cliente emitidos até ali, inclusive os de renovação, param de valer na hora; o cliente recebe `401` e precisa iniciar a autorização de novo. Desconectar um cliente não afeta os outros clientes do mesmo usuário.
