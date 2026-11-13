@@ -36,7 +36,7 @@ O authorization server informa:
 | Campo | Valor |
 |---|---|
 | `authorization_endpoint` | A tela **Autorizar acesso** do painel (`/oauth/authorize`) |
-| `token_endpoint` | `/api/security/oauth/token` |
+| `token_endpoint` | `/api/oauth/token` |
 | `registration_endpoint` | `/api/oauth/register` |
 | `grant_types_supported` | `authorization_code`, `refresh_token` |
 | `code_challenge_methods_supported` | `S256` |
@@ -45,7 +45,7 @@ O authorization server informa:
 
 ## 2. Registro do cliente
 
-Escolha **uma** das formas. Nenhuma exige cadastro manual na Ticto.
+Escolha **uma** das formas. Nenhuma exige cadastro manual na Ticto. As credenciais da API v1 (`client_id` e `client_secret` do painel) não valem no MCP.
 
 <Tabs>
   <Tab title="Client ID Metadata Document">
@@ -106,7 +106,7 @@ https://<painel>/oauth/authorize
 ## 4. Tokens
 
 ```bash
-curl -X POST https://api.ticto.cloud/api/security/oauth/token \
+curl -X POST https://api.ticto.cloud/api/oauth/token \
   -d grant_type=authorization_code \
   -d code=<code> \
   -d redirect_uri=<redirect_uri> \
@@ -123,7 +123,7 @@ curl -X POST https://api.ticto.cloud/api/security/oauth/token \
 Renove com `grant_type=refresh_token`. Cada renovação devolve um `refresh_token` novo; reusar um já usado revoga a família inteira de tokens daquela autorização.
 
 <Warning>
-  O `access_token` do MCP só vale no `/mcp`. Ele é recusado na API v1 e na API v2, e um token da API v2 (`ticto_live_`) não entra no `/mcp`.
+  O MCP é separado da API pública: endpoint de token e chave de assinatura próprios. O `access_token` do MCP só vale no `/mcp` e é recusado na API v1 e na API v2; tokens da v1 e da v2 (`ticto_live_`) não entram no `/mcp`.
 </Warning>
 
 ## Revogação
