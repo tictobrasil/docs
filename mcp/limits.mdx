@@ -1,0 +1,61 @@
+---
+title: "Limites e segurança"
+sidebarTitle: "Limites e segurança"
+description: "Limites de uso, período dos relatórios, dados pessoais mascarados, confirmação de ações irreversíveis e a Política de Produtos Proibidos no MCP da Ticto."
+---
+
+## Limites
+
+| Limite | Valor |
+|---|---|
+| Chamadas ao MCP | 150 a cada 5 minutos, por usuário |
+| Relatórios e financeiro | Só os **últimos 3 meses**. Sem período informado, o servidor usa os últimos 3 meses; período mais antigo é recusado. |
+| Tamanho da resposta | Respostas muito grandes (acima de ~200 KB) são cortadas; use paginação e filtros |
+| Valores monetários | Sempre em **centavos** (ex.: `5990` = R$ 59,90) |
+
+Ao passar do limite de chamadas, o servidor responde `429` e o agente deve esperar antes de tentar de novo.
+
+## Dados pessoais mascarados
+
+Os dados pessoais de compradores, alunos e participantes chegam ao agente **mascarados**, para não irem inteiros para a conversa com a IA:
+
+| Dado | Exemplo |
+|---|---|
+| CPF | `076.***.***-3*` |
+| CNPJ | `12.***.***/****-3*` |
+| E-mail | `jo***@g***.com` |
+| Telefone | `11*******19` |
+| Nome | `Maria S*** O***` |
+| Endereço | `***` |
+
+Linha digitável, código de barras do boleto e Pix copia e cola chegam **inteiros**: não têm dado do comprador e mascarar inutilizaria o código.
+
+Na escrita, valor mascarado nunca é gravado. Ao editar um registro completo (ex.: produto), o servidor recupera o valor real do que voltou mascarado e grava só o que você mudou.
+
+## Ações irreversíveis
+
+Exclusões e ações que não dá para desfazer (ex.: excluir produto, publicar agente, convidar participante, enviar e-mail para todos) exigem `confirm=true`. O agente deve perguntar a você antes; sem a confirmação, o servidor não executa nada.
+
+## Seus dados, só os seus
+
+Cada id enviado pelo agente (produto, oferta, cupom, turma, webhook...) é conferido antes da ação: se não for da sua conta, a chamada é recusada antes de chegar ao painel. O agente também só age no time que você escolheu ao autorizar.
+
+## Política de Produtos Proibidos
+
+O MCP aplica a [Política de Produtos Proibidos da Ticto](https://help.ticto.com.br/sobre-a-ticto/termos-e-politicas/politica-de-produtos-proibidos). Criação e edição de produto, oferta, checkout, cupom, agente, conteúdo ou qualquer texto que envolva um item proibido são recusadas, sem chamar o painel. Produto que exige autorização prévia: fale com `juridico@ticto.com.br`.
+
+## Erros
+
+Quando uma ação falha, a tool devolve o resultado com `isError: true` e a mensagem do motivo, por exemplo:
+
+| Situação | O que o agente recebe |
+|---|---|
+| Sem permissão no painel | O mesmo `403` que o painel daria |
+| Ferramenta desligada por você | Aviso de que a ferramenta foi desligada em Ferramentas MCP |
+| MCP pausado por você | Aviso de que o MCP está pausado |
+| MCP desligado pela Ticto (manutenção ou incidente) | "O MCP da Ticto está temporariamente desligado. Use o painel." |
+| Área não liberada | A tool não existe para o agente (`Unknown tool`) |
+
+## Auditoria
+
+Toda chamada fica registrada nos logs da Ticto: quem chamou, de qual cliente, qual tool e ação, os ids envolvidos e o resultado. O conteúdo enviado e os valores de filtro não são registrados.

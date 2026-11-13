@@ -1,0 +1,358 @@
+---
+title: "Catálogo de ferramentas"
+sidebarTitle: "Catálogo de ferramentas"
+description: "Todas as tools do MCP da Ticto, com as ações de cada uma, o tipo e a permissão exigida."
+---
+
+O MCP tem **32 tools** com **186 ações**. Cada recurso vira até duas tools: `{recurso}_read`, só com leitura, e `{recurso}_write`, com criação, alteração e exclusão. A ação vai no argumento `action`. Os ids (`product`, `offer`, `coupon`...) vão como argumentos com o mesmo nome.
+
+```json
+{ "name": "offers_read", "arguments": { "action": "list", "product": "46887" } }
+```
+
+O agente só recebe as tools das áreas liberadas e das ações ligadas em [Ferramentas MCP](/mcp/manage). A descrição completa de cada ação, com os campos aceitos, vem na própria tool, na lista que o servidor entrega ao agente.
+
+<Info>
+  As quatro primeiras tools (`orders_summary`, `orders_history`, `subscriptions_summary`, `subscriptions_history`) são os resumos herdados da API v1 e recebem filtros diretos, sem `action`.
+</Info>
+
+<AccordionGroup>
+
+<Accordion title="Pedidos e assinaturas (resumo)" icon="wrench">
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `orders_summary` | `—` | Resumo de vendas e comissões | Leitura | Pedidos |
+| `orders_history` | `—` | Histórico de pedidos | Leitura | Pedidos |
+| `subscriptions_summary` | `—` | Resumo de assinaturas | Leitura | Assinaturas |
+| `subscriptions_history` | `—` | Histórico de assinaturas | Leitura | Assinaturas |
+
+</Accordion>
+
+<Accordion title="Produtos" icon="wrench">
+
+Produtos do produtor: cadastro, status de análise, dashboard e tags. \{product\} = id numérico do produto.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `products_read` | `list` | Listar produtos | Leitura | Produtos |
+| `products_read` | `options` | Listar produtos (resumo) | Leitura | Produtos |
+| `products_read` | `get` | Ver detalhe do produto | Leitura | Produtos |
+| `products_read` | `categories` | Ver categorias aceitas no cadastro | Leitura | Produtos |
+| `products_read` | `types` | Ver tipos de produto aceitos no cadastro | Leitura | Produtos |
+| `products_read` | `review_status` | Ver status da análise e motivo da reprovação | Leitura | Produtos |
+| `products_read` | `dashboard` | Ver métricas do produto | Leitura | Produtos |
+| `products_read` | `tags` | Ver tags de produto do produtor | Leitura | Produtos |
+| `products_write` | `create` | Criar produto | Criação e alteração | Produtos |
+| `products_write` | `update` | Atualizar produto | Irreversível (pede confirmação) | Produtos |
+| `products_write` | `toggle` | Ativar/desativar o produto | Criação e alteração | Produtos |
+| `products_write` | `submit_review` | Enviar o produto para análise | Criação e alteração | Produtos |
+| `products_write` | `toggle_hidden` | Ocultar/mostrar o produto | Criação e alteração | Produtos |
+| `products_write` | `delete` | Excluir o produto | Irreversível (pede confirmação) | Produtos |
+| `products_write` | `create_tag` | Criar tag | Criação e alteração | Produtos |
+| `products_write` | `update_tag` | Atualizar tag | Criação e alteração | Produtos |
+| `products_write` | `delete_tag` | Excluir tag | Irreversível (pede confirmação) | Produtos |
+
+</Accordion>
+
+<Accordion title="Ofertas" icon="wrench">
+
+Ofertas (preço, parcelas, assinatura) de um produto. \{product\} = id do produto, \{offer\} = id da oferta. Valores em centavos.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `offers_read` | `list` | Listar ofertas do produto | Leitura | Produtos |
+| `offers_read` | `get` | Ver detalhe da oferta | Leitura | Produtos |
+| `offers_read` | `history` | Ver histórico de alterações da oferta | Leitura | Produtos |
+| `offers_read` | `interest_preview` | Simular parcelas e juros no cartão | Leitura | Produtos |
+| `offers_write` | `create` | Criar oferta | Criação e alteração | Produtos |
+| `offers_write` | `update` | Atualizar oferta | Irreversível (pede confirmação) | Produtos |
+| `offers_write` | `toggle` | Ativar/desativar a oferta | Criação e alteração | Produtos |
+| `offers_write` | `hide` | Ocultar/mostrar a oferta | Criação e alteração | Produtos |
+| `offers_write` | `reorder` | Reordenar ofertas | Criação e alteração | Produtos |
+| `offers_write` | `delete` | Excluir a oferta | Irreversível (pede confirmação) | Produtos |
+
+</Accordion>
+
+<Accordion title="Checkouts" icon="wrench">
+
+Checkouts de um produto. \{product\} = id do produto, \{checkout\} = uuid do checkout.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `checkouts_read` | `list` | Listar checkouts | Leitura | Produtos |
+| `checkouts_read` | `get` | Ver detalhe do checkout | Leitura | Produtos |
+| `checkouts_write` | `create` | Criar checkout | Irreversível (pede confirmação) | Produtos |
+| `checkouts_write` | `update` | Atualizar checkout | Irreversível (pede confirmação) | Produtos |
+| `checkouts_write` | `duplicate` | Duplicar o checkout | Criação e alteração | Produtos |
+| `checkouts_write` | `delete` | Excluir o checkout | Irreversível (pede confirmação) | Produtos |
+
+</Accordion>
+
+<Accordion title="Cupons" icon="wrench">
+
+Cupons de desconto de um produto. \{product\} = id do produto, \{coupon\} = id do cupom. usage_limit = limite de usos, used_times = usos já feitos (pedidos pagos ou aguardando pagamento), remaining = usos restantes. Cupom só vale no checkout: a cobrança direta da API não aplica cupom.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `coupons_read` | `list` | Listar cupons | Leitura | Produtos |
+| `coupons_read` | `get` | Ver detalhe do cupom | Leitura | Produtos |
+| `coupons_read` | `usage` | Ver uso de cupons | Leitura | Produtos |
+| `coupons_write` | `create` | Criar cupom | Criação e alteração | Produtos |
+| `coupons_write` | `update` | Atualizar cupom | Irreversível (pede confirmação) | Produtos |
+| `coupons_write` | `delete` | Excluir o cupom | Irreversível (pede confirmação) | Produtos |
+
+</Accordion>
+
+<Accordion title="Funis de upsell (flow)" icon="wrench">
+
+Funis pós-compra de um produto. \{product\} = id do produto, \{flow\} = pk do funil.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `flows_read` | `list` | Listar funis | Leitura | Produtos |
+| `flows_write` | `create_simple` | Criar funil simples | Criação e alteração | Produtos |
+| `flows_write` | `save` | Salvar funil completo | Irreversível (pede confirmação) | Produtos |
+| `flows_write` | `customize_buttons` | Personalizar botões | Criação e alteração | Produtos |
+| `flows_write` | `delete` | Excluir o funil | Irreversível (pede confirmação) | Produtos |
+
+</Accordion>
+
+<Accordion title="Lotes e ingressos" icon="wrench">
+
+Eventos: lotes, participantes, credenciamento e check-in. \{product\} = id do produto, \{batch\} = id do lote, \{attendee\} = id do participante, \{token\} = token do ingresso.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `events_read` | `batches` | Listar lotes | Leitura | Produtos |
+| `events_read` | `batch` | Ver detalhe do lote | Leitura | Produtos |
+| `events_read` | `attendees` | Listar participantes | Leitura | Produtos |
+| `events_read` | `attendees_totals` | Ver totais de participantes | Leitura | Produtos |
+| `events_read` | `attendees_pending` | Ver totais pendentes | Leitura | Produtos |
+| `events_write` | `create_batch` | Criar lote | Criação e alteração | Produtos |
+| `events_write` | `update_batch` | Atualizar lote | Criação e alteração | Produtos |
+| `events_write` | `duplicate_batch` | Duplicar lote | Criação e alteração | Produtos |
+| `events_write` | `delete_batch` | Excluir lote | Irreversível (pede confirmação) | Produtos |
+| `events_write` | `invite` | Convidar participante | Irreversível (pede confirmação) | Produtos |
+| `events_write` | `send_checkin_email` | Enviar e-mail de check-in a um participante | Criação e alteração | Produtos |
+| `events_write` | `resend_accredit` | Reenviar e-mail de credenciamento | Criação e alteração | Produtos |
+| `events_write` | `send_all_checkin_emails` | Enviar check-in para todos | Irreversível (pede confirmação) | Produtos |
+
+</Accordion>
+
+<Accordion title="Relatório de vendas" icon="wrench">
+
+Relatório de vendas (comissões), pedidos e recuperação de vendas. Só leitura. \{commission\} = id da venda/comissão, \{order\} = id do pedido, \{section\} = canceled-sales \| issued-bank-slip \| issued-pix \| abandoned-cart \| installment-bank-slip \| change-card.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `sales_read` | `list` | Listar vendas | Leitura | Pedidos |
+| `sales_read` | `totals` | Ver totais das vendas | Leitura | Pedidos |
+| `sales_read` | `get` | Ver detalhe da venda | Leitura | Pedidos |
+| `sales_read` | `order` | Ver detalhe do pedido | Leitura | Pedidos |
+| `sales_read` | `recovery` | Ver recuperação de vendas | Leitura | Pedidos |
+| `sales_read` | `recovery_change_card` | Ver assinaturas com cartão a trocar | Leitura | Pedidos |
+| `sales_read` | `recovery_installment_totals` | Ver totais de boleto parcelado | Leitura | Pedidos |
+| `sales_read` | `recovery_installment_charges` | Ver cobranças de um boleto parcelado | Leitura | Pedidos |
+| `sales_read` | `recovery_scheduled_contacts` | Ver contatos agendados | Leitura | Pedidos |
+| `sales_read` | `recovery_contacts` | Ver contatos registrados de um pedido | Leitura | Pedidos |
+
+</Accordion>
+
+<Accordion title="Relatório de assinaturas" icon="wrench">
+
+Relatório de assinaturas dos compradores. Só leitura. \{subscription\} = id da assinatura. CANCELAR, TROCAR PLANO ou UPGRADE/DOWNGRADE não são feitos pelo MCP: oriente o produtor a usar a API Pública v2 da Ticto (cancelamento: POST /api/v2/subscriptions/\{id\}/cancel com token v2 de escopo subscriptions:cancel e header Idempotency-Key; tokens em Integrações → Tokens da API → API v2 no painel). Troca de plano/upgrade/downgrade ainda não têm endpoint na API: hoje o próprio assinante faz pelo link de gestão da assinatura. Reembolso nunca é feito pelo MCP.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `subscriptions_read` | `list` | Listar assinaturas | Leitura | Assinaturas |
+| `subscriptions_read` | `totals` | Ver totais das assinaturas | Leitura | Assinaturas |
+| `subscriptions_read` | `get` | Ver detalhe da assinatura | Leitura | Assinaturas |
+| `subscriptions_read` | `by_period` | Ver assinaturas do produto por período | Leitura | Assinaturas |
+| `subscriptions_read` | `by_offer` | Ver assinaturas do produto por oferta | Leitura | Assinaturas |
+
+</Accordion>
+
+<Accordion title="Relatórios" icon="wrench">
+
+Dashboard, Smart Advanced, Smart Source e acesso pendente à área de membros. \{metric\} (dashboard) = sales \| bank-slip-sales \| refunded \| revenues \| sales-champion-day \| sales-champion-hour \| best-selling-products \| best-selling-states \| best-selling-cities \| best-selling-location-ip-cities \| best-selling-location-ip-states. \{metric\} (smart_advanced) = total-amount \| total-sales \| total-sales-canceled \| sales-refunded \| sales-chargeback \| credit-card-canceled-sales \| sales-by-payment-method \| total-sales-by-day \| total-sales-by-hour \| issued-bank-slip \| issued-bank-slip-paid \| bank-slips \| sales-by-cities \| sales-by-states \| subscription-month-average \| canceled-subscription-percentage \| subscription-lost-due-cancellation. \{tag\} (smart_source) = none \| utm_source \| utm_medium \| utm_campaign \| utm_content \| utm_term \| utm_name \| src \| sck \| tvar. \{product\} = id do produto. Período: filter[betweenDates]=dd/mm/aaaa,dd/mm/aaaa, só dos ÚLTIMOS 3 MESES (sem período, usa os últimos 3 meses). Como ler o Smart Advanced: total-amount soma o valor do pedido (com order bump) de pedidos em QUALQUER status (aguardando pagamento, recusado, autorizado...); total-sales soma só os pedidos AUTORIZADOS; os dois pela data de criação do pedido, então a diferença são os pedidos não pagos. sales-by-cities/states agrupam pela cidade do endereço do comprador: venda sem endereço (comum na cobrança direta pela API) aparece com cidade vazia.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `reports_read` | `dashboard` | Ver métrica do dashboard | Leitura | Relatórios |
+| `reports_read` | `smart_advanced` | Ver métrica do Smart Advanced | Leitura | Relatórios |
+| `reports_read` | `smart_source` | Ver vendas do produto por origem | Leitura | Relatórios |
+| `reports_read` | `smart_source_totals` | Ver totalizadores por origem | Leitura | Relatórios |
+
+</Accordion>
+
+<Accordion title="Financeiro" icon="wrench">
+
+Saldo e extrato da carteira, só dos ÚLTIMOS 3 MESES (o servidor recusa período maior; sem período, usa os últimos 3 meses). Só leitura. \{wallet\} = uuid da carteira (pegue em wallets). query: filter[betweenDates]=dd/mm/aaaa,dd/mm/aaaa. Como ler o saldo: a comissão de venda autorizada entra primeiro como saldo PENDENTE (lançado a cada ~5 min) e passa a DISPONÍVEL depois do prazo de liberação (D+X da conta); disponível é o que pode ser sacado. Boleto não pago não entra no saldo. Venda autorizada não significa saldo disponível. Saque e dados bancários não são feitos pelo MCP: oriente o painel (Financeiro).
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `finance_read` | `wallets` | Ver carteiras do produtor | Leitura | Financeiro |
+| `finance_read` | `balance` | Ver saldo da conta no período | Leitura | Financeiro |
+| `finance_read` | `statement` | Ver extrato do período | Leitura | Financeiro |
+
+</Accordion>
+
+<Accordion title="Webhooks" icon="wrench">
+
+Webhooks do produtor. \{webhook\} = id do webhook, \{folder\} = id da pasta.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `webhooks_read` | `list` | Listar webhooks | Leitura | Webhooks |
+| `webhooks_read` | `get` | Ver detalhe do webhook | Leitura | Webhooks |
+| `webhooks_read` | `events` | Ver eventos disponíveis | Leitura | Webhooks |
+| `webhooks_read` | `folders` | Ver pastas de webhooks | Leitura | Webhooks |
+| `webhooks_write` | `create` | Criar webhook | Irreversível (pede confirmação) | Webhooks |
+| `webhooks_write` | `update` | Atualizar webhook | Irreversível (pede confirmação) | Webhooks |
+| `webhooks_write` | `toggle` | Ativar/desativar webhook | Criação e alteração | Webhooks |
+| `webhooks_write` | `delete` | Excluir webhook | Irreversível (pede confirmação) | Webhooks |
+| `webhooks_write` | `create_folder` | Criar pasta | Criação e alteração | Webhooks |
+
+</Accordion>
+
+<Accordion title="Integrações" icon="wrench">
+
+Integrações já conectadas (ActiveCampaign, RD Station, Kajabi, Notazz, Bling...): regras e segmentações. Conectar uma integração nova (credenciais/OAuth) é só pelo painel. \{integration\} = id, \{type\} = tipo da integração, \{type\} nas regras = bling \| shipoffers, \{rule\} = id da regra, \{segmentation\} = id da segmentação, \{resource\} = tags \| lists \| channels \| funnels \| classrooms \| subscriptions \| deliveries \| sheets.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `integrations_read` | `list` | Listar integrações | Leitura | Integrações |
+| `integrations_read` | `get` | Ver detalhe da integração | Leitura | Integrações |
+| `integrations_read` | `rules` | Ver regras da integração | Leitura | Integrações |
+| `integrations_read` | `rule_offers` | Ver ofertas para regra | Leitura | Integrações |
+| `integrations_read` | `segmentations` | Ver segmentações | Leitura | Integrações |
+| `integrations_read` | `segmentation` | Ver detalhe da segmentação | Leitura | Integrações |
+| `integrations_read` | `external` | Buscar dados da plataforma externa | Leitura | Integrações |
+| `integrations_write` | `create_rule` | Criar regra | Irreversível (pede confirmação) | Integrações |
+| `integrations_write` | `delete_rule` | Excluir regra | Irreversível (pede confirmação) | Integrações |
+| `integrations_write` | `create_segmentation` | Criar segmentação | Irreversível (pede confirmação) | Integrações |
+| `integrations_write` | `update_segmentation` | Atualizar segmentação | Irreversível (pede confirmação) | Integrações |
+| `integrations_write` | `delete_segmentation` | Excluir segmentação | Irreversível (pede confirmação) | Integrações |
+
+</Accordion>
+
+<Accordion title="Área de membros: portais e turmas" icon="wrench">
+
+Como funciona a área de membros da Ticto: o PORTAL é a área do aluno (subdomínio próprio, cores e vitrine). O CONTEÚDO é o curso: tem MÓDULOS, e dentro deles AULAS (texto, vídeo, arquivo) e QUIZZES; pode ter certificado. A TURMA fica dentro de um portal e define QUAIS conteúdos o aluno acessa e QUANDO (liberação por data ou por dias após a compra). O aluno entra numa turma ao comprar uma OFERTA vinculada a ela (na oferta: members_classroom_id + days_of_access), por cadastro manual ou por ACESSO GRATUITO. O produto se liga ao portal (link_product). A VITRINE organiza os conteúdos em seções na home do portal; conteúdo que o aluno não tem pode mostrar a página de vendas. AVISOS vão para os alunos das turmas escolhidas. Fluxo típico para lançar um curso: criar conteúdo → módulos → aulas → criar/usar uma turma no portal → liberar o conteúdo na turma (set_classroom_contents) → vincular a oferta à turma (offers_write update). Portais, turmas, vitrine, avisos, próximos lançamentos e acessos gratuitos. \{portal\}, \{classroom\}, \{section\}, \{notice\}, \{release\}, \{free_access\} = ids. Vincular portal a produto: products \{product\}.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `members_portals_read` | `portals` | Listar portais | Leitura | Área de membros |
+| `members_portals_read` | `portal` | Ver detalhe do portal | Leitura | Área de membros |
+| `members_portals_read` | `portal_url` | Ver URL do portal | Leitura | Área de membros |
+| `members_portals_read` | `classrooms` | Ver turmas do portal | Leitura | Área de membros |
+| `members_portals_read` | `classroom` | Ver detalhe da turma | Leitura | Área de membros |
+| `members_portals_read` | `classroom_contents` | Ver conteúdos liberados na turma | Leitura | Área de membros |
+| `members_portals_read` | `sections` | Ver seções da vitrine | Leitura | Área de membros |
+| `members_portals_read` | `notices` | Ver avisos | Leitura | Área de membros |
+| `members_portals_read` | `releases` | Ver próximos lançamentos | Leitura | Área de membros |
+| `members_portals_read` | `free_accesses` | Ver acessos gratuitos | Leitura | Área de membros |
+| `members_portals_read` | `free_access` | Ver detalhe do acesso gratuito | Leitura | Área de membros |
+| `members_portals_write` | `update_portal` | Atualizar o portal | Irreversível (pede confirmação) | Área de membros |
+| `members_portals_write` | `create_classroom` | Criar turma | Criação e alteração | Área de membros |
+| `members_portals_write` | `update_classroom` | Atualizar turma | Criação e alteração | Área de membros |
+| `members_portals_write` | `move_classroom` | Reordenar turma | Criação e alteração | Área de membros |
+| `members_portals_write` | `delete_classroom` | Excluir turma | Irreversível (pede confirmação) | Área de membros |
+| `members_portals_write` | `set_classroom_contents` | Liberar conteúdos na turma | Criação e alteração | Área de membros |
+| `members_portals_write` | `remove_classroom_contents` | Tirar conteúdos da turma | Irreversível (pede confirmação) | Área de membros |
+| `members_portals_write` | `create_section` | Criar seção da vitrine | Criação e alteração | Área de membros |
+| `members_portals_write` | `create_notice` | Criar aviso | Criação e alteração | Área de membros |
+| `members_portals_write` | `create_release` | Criar próximo lançamento | Criação e alteração | Área de membros |
+| `members_portals_write` | `update_release` | Atualizar próximo lançamento | Criação e alteração | Área de membros |
+| `members_portals_write` | `delete_release` | Excluir próximo lançamento | Irreversível (pede confirmação) | Área de membros |
+| `members_portals_write` | `create_free_access` | Criar acesso gratuito | Irreversível (pede confirmação) | Área de membros |
+| `members_portals_write` | `update_free_access` | Atualizar acesso gratuito | Irreversível (pede confirmação) | Área de membros |
+| `members_portals_write` | `link_product` | Vincular o portal ao produto | Criação e alteração | Área de membros |
+| `members_portals_write` | `unlink_product` | Desvincular o portal do produto | Irreversível (pede confirmação) | Área de membros |
+
+</Accordion>
+
+<Accordion title="Área de membros: conteúdos e aulas" icon="wrench">
+
+Como funciona a área de membros da Ticto: o PORTAL é a área do aluno (subdomínio próprio, cores e vitrine). O CONTEÚDO é o curso: tem MÓDULOS, e dentro deles AULAS (texto, vídeo, arquivo) e QUIZZES; pode ter certificado. A TURMA fica dentro de um portal e define QUAIS conteúdos o aluno acessa e QUANDO (liberação por data ou por dias após a compra). O aluno entra numa turma ao comprar uma OFERTA vinculada a ela (na oferta: members_classroom_id + days_of_access), por cadastro manual ou por ACESSO GRATUITO. O produto se liga ao portal (link_product). A VITRINE organiza os conteúdos em seções na home do portal; conteúdo que o aluno não tem pode mostrar a página de vendas. AVISOS vão para os alunos das turmas escolhidas. Fluxo típico para lançar um curso: criar conteúdo → módulos → aulas → criar/usar uma turma no portal → liberar o conteúdo na turma (set_classroom_contents) → vincular a oferta à turma (offers_write update). Conteúdos (cursos), módulos, aulas, quizzes e certificado. \{content\}, \{module\}, \{lesson\}, \{element\}, \{item\}, \{quiz\}, \{question\} = ids. Aula de texto: elements[\{type: "text", name, order, contents: \{text: HTML\}\}]. Vídeo/arquivo/imagem exigem upload pelo painel.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `members_contents_read` | `contents` | Listar conteúdos | Leitura | Área de membros |
+| `members_contents_read` | `content` | Ver detalhe do conteúdo | Leitura | Área de membros |
+| `members_contents_read` | `content_classrooms` | Ver turmas com o conteúdo | Leitura | Área de membros |
+| `members_contents_read` | `modules` | Ver módulos do conteúdo | Leitura | Área de membros |
+| `members_contents_read` | `module` | Ver detalhe do módulo | Leitura | Área de membros |
+| `members_contents_read` | `lesson` | Ver detalhe da aula | Leitura | Área de membros |
+| `members_contents_read` | `lesson_elements` | Ver elementos da aula | Leitura | Área de membros |
+| `members_contents_read` | `quiz` | Ver detalhe do quiz | Leitura | Área de membros |
+| `members_contents_read` | `quiz_questions` | Ver perguntas do quiz | Leitura | Área de membros |
+| `members_contents_read` | `certificate` | Ver certificado do conteúdo | Leitura | Área de membros |
+| `members_contents_write` | `create_content` | Criar conteúdo | Criação e alteração | Área de membros |
+| `members_contents_write` | `update_content` | Atualizar conteúdo | Criação e alteração | Área de membros |
+| `members_contents_write` | `clone_content` | Clonar conteúdo | Criação e alteração | Área de membros |
+| `members_contents_write` | `move_content` | Reordenar conteúdo | Criação e alteração | Área de membros |
+| `members_contents_write` | `delete_content` | Excluir conteúdo | Irreversível (pede confirmação) | Área de membros |
+| `members_contents_write` | `create_module` | Criar módulo | Criação e alteração | Área de membros |
+| `members_contents_write` | `update_module` | Atualizar módulo | Criação e alteração | Área de membros |
+| `members_contents_write` | `move_module` | Reordenar módulo | Criação e alteração | Área de membros |
+| `members_contents_write` | `delete_module` | Excluir módulo | Irreversível (pede confirmação) | Área de membros |
+| `members_contents_write` | `create_submodule` | Criar submódulo | Criação e alteração | Área de membros |
+| `members_contents_write` | `create_lesson` | Criar aula | Criação e alteração | Área de membros |
+| `members_contents_write` | `update_lesson` | Atualizar aula | Criação e alteração | Área de membros |
+| `members_contents_write` | `delete_lesson` | Excluir aula | Irreversível (pede confirmação) | Área de membros |
+| `members_contents_write` | `delete_element` | Excluir elemento da aula | Irreversível (pede confirmação) | Área de membros |
+| `members_contents_write` | `create_quiz` | Criar quiz | Criação e alteração | Área de membros |
+| `members_contents_write` | `update_quiz` | Atualizar quiz | Criação e alteração | Área de membros |
+| `members_contents_write` | `delete_quiz` | Excluir quiz | Irreversível (pede confirmação) | Área de membros |
+| `members_contents_write` | `create_question` | Criar pergunta | Criação e alteração | Área de membros |
+| `members_contents_write` | `update_question` | Atualizar pergunta | Criação e alteração | Área de membros |
+| `members_contents_write` | `move_question` | Reordenar pergunta | Criação e alteração | Área de membros |
+| `members_contents_write` | `delete_question` | Excluir pergunta | Irreversível (pede confirmação) | Área de membros |
+| `members_contents_write` | `save_certificate` | Salvar o certificado | Criação e alteração | Área de membros |
+
+</Accordion>
+
+<Accordion title="Área de membros: alunos e comentários" icon="wrench">
+
+Como funciona a área de membros da Ticto: o PORTAL é a área do aluno (subdomínio próprio, cores e vitrine). O CONTEÚDO é o curso: tem MÓDULOS, e dentro deles AULAS (texto, vídeo, arquivo) e QUIZZES; pode ter certificado. A TURMA fica dentro de um portal e define QUAIS conteúdos o aluno acessa e QUANDO (liberação por data ou por dias após a compra). O aluno entra numa turma ao comprar uma OFERTA vinculada a ela (na oferta: members_classroom_id + days_of_access), por cadastro manual ou por ACESSO GRATUITO. O produto se liga ao portal (link_product). A VITRINE organiza os conteúdos em seções na home do portal; conteúdo que o aluno não tem pode mostrar a página de vendas. AVISOS vão para os alunos das turmas escolhidas. Fluxo típico para lançar um curso: criar conteúdo → módulos → aulas → criar/usar uma turma no portal → liberar o conteúdo na turma (set_classroom_contents) → vincular a oferta à turma (offers_write update). Alunos, progresso, relatórios de acesso e comentários. \{student\} = id do aluno, \{portal\} = id do portal, \{comment\} = id do comentário, \{transaction\} = id da transação, \{kind\} = statistic \| completed-lessons \| viewed-lessons \| access-history \| quiz-results.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `members_students_read` | `students` | Listar alunos | Leitura | Área de membros |
+| `members_students_read` | `progress` | Ver progresso do aluno | Leitura | Área de membros |
+| `members_students_read` | `comments` | Ver comentários | Leitura | Área de membros |
+| `members_students_read` | `report_general` | Ver relatório geral da área de membros | Leitura | Área de membros |
+| `members_students_read` | `report_answers` | Ver respostas por mês | Leitura | Área de membros |
+| `members_students_read` | `report_access_expiration` | Ver acessos que vão expirar | Leitura | Área de membros |
+| `members_students_write` | `create_student` | Cadastrar aluno | Irreversível (pede confirmação) | Área de membros |
+| `members_students_write` | `give_freepass` | Liberar/tirar free pass | Irreversível (pede confirmação) | Área de membros |
+
+</Accordion>
+
+<Accordion title="Agentes de IA" icon="wrench">
+
+Agentes de IA de atendimento por produto e suas personas. \{agent\} = código do agente, \{persona\} = código da persona.
+
+| Tool | `action` | O que faz | Tipo | Permissão |
+|---|---|---|---|---|
+| `ai_agents_read` | `list` | Listar agentes | Leitura | Agentes de IA |
+| `ai_agents_read` | `provisionable_products` | Ver produtos sem agente | Leitura | Agentes de IA |
+| `ai_agents_read` | `overview` | Ver visão geral | Leitura | Agentes de IA |
+| `ai_agents_read` | `conversations` | Ver conversas | Leitura | Agentes de IA |
+| `ai_agents_read` | `get` | Ver detalhe do agente | Leitura | Agentes de IA |
+| `ai_agents_read` | `metrics` | Ver métricas do agente | Leitura | Agentes de IA |
+| `ai_agents_read` | `personas` | Ver personas | Leitura | Agentes de IA |
+| `ai_agents_write` | `create` | Criar agente para um produto | Criação e alteração | Agentes de IA |
+| `ai_agents_write` | `update` | Atualizar agente | Criação e alteração | Agentes de IA |
+| `ai_agents_write` | `update_knowledge` | Atualizar base de conhecimento | Criação e alteração | Agentes de IA |
+| `ai_agents_write` | `publish` | Publicar agente (passa a falar com compradores) | Irreversível (pede confirmação) | Agentes de IA |
+| `ai_agents_write` | `unpublish` | Despublicar agente | Criação e alteração | Agentes de IA |
+| `ai_agents_write` | `create_persona` | Criar persona | Criação e alteração | Agentes de IA |
+| `ai_agents_write` | `update_persona` | Atualizar persona | Criação e alteração | Agentes de IA |
+| `ai_agents_write` | `delete_persona` | Excluir persona | Irreversível (pede confirmação) | Agentes de IA |
+
+</Accordion>
+
+</AccordionGroup>

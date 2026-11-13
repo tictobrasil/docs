@@ -1,0 +1,69 @@
+---
+title: "MCP da Ticto"
+sidebarTitle: "Introdução"
+description: "Conecte o seu agente de IA (Claude, ChatGPT, Cursor, VS Code e outros) à sua conta Ticto pelo Model Context Protocol, com as mesmas permissões que você tem no painel."
+---
+
+O **MCP da Ticto** é um servidor [Model Context Protocol](https://modelcontextprotocol.io) que dá ao seu agente de IA acesso à sua conta Ticto. Com ele, você pede em linguagem natural e o agente consulta e opera o painel por você: lista vendas, cria ofertas, monta um funil, libera conteúdo na área de membros.
+
+O MCP funciona com **qualquer cliente compatível** com MCP remoto e OAuth 2.1: Claude (claude.ai, Claude Desktop e Claude Code), ChatGPT, Cursor, VS Code, Windsurf, Gemini CLI, MCP Inspector e outros.
+
+<CardGroup cols={2}>
+  <Card title="Conectar" icon="plug" href="/mcp/connect">
+    Endereço do servidor e passo a passo por cliente
+  </Card>
+  <Card title="Permissões" icon="shield-check" href="/mcp/permissions">
+    O que o agente pode acessar e como você controla
+  </Card>
+  <Card title="Ferramentas MCP" icon="sliders-horizontal" href="/mcp/manage">
+    Ligue, desligue ou pause ferramentas pelo painel
+  </Card>
+  <Card title="Catálogo de ferramentas" icon="list" href="/mcp/tools">
+    Todas as tools e ações disponíveis
+  </Card>
+</CardGroup>
+
+## O que o agente pode fazer
+
+| Área | O que inclui |
+|---|---|
+| **Produtos** | Produtos, ofertas, checkouts, cupons, funis de upsell, lotes e ingressos |
+| **Pedidos** | Relatório de vendas, detalhe de pedido e recuperação de vendas |
+| **Assinaturas** | Lista, totais, detalhe, histórico e assinaturas por período ou por oferta |
+| **Relatórios** | Dashboard, Smart Advanced e Smart Source |
+| **Financeiro** | Saldo e extrato dos últimos 3 meses |
+| **Webhooks** | Cadastro, edição, ativação e pastas de webhooks |
+| **Integrações** | Regras e segmentações das integrações já conectadas |
+| **Área de membros** | Portais, turmas, conteúdos, módulos, aulas, quizzes, alunos e comentários |
+| **Agentes de IA** | Agentes de atendimento, personas, base de conhecimento e conversas |
+
+## O que o agente não faz
+
+Algumas operações ficam **só no painel**, por segurança. Quando você pedir, o agente explica onde fazer:
+
+- Reembolso, saque, dados bancários e dados da conta
+- Afiliados e coproduções
+- Cancelar assinatura, trocar plano, upgrade ou downgrade. O cancelamento é feito pela [API v2](/authentication/scopes); a troca de plano, pelo próprio assinante no link de gestão da assinatura.
+- Conectar uma integração nova (credenciais e OAuth de terceiros)
+- Upload de arquivos (capa de produto, vídeos de aula)
+
+## Como funciona
+
+<Steps>
+  <Step title="Você conecta o agente">
+    Cola o endereço do servidor MCP no seu cliente. Ele abre a tela **Autorizar acesso** da Ticto.
+  </Step>
+  <Step title="Você escolhe o que liberar">
+    Faz login, escolhe o time e marca as áreas que o agente pode usar.
+  </Step>
+  <Step title="O agente trabalha com as suas permissões">
+    Cada ação roda como você, no time escolhido. O agente nunca faz nada que você não possa fazer no painel.
+  </Step>
+  <Step title="Você ajusta quando quiser">
+    Em **Ferramentas MCP**, no painel, você liga e desliga ferramentas, pausa o MCP ou desconecta o agente.
+  </Step>
+</Steps>
+
+<Note>
+  O MCP é diferente da [API v2](/introduction). A API v2 usa um token `ticto_live_` criado por você e age como **dono do time**. O MCP usa OAuth: o agente pede autorização na tela da Ticto e age como **o usuário logado**, com o perfil dele na equipe.
+</Note>

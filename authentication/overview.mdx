@@ -6,6 +6,10 @@ description: "Saiba como gerar tokens Bearer no painel da Ticto, incluí-los cor
 
 A Ticto API v2 utiliza **Bearer tokens** para autenticar todas as requisições. Cada chamada deve incluir um token válido no cabeçalho `Authorization`. Sem ele, a API rejeita a requisição imediatamente. Os tokens são gerados diretamente no painel da Ticto e carregam as permissões (escopos) que você definir no momento da criação.
 
+<Note>
+  Esta página é sobre a API v2. O [MCP da Ticto](/mcp/introduction) tem autenticação própria (OAuth 2.1): o agente pede autorização na tela da Ticto e não usa token `ticto_live_`. Veja [OAuth para desenvolvedores](/mcp/oauth).
+</Note>
+
 ## Como gerar um token
 
 <Steps>

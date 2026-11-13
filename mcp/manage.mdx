@@ -1,0 +1,57 @@
+---
+title: "Ferramentas MCP"
+sidebarTitle: "Ferramentas MCP"
+description: "Controle pelo painel quais ferramentas o seu agente de IA pode usar, pause o MCP ou desconecte o agente."
+---
+
+A tela **Ferramentas MCP** fica no painel da Ticto, no menu do seu avatar, em **MCP**. Ela mostra a conexão e deixa você controlar, ferramenta por ferramenta, o que o agente pode usar. As mudanças valem na hora, para todos os agentes conectados à sua conta.
+
+## Dados de conexão
+
+- **Endpoint**: o endereço do servidor MCP, com o botão **Copiar endpoint**.
+- **Autenticação**: OAuth 2.1. Ao conectar, o agente abre a tela de autorização da Ticto.
+- **Status**: **Conectado desde** a data da última autorização, **Desconectado em** a data em que você desconectou, ou **Nunca conectado**.
+
+## Ligar e desligar ferramentas
+
+As ferramentas ficam em abas por área:
+
+| Aba | O que tem |
+|---|---|
+| **Vendas e relatórios** | Pedidos, assinaturas, relatórios e financeiro |
+| **Produtos** | Produtos, ofertas, checkouts, cupons, funis, lotes e ingressos |
+| **Webhooks e integrações** | Webhooks, regras e segmentações |
+| **Área de membros** | Portais, turmas, conteúdos e alunos |
+| **Agentes de IA** | Agentes, personas e conversas |
+
+Cada ferramenta tem um switch e a indicação de risco (**Baixo**, **Médio** ou **Alto**). O **Assistente de seleção** marca de uma vez a aba atual:
+
+- **Marcar todas**
+- **Apenas leitura**
+- **Leitura, criação e alteração** (tudo menos exclusão e ações irreversíveis)
+- **Desmarcar todas**
+
+Clique em **Salvar** para aplicar. Ferramenta desligada some da lista do agente e, se ele tentar usá-la, a chamada é recusada com o aviso de que foi desligada por você.
+
+<Note>
+  O que você desmarcou na tela de autorização começa **desligado** aqui. Ligar uma ferramenta dessas libera a área na hora, sem reconectar o agente. Ligar nunca dá mais acesso do que você tem no painel: vale o seu perfil na equipe.
+</Note>
+
+## Pausar e desconectar
+
+O switch **Servidor MCP** no topo da tela controla o MCP inteiro da sua conta.
+
+<Tabs>
+  <Tab title="Desligar (desconectar)">
+    Ao desligar, você confirma em **Desconectar o agente de IA**:
+
+    - Acessos já autorizados são revogados na hora, em todos os agentes.
+    - O Servidor MCP fica pausado: o agente não vê nem executa nenhuma ferramenta.
+    - Suas ferramentas ligadas e desligadas continuam salvas.
+  </Tab>
+  <Tab title="Religar">
+    Ao religar, o MCP volta a ficar ativo para a sua conta, mas o agente **precisa conectar de novo**, porque a autorização anterior foi revogada. A tela avisa: **"MCP reativado. Conecte o agente de IA de novo para voltar a usar."**
+
+    Autorizar de novo pelo agente também reativa o MCP, mantendo as ferramentas que você tinha desligado.
+  </Tab>
+</Tabs>
