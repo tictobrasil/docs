@@ -3304,12 +3304,12 @@
           "Webhooks"
         ],
         "summary": "Exclui o webhook",
-        "description": "Exclui o webhook. Escopo: `webhooks:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui o webhook. Escopo: `webhooks:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteWebhook",
         "security": [
           {
             "bearerAuth": [
-              "webhooks:write"
+              "webhooks:delete"
             ]
           }
         ],
@@ -3751,12 +3751,12 @@
           "Integrações"
         ],
         "summary": "Exclui a regra da integração",
-        "description": "Exclui a regra da integração. Escopo: `integrations:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui a regra da integração. Escopo: `integrations:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteIntegrationRule",
         "security": [
           {
             "bearerAuth": [
-              "integrations:write"
+              "integrations:delete"
             ]
           }
         ],
@@ -4100,12 +4100,12 @@
           "Integrações"
         ],
         "summary": "Exclui a segmentação",
-        "description": "Exclui a segmentação. Escopo: `integrations:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui a segmentação. Escopo: `integrations:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteSegmentation",
         "security": [
           {
             "bearerAuth": [
-              "integrations:write"
+              "integrations:delete"
             ]
           }
         ],
@@ -5010,12 +5010,12 @@
           "Agentes de IA"
         ],
         "summary": "Exclui a persona do produtor",
-        "description": "Exclui a persona do produtor ({persona} = code da persona). Escopo: `ai_agents:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui a persona do produtor ({persona} = code da persona). Escopo: `ai_agents:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteAiAgentPersona",
         "security": [
           {
             "bearerAuth": [
-              "ai_agents:write"
+              "ai_agents:delete"
             ]
           }
         ],
@@ -6627,12 +6627,12 @@
           "Área de membros"
         ],
         "summary": "Exclui a turma",
-        "description": "Exclui a turma. Escopo: `members:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui a turma. Escopo: `members:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteMemberClassroom",
         "security": [
           {
             "bearerAuth": [
-              "members:write"
+              "members:delete"
             ]
           }
         ],
@@ -7639,12 +7639,12 @@
           "Área de membros"
         ],
         "summary": "Exclui o próximo lançamento",
-        "description": "Exclui o próximo lançamento. Escopo: `members:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui o próximo lançamento. Escopo: `members:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteMemberRelease",
         "security": [
           {
             "bearerAuth": [
-              "members:write"
+              "members:delete"
             ]
           }
         ],
@@ -7997,12 +7997,12 @@
           "Área de membros"
         ],
         "summary": "Exclui o conteúdo",
-        "description": "Exclui o conteúdo. Escopo: `members:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui o conteúdo. Escopo: `members:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteMemberContent",
         "security": [
           {
             "bearerAuth": [
-              "members:write"
+              "members:delete"
             ]
           }
         ],
@@ -8362,12 +8362,12 @@
           "Área de membros"
         ],
         "summary": "Exclui o módulo",
-        "description": "Exclui o módulo. Escopo: `members:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui o módulo. Escopo: `members:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteMemberModule",
         "security": [
           {
             "bearerAuth": [
-              "members:write"
+              "members:delete"
             ]
           }
         ],
@@ -8534,12 +8534,12 @@
           "Área de membros"
         ],
         "summary": "Exclui a aula",
-        "description": "Exclui a aula. Escopo: `members:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui a aula. Escopo: `members:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteMemberLesson",
         "security": [
           {
             "bearerAuth": [
-              "members:write"
+              "members:delete"
             ]
           }
         ],
@@ -8758,12 +8758,12 @@
           "Área de membros"
         ],
         "summary": "Exclui o quiz",
-        "description": "Exclui o quiz. Escopo: `members:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui o quiz. Escopo: `members:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteMemberQuiz",
         "security": [
           {
             "bearerAuth": [
-              "members:write"
+              "members:delete"
             ]
           }
         ],
@@ -9405,12 +9405,12 @@
           "Área de membros"
         ],
         "summary": "Exclui um elemento da aula",
-        "description": "Exclui um elemento da aula. Escopo: `members:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui um elemento da aula. Escopo: `members:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteMemberLessonElement",
         "security": [
           {
             "bearerAuth": [
-              "members:write"
+              "members:delete"
             ]
           }
         ],
@@ -9590,12 +9590,12 @@
           "Área de membros"
         ],
         "summary": "Exclui a pergunta",
-        "description": "Exclui a pergunta. Escopo: `members:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Exclui a pergunta. Escopo: `members:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "deleteMemberQuestion",
         "security": [
           {
             "bearerAuth": [
-              "members:write"
+              "members:delete"
             ]
           }
         ],
@@ -10310,12 +10310,12 @@
           "Área de membros"
         ],
         "summary": "Desvincula o portal do produto",
-        "description": "Desvincula o portal do produto. Escopo: `members:write` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Desvincula o portal do produto. Escopo: `members:delete` (exato: o curinga não vale). Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "unlinkMemberPortalFromProduct",
         "security": [
           {
             "bearerAuth": [
-              "members:write"
+              "members:delete"
             ]
           }
         ],
