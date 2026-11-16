@@ -4,7 +4,7 @@ sidebarTitle: "Catálogo de ferramentas"
 description: "Todas as tools do MCP da Ticto: cada uma é um endpoint da API v2, com o tipo e a permissão de cada uma."
 ---
 
-O MCP tem **180 tools da API v2** e mais **2 tools de funis (flow)**, que ainda não estão na v2.
+O MCP tem **180 tools**, todas da API v2. Funis de upsell (flow) não estão no MCP: são configurados pelo painel.
 
 Cada tool é um endpoint da [API v2](/introduction), executado pela Ticto no mesmo processo, com as permissões da conexão do agente. Os ids são os públicos da v2: produto pelo `hash` (ex.: `P5E501A73`), oferta pelo código (ex.: `O64522FA4`), checkout pelo `uuid`, agente e persona pelo código. As respostas vêm no formato da v2: `{object, id, ...}` e listas em `{object: "list", data, meta}`.
 
@@ -305,32 +305,6 @@ Cada tool recebe os ids da rota como argumentos, os filtros em `query` e o corpo
 | `get_member_report_access_expiration` | Acessos que vão expirar | Leitura | Área de membros |
 | `create_member_student` | Cadastra aluno | Irreversível (pede confirmação) | Área de membros |
 | `give_member_freepass` | Libera/tira o passe livre do aluno nas turmas do produtor | Irreversível (pede confirmação) | Área de membros |
-
-</Accordion>
-
-</AccordionGroup>
-
-## Funis (flow)
-
-Os funis ainda não estão na API v2 e seguem pelo caminho antigo, com a ação no argumento `action`:
-
-```json
-{ "name": "flows_read", "arguments": { "action": "list", "product": "46887" } }
-```
-
-<AccordionGroup>
-
-<Accordion title="Funis de upsell (flow)" icon="wrench">
-
-Funis pós-compra de um produto. \{product\} = id do produto, \{flow\} = pk do funil.
-
-| Tool | `action` | O que faz | Tipo | Permissão |
-|---|---|---|---|---|
-| `flows_read` | `list` | Listar funis | Leitura | Produtos |
-| `flows_write` | `create_simple` | Criar funil simples | Criação e alteração | Produtos |
-| `flows_write` | `save` | Salvar funil completo | Irreversível (pede confirmação) | Produtos |
-| `flows_write` | `customize_buttons` | Personalizar botões | Criação e alteração | Produtos |
-| `flows_write` | `delete` | Excluir o funil | Irreversível (pede confirmação) | Produtos |
 
 </Accordion>
 

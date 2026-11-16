@@ -1203,7 +1203,7 @@
           "Ofertas"
         ],
         "summary": "Cria oferta com todas as opções",
-        "description": "Cria oferta com todas as opções. body: name, price (centavos), type_of_charge (one-time|recurring), currency_id, is_subscription, allow_credit_card, allow_bank_slip, allow_pix, allow_bank_slip_installments, auto_affiliation=false; assinatura: subscription {interval, trial_days_text, trial_days, first_charge_price, allow_plan_change}; opcionais: allow_pix_recurring, bank_slip_days_due, credit_card_installments_options, producer_pays_interest, fake_initial_price, members_classroom_id (turma da área de membros do produtor), days_of_access, batch_id (lote do produto). Curso exige área de membros vinculada. Escopo: `offers:write`. Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Cria oferta com todas as opções. body: name, price (centavos), type_of_charge (one-time|recurring), currency_id, is_subscription, allow_credit_card, allow_bank_slip, allow_pix, allow_bank_slip_installments, auto_affiliation=false; assinatura: subscription {interval, trial_days_text, trial_days, first_charge_price, allow_plan_change}; credit_card_installments_options (ex.: [1..12]) se allow_credit_card; bank_slip_days_due se allow_bank_slip; evento: batch_id (lote do produto) e days_to_expire_pix se allow_pix; opcionais: allow_pix_recurring, producer_pays_interest, fake_initial_price, members_classroom_id (turma da área de membros do produtor), days_of_access, batch_id (lote do produto). Curso exige área de membros vinculada. Escopo: `offers:write`. Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "createOfferAdvanced",
         "security": [
           {
@@ -8464,7 +8464,7 @@
           "Área de membros"
         ],
         "summary": "Atualiza a aula",
-        "description": "Atualiza a aula. body: a aula completa (mesmos campos do create_member_lesson). Escopo: `members:write`. Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Atualiza a aula. body: a aula completa (mesmos campos do create_member_lesson). Pela v2, elementos só de texto; imagem, anexo, áudio e vídeo pelo painel (upload). Escopo: `members:write`. Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "updateMemberLesson",
         "security": [
           {
@@ -9342,7 +9342,7 @@
           "Área de membros"
         ],
         "summary": "Cria aula",
-        "description": "Cria aula. body: name, module_id, elements[{type: \"text\", name, order, contents: {text: HTML}}], is_free, disable_comments, private_comments, disable_rating, auto_next_lesson (0|1), release_days_after_purchase OU release_date. Vídeo, arquivo e imagem: upload pelo painel. Escopo: `members:write`. Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
+        "description": "Cria aula. body: name, module_id, elements[{type: \"text\", name, order, contents: {text: HTML}}], is_free, disable_comments, private_comments, disable_rating, auto_next_lesson (0|1), release_days_after_purchase OU release_date. Vídeo, arquivo e imagem: upload pelo painel. Pela v2, elementos só de texto; imagem, anexo, áudio e vídeo pelo painel (upload). Escopo: `members:write`. Ids públicos na entrada e na saída; `404` se o registro não for do produtor.",
         "operationId": "createMemberLesson",
         "security": [
           {

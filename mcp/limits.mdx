@@ -38,7 +38,7 @@ Exclusões e ações que não dá para desfazer (ex.: cancelar assinatura, exclu
 
 ## Seus dados, só os seus
 
-Nas tools da API v2, o produtor vem da conexão e nunca do pedido: todo registro é buscado dentro da sua conta, e o que não for seu responde `404`. Nas tools do painel, cada id enviado pelo agente (produto, oferta, cupom, turma, webhook...) é conferido antes da ação: se não for da sua conta, a chamada é recusada antes de chegar ao painel.
+Toda tool é uma rota da API v2: o produtor vem da conexão e nunca do pedido. Cada id enviado pelo agente, no caminho ou no corpo (produto, oferta, cupom, turma, portal, webhook, lote...), é buscado dentro da sua conta antes da ação; o que não for seu responde `404` e nada é alterado.
 
 ## Política de Produtos Proibidos
 
