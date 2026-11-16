@@ -29,18 +29,22 @@ Cada área tem uma permissão de leitura e, quando existe escrita, uma de escrit
 | **Pedidos** | `orders:read` | Pedidos, vendas e recuperação de vendas |
 | **Assinaturas** | `subscriptions:read` | Lista, totais, detalhe e histórico de assinaturas, inclusive por produto (período e oferta) |
 | **Cancelar assinaturas** | `subscriptions:cancel` | Cancelar uma assinatura pelo id. Começa **desmarcado** e o agente confirma com você antes de cada cancelamento. |
-| **Produtos** | `products:read`, `products:write` | Produtos, ofertas, checkouts, cupons, funis e lotes |
-| **Excluir produtos, ofertas, cupons e checkouts** | `products:delete` | Exclusões. Começa **desmarcado** e o agente confirma com você antes de cada exclusão. |
+| **Produtos** | `products:read`, `products:write` | Produtos, ofertas, checkouts, cupons, funis, lotes, participantes, convites e check-in de eventos |
+| **Excluir produtos, ofertas, cupons, checkouts e lotes** | `products:delete` | Exclusões. Começa **desmarcado** e o agente confirma com você antes de cada exclusão. |
 | **Relatórios** | `reports:read` | Dashboard, Smart Advanced e Smart Source |
-| **Financeiro** | `finance:read` | Saldo, extrato e saques dos últimos 3 meses |
+| **Financeiro** | `finance:read` | Carteiras, saldo, extrato e saques dos últimos 3 meses |
 | **Webhooks** | `webhooks:read`, `webhooks:write` | Webhooks e pastas de webhooks |
-| **Integrações** | `tools:read`, `tools:write` | Regras e segmentações das integrações já conectadas |
+| **Integrações** | `tools:read`, `tools:write` | Regras, segmentações e listas da ferramenta (tags, listas, funis) das integrações já conectadas |
 | **Área de membros** | `members:read`, `members:write` | Portais, turmas, conteúdos, alunos e comentários |
 | **Agentes de IA** | `ai_agents:read`, `ai_agents:write` | Agentes, personas e conversas |
 
 <Note>
   Uma área desmarcada some por inteiro para aquele agente: ele não vê as ferramentas dela e, se tentar chamá-las, a chamada é recusada.
 </Note>
+
+## Validade da conexão
+
+Cada agente conectado vira uma **credencial interna da API v2**, só daquele agente: ela guarda as permissões que você liberou e nunca sai da Ticto (o agente recebe só o token do MCP). A conexão vale enquanto o agente renovar o acesso; se ele ficar **14 dias** sem renovar, ela vence e o agente precisa autorizar de novo. Desconectar em **Ferramentas MCP** derruba na hora.
 
 ## Autorização e Ferramentas MCP conversam
 
