@@ -1,0 +1,311 @@
+---
+title: "Catálogo de ferramentas"
+sidebarTitle: "Catálogo de ferramentas"
+description: "Todas as tools do MCP da Ticto: cada uma é um endpoint da API v2, com o tipo e a permissão de cada uma."
+---
+
+O MCP tem **180 tools**, todas da API v2. Funis de upsell (flow) não estão no MCP: são configurados pelo painel.
+
+Cada tool é um endpoint da [API v2](/introduction), executado pela Ticto no mesmo processo, com as permissões da conexão do agente. Os ids são os públicos da v2: produto pelo `hash` (ex.: `P5E501A73`), oferta pelo código (ex.: `O64522FA4`), checkout pelo `uuid`, agente e persona pelo código. As respostas vêm no formato da v2: `{object, id, ...}` e listas em `{object: "list", data, meta}`.
+
+Nas edições, mande **só os campos que mudam**: o resto fica como está.
+
+O agente só recebe as tools das áreas liberadas e das ações ligadas para aquela conexão em [Ferramentas MCP](/mcp/manage). A descrição completa de cada tool, com os campos aceitos, vem na própria tool, na lista que o servidor entrega ao agente.
+
+## Tools da API v2
+
+Cada tool recebe os ids da rota como argumentos, os filtros em `query` e o corpo em `body`:
+
+```json
+{ "name": "list_offers", "arguments": { "hash": "PA5DB5141" } }
+{ "name": "update_coupon", "arguments": { "product": "P5E501A73", "coupon": "13158", "body": { "discount": 25 }, "confirm": true } }
+```
+
+<AccordionGroup>
+
+<Accordion title="Produtos e ofertas" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `list_products` | Listar produtos | Leitura | Produtos |
+| `get_product` | Ver detalhe do produto | Leitura | Produtos |
+| `create_product` | Criar produto | Criação e alteração | Produtos |
+| `update_product` | Atualizar produto | Irreversível (pede confirmação) | Produtos |
+| `toggle_product` | Ativar/desativar o produto | Criação e alteração | Produtos |
+| `toggle_product_hidden` | Ocultar/mostrar o produto | Criação e alteração | Produtos |
+| `get_product_review` | Ver status da análise e motivo da reprovação | Leitura | Produtos |
+| `submit_product_review` | Enviar o produto para análise | Criação e alteração | Produtos |
+| `get_product_dashboard` | Ver métricas do produto | Leitura | Produtos |
+| `delete_product` | Excluir o produto | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons, checkouts e lotes) |
+| `list_product_categories` | Ver categorias aceitas no cadastro | Leitura | Produtos |
+| `list_product_types` | Ver tipos de produto aceitos no cadastro | Leitura | Produtos |
+| `list_product_tags` | Ver tags de produto | Leitura | Produtos |
+| `create_product_tag` | Criar tag | Criação e alteração | Produtos |
+| `update_product_tag` | Atualizar tag | Criação e alteração | Produtos |
+| `delete_product_tag` | Excluir tag | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons, checkouts e lotes) |
+| `create_product_advanced` | Criar produto (qualquer tipo) | Criação e alteração | Produtos |
+
+</Accordion>
+
+<Accordion title="Ofertas" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `list_offers` | Listar ofertas do produto | Leitura | Produtos |
+| `get_offer` | Ver detalhe da oferta | Leitura | Produtos |
+| `create_offer` | Criar oferta | Criação e alteração | Produtos |
+| `create_offer_advanced` | Criar oferta (todas as opções) | Criação e alteração | Produtos |
+| `reorder_offers` | Reordenar ofertas | Criação e alteração | Produtos |
+| `update_offer` | Atualizar oferta | Irreversível (pede confirmação) | Produtos |
+| `toggle_offer` | Ativar/desativar a oferta | Criação e alteração | Produtos |
+| `hide_offer` | Ocultar/mostrar a oferta | Criação e alteração | Produtos |
+| `get_offer_history` | Ver histórico de alterações da oferta | Leitura | Produtos |
+| `delete_offer` | Excluir a oferta | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons, checkouts e lotes) |
+| `get_interest_preview` | Simular parcelas e juros | Leitura | Produtos |
+
+</Accordion>
+
+<Accordion title="Pedidos" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `orders_summary` | Resumo de vendas e comissões | Leitura | Pedidos |
+| `orders_history` | Histórico de pedidos | Leitura | Pedidos |
+| `get_order` | Ver detalhe do pedido | Leitura | Pedidos |
+| `get_sale` | Ver detalhe da venda | Leitura | Pedidos |
+| `list_recovery_change_card` | Ver assinaturas com cartão a trocar | Leitura | Pedidos |
+| `list_sales_recovery` | Ver recuperação de vendas | Leitura | Pedidos |
+| `list_recovery_charges` | Ver cobranças do boleto parcelado | Leitura | Pedidos |
+| `list_recovery_contacts` | Ver contatos de recuperação do pedido | Leitura | Pedidos |
+
+</Accordion>
+
+<Accordion title="Assinaturas" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `subscriptions_summary` | Resumo de assinaturas | Leitura | Assinaturas |
+| `subscriptions_history` | Histórico de assinaturas | Leitura | Assinaturas |
+| `get_subscription` | Ver detalhe da assinatura | Leitura | Assinaturas |
+| `cancel_subscription` | Cancelar assinatura | Irreversível (pede confirmação) | Cancelar assinaturas |
+| `get_subscriptions_by_period` | Ver assinaturas do produto por período | Leitura | Assinaturas |
+| `get_subscriptions_by_offer` | Ver assinaturas do produto por oferta | Leitura | Assinaturas |
+
+</Accordion>
+
+<Accordion title="Saques" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `cashouts_summary` | Resumo de saques | Leitura | Financeiro |
+| `cashouts_history` | Histórico de saques | Leitura | Financeiro |
+| `get_cashout` | Ver detalhe do saque | Leitura | Financeiro |
+| `list_wallets` | Listar carteiras | Leitura | Financeiro |
+| `get_wallet_balance` | Saldo da carteira | Leitura | Financeiro |
+| `get_wallet_statement` | Extrato da carteira | Leitura | Financeiro |
+
+</Accordion>
+
+<Accordion title="Cupons" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `get_coupons_usage` | Ver uso de cupons | Leitura | Produtos |
+| `list_coupons` | Listar cupons | Leitura | Produtos |
+| `create_coupon` | Criar cupom | Criação e alteração | Produtos |
+| `get_coupon` | Ver detalhe do cupom | Leitura | Produtos |
+| `update_coupon` | Atualizar cupom | Irreversível (pede confirmação) | Produtos |
+| `delete_coupon` | Excluir o cupom | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons, checkouts e lotes) |
+
+</Accordion>
+
+<Accordion title="Checkouts" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `list_checkouts` | Listar checkouts | Leitura | Produtos |
+| `create_checkout` | Criar checkout | Irreversível (pede confirmação) | Produtos |
+| `get_checkout` | Ver detalhe do checkout | Leitura | Produtos |
+| `update_checkout` | Atualizar checkout | Irreversível (pede confirmação) | Produtos |
+| `duplicate_checkout` | Duplicar o checkout | Criação e alteração | Produtos |
+| `delete_checkout` | Excluir o checkout | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons, checkouts e lotes) |
+
+</Accordion>
+
+<Accordion title="Relatórios" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `get_dashboard` | Ver dashboard | Leitura | Relatórios |
+| `get_smart_advanced` | Ver Smart Advanced | Leitura | Relatórios |
+| `get_smart_source_totals` | Ver totais do Smart Source | Leitura | Relatórios |
+| `get_smart_source` | Ver Smart Source | Leitura | Relatórios |
+
+</Accordion>
+
+<Accordion title="Webhooks" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `list_webhook_events` | Ver eventos de webhook | Leitura | Webhooks |
+| `list_webhook_folders` | Listar pastas de webhooks | Leitura | Webhooks |
+| `create_webhook_folder` | Criar pasta de webhooks | Criação e alteração | Webhooks |
+| `list_webhooks` | Listar webhooks | Leitura | Webhooks |
+| `create_webhook` | Criar webhook | Irreversível (pede confirmação) | Webhooks |
+| `get_webhook` | Ver detalhe do webhook | Leitura | Webhooks |
+| `update_webhook` | Atualizar webhook | Irreversível (pede confirmação) | Webhooks |
+| `toggle_webhook` | Ativar/desativar o webhook | Criação e alteração | Webhooks |
+| `delete_webhook` | Excluir o webhook | Irreversível (pede confirmação) | Webhooks |
+
+</Accordion>
+
+<Accordion title="Integrações" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `list_integrations` | Listar integrações | Leitura | Integrações |
+| `get_integration` | Ver detalhe da integração | Leitura | Integrações |
+| `list_integration_rule_offers` | Ver ofertas disponíveis para regra | Leitura | Integrações |
+| `list_integration_rules` | Listar regras da integração | Leitura | Integrações |
+| `create_integration_rule` | Criar regra na integração | Irreversível (pede confirmação) | Integrações |
+| `delete_integration_rule` | Excluir a regra da integração | Irreversível (pede confirmação) | Integrações |
+| `list_segmentations` | Listar segmentações | Leitura | Integrações |
+| `create_segmentation` | Criar segmentação | Irreversível (pede confirmação) | Integrações |
+| `get_segmentation` | Ver detalhe da segmentação | Leitura | Integrações |
+| `update_segmentation` | Atualizar segmentação | Irreversível (pede confirmação) | Integrações |
+| `delete_segmentation` | Excluir a segmentação | Irreversível (pede confirmação) | Integrações |
+| `list_integration_resources` | Buscar listas na ferramenta da integração | Criação e alteração | Integrações |
+
+</Accordion>
+
+<Accordion title="Agentes de IA" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `list_ai_agent_products` | Ver produtos que podem ter agente | Leitura | Agentes de IA |
+| `get_ai_agents_overview` | Ver visão geral dos agentes | Leitura | Agentes de IA |
+| `list_ai_agent_conversations` | Ver conversas dos agentes | Leitura | Agentes de IA |
+| `list_ai_agents` | Listar agentes | Leitura | Agentes de IA |
+| `create_ai_agent` | Criar agente | Criação e alteração | Agentes de IA |
+| `get_ai_agent` | Ver detalhe do agente | Leitura | Agentes de IA |
+| `get_ai_agent_metrics` | Ver métricas do agente | Leitura | Agentes de IA |
+| `update_ai_agent` | Atualizar agente | Criação e alteração | Agentes de IA |
+| `update_ai_agent_knowledge` | Atualizar base de conhecimento do agente | Criação e alteração | Agentes de IA |
+| `publish_ai_agent` | Publicar o agente | Irreversível (pede confirmação) | Agentes de IA |
+| `unpublish_ai_agent` | Despublicar o agente | Criação e alteração | Agentes de IA |
+| `list_ai_agent_personas` | Listar personas | Leitura | Agentes de IA |
+| `create_ai_agent_persona` | Criar persona | Criação e alteração | Agentes de IA |
+| `update_ai_agent_persona` | Atualizar persona | Criação e alteração | Agentes de IA |
+| `delete_ai_agent_persona` | Excluir a persona | Irreversível (pede confirmação) | Agentes de IA |
+
+</Accordion>
+
+<Accordion title="Eventos" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `get_attendees_totals` | Ver totais de participantes | Leitura | Produtos |
+| `get_attendees_pending` | Ver credenciamentos pendentes | Leitura | Produtos |
+| `list_attendees` | Listar participantes | Leitura | Produtos |
+| `list_batches` | Listar lotes | Leitura | Produtos |
+| `create_batch` | Criar lote | Criação e alteração | Produtos |
+| `get_batch` | Ver detalhe do lote | Leitura | Produtos |
+| `update_batch` | Atualizar lote | Irreversível (pede confirmação) | Produtos |
+| `duplicate_batch` | Duplicar o lote | Criação e alteração | Produtos |
+| `delete_batch` | Excluir o lote | Irreversível (pede confirmação) | Excluir (produtos, ofertas, cupons, checkouts e lotes) |
+| `invite_attendee` | Convidar participante para o lote | Irreversível (pede confirmação) | Produtos |
+| `send_all_checkin_emails` | Enviar o e-mail de check-in a todos os pendentes | Irreversível (pede confirmação) | Produtos |
+| `send_checkin_email` | Enviar o e-mail de check-in a um participante | Criação e alteração | Produtos |
+| `resend_accreditation` | Reenviar o e-mail de credenciamento | Criação e alteração | Produtos |
+
+</Accordion>
+
+<Accordion title="Portais e turmas" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `list_member_portals` | Listar portais | Leitura | Área de membros |
+| `get_member_portal` | Detalhe do portal | Leitura | Área de membros |
+| `get_member_portal_url` | URL de acesso do portal | Leitura | Área de membros |
+| `list_member_classrooms` | Turmas do portal | Leitura | Área de membros |
+| `get_member_classroom` | Detalhe da turma | Leitura | Área de membros |
+| `list_member_classroom_contents` | Conteúdos liberados na turma | Leitura | Área de membros |
+| `list_member_sections` | Seções da vitrine do portal | Leitura | Área de membros |
+| `list_member_notices` | Avisos do portal | Leitura | Área de membros |
+| `list_member_releases` | Próximos lançamentos do portal | Leitura | Área de membros |
+| `list_member_free_accesses` | Acessos gratuitos do portal | Leitura | Área de membros |
+| `get_member_free_access` | Detalhe do acesso gratuito | Leitura | Área de membros |
+| `update_member_portal` | Atualiza o portal | Irreversível (pede confirmação) | Área de membros |
+| `create_member_classroom` | Cria turma | Criação e alteração | Área de membros |
+| `update_member_classroom` | Atualiza a turma | Criação e alteração | Área de membros |
+| `move_member_classroom` | Reordena a turma no portal | Criação e alteração | Área de membros |
+| `delete_member_classroom` | Exclui a turma | Irreversível (pede confirmação) | Área de membros |
+| `set_member_classroom_contents` | Libera conteúdos na turma | Criação e alteração | Área de membros |
+| `remove_member_classroom_contents` | Tira conteúdos da turma | Irreversível (pede confirmação) | Área de membros |
+| `create_member_section` | Cria seção da vitrine | Criação e alteração | Área de membros |
+| `create_member_notice` | Cria aviso | Criação e alteração | Área de membros |
+| `create_member_release` | Cria próximo lançamento | Criação e alteração | Área de membros |
+| `update_member_release` | Atualiza o próximo lançamento | Criação e alteração | Área de membros |
+| `delete_member_release` | Exclui o próximo lançamento | Irreversível (pede confirmação) | Área de membros |
+| `create_member_free_access` | Cria acesso gratuito | Irreversível (pede confirmação) | Área de membros |
+| `update_member_free_access` | Atualiza o acesso gratuito | Irreversível (pede confirmação) | Área de membros |
+| `link_member_portal_to_product` | Vincular o portal ao produto | Criação e alteração | Área de membros |
+| `unlink_member_portal_from_product` | Desvincula o portal do produto | Irreversível (pede confirmação) | Área de membros |
+
+</Accordion>
+
+<Accordion title="Conteúdos" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `list_member_contents` | Listar conteúdos | Leitura | Área de membros |
+| `get_member_content` | Detalhe do conteúdo | Leitura | Área de membros |
+| `list_member_content_classrooms` | Turmas que têm o conteúdo | Leitura | Área de membros |
+| `list_member_modules` | Módulos do conteúdo | Leitura | Área de membros |
+| `get_member_module` | Detalhe do módulo | Leitura | Área de membros |
+| `get_member_lesson` | Detalhe da aula | Leitura | Área de membros |
+| `list_member_lesson_elements` | Elementos da aula | Leitura | Área de membros |
+| `get_member_quiz` | Detalhe do quiz | Leitura | Área de membros |
+| `list_member_quiz_questions` | Perguntas do quiz | Leitura | Área de membros |
+| `get_member_certificate` | Certificado do conteúdo | Leitura | Área de membros |
+| `create_member_content` | Cria conteúdo | Criação e alteração | Área de membros |
+| `update_member_content` | Atualiza o conteúdo | Criação e alteração | Área de membros |
+| `clone_member_content` | Clona o conteúdo | Criação e alteração | Área de membros |
+| `move_member_content` | Reordena o conteúdo | Criação e alteração | Área de membros |
+| `delete_member_content` | Exclui o conteúdo | Irreversível (pede confirmação) | Área de membros |
+| `create_member_module` | Cria módulo no conteúdo | Criação e alteração | Área de membros |
+| `update_member_module` | Atualiza o módulo | Criação e alteração | Área de membros |
+| `move_member_module` | Reordena o módulo no conteúdo | Criação e alteração | Área de membros |
+| `delete_member_module` | Exclui o módulo | Irreversível (pede confirmação) | Área de membros |
+| `create_member_submodule` | Cria submódulo | Criação e alteração | Área de membros |
+| `create_member_lesson` | Cria aula | Criação e alteração | Área de membros |
+| `update_member_lesson` | Atualiza a aula | Criação e alteração | Área de membros |
+| `delete_member_lesson` | Exclui a aula | Irreversível (pede confirmação) | Área de membros |
+| `delete_member_lesson_element` | Exclui um elemento da aula | Irreversível (pede confirmação) | Área de membros |
+| `create_member_quiz` | Cria quiz | Criação e alteração | Área de membros |
+| `update_member_quiz` | Atualiza o quiz | Criação e alteração | Área de membros |
+| `delete_member_quiz` | Exclui o quiz | Irreversível (pede confirmação) | Área de membros |
+| `create_member_question` | Cria pergunta no quiz | Criação e alteração | Área de membros |
+| `update_member_question` | Atualiza a pergunta | Criação e alteração | Área de membros |
+| `move_member_question` | Reordena a pergunta no quiz | Criação e alteração | Área de membros |
+| `delete_member_question` | Exclui a pergunta | Irreversível (pede confirmação) | Área de membros |
+| `save_member_certificate` | Salva o certificado do conteúdo | Criação e alteração | Área de membros |
+
+</Accordion>
+
+<Accordion title="Alunos" icon="sparkles">
+
+| Tool | O que faz | Tipo | Permissão |
+|---|---|---|---|
+| `list_member_students` | Listar alunos | Leitura | Área de membros |
+| `get_member_student_progress` | Progresso do aluno | Leitura | Área de membros |
+| `list_member_comments` | Comentários dos alunos | Leitura | Área de membros |
+| `get_member_report_general` | Relatório geral da área de membros | Leitura | Área de membros |
+| `get_member_report_answers` | Respostas de quiz por mês | Leitura | Área de membros |
+| `get_member_report_access_expiration` | Acessos que vão expirar | Leitura | Área de membros |
+| `create_member_student` | Cadastra aluno | Irreversível (pede confirmação) | Área de membros |
+| `give_member_freepass` | Libera/tira o passe livre do aluno nas turmas do produtor | Irreversível (pede confirmação) | Área de membros |
+
+</Accordion>
+
+</AccordionGroup>

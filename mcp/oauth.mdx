@@ -1,0 +1,131 @@
+---
+title: "OAuth para desenvolvedores"
+sidebarTitle: "OAuth para desenvolvedores"
+description: "Detalhes do OAuth 2.1 do MCP da Ticto para quem constrói o próprio cliente: descoberta, registro do cliente, PKCE, tokens e o nome exibido na autorização."
+---
+
+O MCP da Ticto segue a [especificação de autorização do MCP](https://modelcontextprotocol.io/specification/draft/basic/authorization): OAuth 2.1 com PKCE, descoberta por metadados e registro de cliente sem cadastro manual. Clientes MCP prontos já fazem tudo isto sozinhos; esta página é para quem constrói um cliente.
+
+Os exemplos usam produção (`https://api.ticto.cloud`). No sandbox, troque por `https://sandbox.ticto.cloud`.
+
+## Servidor MCP
+
+| | |
+|---|---|
+| Endpoint | `POST https://api.ticto.cloud/mcp` |
+| Transporte | Streamable HTTP, JSON-RPC sem sessão (`GET` responde `405`) |
+| Versões do protocolo | `2025-11-25`, `2025-06-18`, `2025-03-26` |
+| Autenticação | `Authorization: Bearer <access_token>` |
+
+## 1. Descoberta
+
+Sem token, o `/mcp` responde `401` apontando os metadados:
+
+```http
+HTTP/2 401
+WWW-Authenticate: Bearer resource_metadata="https://api.ticto.cloud/.well-known/oauth-protected-resource/mcp", scope="orders:read subscriptions:read products:read ..."
+```
+
+| Documento | Endereço |
+|---|---|
+| Protected resource (RFC 9728) | `/.well-known/oauth-protected-resource` (também em `/.well-known/oauth-protected-resource/mcp`) |
+| Authorization server (RFC 8414) | `/.well-known/oauth-authorization-server` |
+
+O authorization server informa:
+
+| Campo | Valor |
+|---|---|
+| `authorization_endpoint` | A tela **Autorizar acesso** do painel (`/oauth/authorize`) |
+| `token_endpoint` | `/api/oauth/token` |
+| `registration_endpoint` | `/api/oauth/register` |
+| `grant_types_supported` | `authorization_code`, `refresh_token` |
+| `code_challenge_methods_supported` | `S256` |
+| `token_endpoint_auth_methods_supported` | `none`, `client_secret_post`, `client_secret_basic` |
+| `client_id_metadata_document_supported` | `true` |
+
+## 2. Registro do cliente
+
+Escolha **uma** das formas. Nenhuma exige cadastro manual na Ticto. As credenciais da API v1 (`client_id` e `client_secret` do painel) não valem no MCP.
+
+<Tabs>
+  <Tab title="Client ID Metadata Document">
+    O `client_id` é uma URL `https` que devolve um JSON com `client_id` (a própria URL), `client_name` e `redirect_uris`. É como Claude, ChatGPT e VS Code se identificam.
+
+    Regras: a URL precisa resolver para IP público, na porta `443`, sem redirecionamento e com no máximo 64 KB.
+  </Tab>
+  <Tab title="Registro dinâmico (RFC 7591)">
+    ```bash
+    curl -X POST https://api.ticto.cloud/api/oauth/register \
+      -H "Content-Type: application/json" \
+      -d '{
+        "client_name": "Meu agente",
+        "redirect_uris": ["https://meuapp.com/oauth/callback"],
+        "grant_types": ["authorization_code", "refresh_token"],
+        "response_types": ["code"],
+        "token_endpoint_auth_method": "none"
+      }'
+    ```
+
+    A resposta traz o `client_id`. O registro não guarda estado: o `client_id` é assinado pela Ticto e carrega o nome e os `redirect_uris`.
+
+    - `redirect_uris`: `https`, `http` só em loopback (`127.0.0.1`, `localhost`) ou esquema próprio de app nativo (ex.: `cursor://`). Sem fragmento.
+    - `grant_types`: só `authorization_code` e `refresh_token`.
+    - Peça `client_secret_post` ou `client_secret_basic` em `token_endpoint_auth_method` se quiser um `client_secret`; com `none` o cliente é público e o PKCE protege a troca.
+    - Limite: 30 registros por minuto por IP.
+  </Tab>
+</Tabs>
+
+### Nome exibido na autorização
+
+A tela **Autorizar acesso** mostra o `client_name` do seu cliente (sem caracteres de controle, até 80 caracteres). No registro dinâmico sem `client_name`, aparece o host do primeiro `redirect_uri`. O nome que o usuário digita no próprio app não é enviado à Ticto.
+
+Só os clientes oficiais do Claude aparecem como verificados. Os demais funcionam normalmente, com o aviso de cliente não verificado na tela.
+
+## 3. Autorização (PKCE)
+
+Abra no navegador do usuário:
+
+```text
+https://<painel>/oauth/authorize
+  ?response_type=code
+  &client_id=<client_id>
+  &redirect_uri=<redirect_uri registrado>
+  &code_challenge=<BASE64URL(SHA256(code_verifier))>
+  &code_challenge_method=S256
+  &state=<aleatório>
+  &scope=orders:read products:read products:write
+  &resource=https://api.ticto.cloud/mcp
+```
+
+- `scope` é opcional: sem ele, a tela oferece todas as [permissões](/mcp/permissions). Escopos que o MCP não conhece (ex.: `openid`, `offline_access`) são ignorados.
+- Só o dono do time autoriza. Colaborador recebe `403` com `error=owner_only` na tela.
+- O usuário pode desmarcar áreas. O que ele marcar vira a **conexão do seu cliente** (identificada pelo `client_id`), com permissões próprias. O claim `scp` do token mostra o que foi marcado na autorização; o que vale em cada chamada é a conexão, que o usuário pode ajustar depois em Ferramentas MCP.
+- Se o usuário negar, o retorno é `error=access_denied` com o `state`.
+- Erro de `client_id` ou `redirect_uri` nunca redireciona: a tela mostra o erro.
+
+## 4. Tokens
+
+```bash
+curl -X POST https://api.ticto.cloud/api/oauth/token \
+  -d grant_type=authorization_code \
+  -d code=<code> \
+  -d redirect_uri=<redirect_uri> \
+  -d client_id=<client_id> \
+  -d code_verifier=<code_verifier> \
+  -d resource=https://api.ticto.cloud/mcp
+```
+
+| Token | Formato | Validade |
+|---|---|---|
+| `access_token` | JWT com `aud` = endereço do `/mcp` | 60 minutos (`expires_in`) |
+| `refresh_token` | Opaco, de uso único | Até 14 dias |
+
+Renove com `grant_type=refresh_token`. Cada renovação devolve um `refresh_token` novo; reusar um já usado revoga a família inteira de tokens daquela autorização.
+
+<Warning>
+  O MCP é separado da API pública: endpoint de token e chave de assinatura próprios. O `access_token` do MCP só vale no `/mcp` e é recusado na API v1 e na API v2; tokens da v1 e da v2 (`ticto_live_`) não entram no `/mcp`.
+</Warning>
+
+## Revogação
+
+O usuário desconecta o seu cliente pelo painel, em [Ferramentas MCP](/mcp/manage) → **Gerenciar conexões**. Os tokens do seu cliente emitidos até ali, inclusive os de renovação, param de valer na hora; o cliente recebe `401` e precisa iniciar a autorização de novo. Desconectar um cliente não afeta os outros clientes do mesmo usuário.

@@ -95,6 +95,23 @@
             "pages": ["webhooks/v1", "webhooks/abandoned-cart-v1"]
           }
         ]
+      },
+      {
+        "tab": "MCP",
+        "groups": [
+          {
+            "group": "Introdução",
+            "pages": ["mcp/introduction", "mcp/connect"]
+          },
+          {
+            "group": "Uso",
+            "pages": ["mcp/permissions", "mcp/manage", "mcp/tools", "mcp/limits"]
+          },
+          {
+            "group": "Desenvolvedores",
+            "pages": ["mcp/oauth"]
+          }
+        ]
       }
     ]
   },

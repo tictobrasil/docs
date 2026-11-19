@@ -1,0 +1,89 @@
+---
+title: "Conectar o seu agente"
+sidebarTitle: "Conectar"
+description: "Endereço do servidor MCP da Ticto e o passo a passo para conectar Claude, ChatGPT, Cursor, VS Code e outros clientes."
+---
+
+## Endereço do servidor
+
+| Ambiente | Endereço do MCP |
+|---|---|
+| **Produção** | `https://api.ticto.cloud/mcp` |
+| **Sandbox** | `https://sandbox.ticto.cloud/mcp` |
+
+<Tip>
+  O endereço certo da sua conta também aparece no painel, em **Ferramentas MCP → Dados de conexão**, com o botão **Copiar endpoint**.
+</Tip>
+
+O transporte é **HTTP (Streamable HTTP)** e a autenticação é **OAuth 2.1**. Você não precisa gerar token nem colar chave: o cliente descobre sozinho como autenticar e abre a tela da Ticto.
+
+## Passo a passo por cliente
+
+<Tabs>
+  <Tab title="Claude (claude.ai / Desktop)">
+    1. Abra **Settings → Connectors** e clique em **Add custom connector**.
+    2. Dê um nome (ex.: `Ticto`) e cole o endereço do MCP.
+    3. Clique em **Connect**. A tela **Autorizar acesso** da Ticto abre no navegador.
+  </Tab>
+  <Tab title="Claude Code">
+    ```bash
+    claude mcp add --transport http ticto https://api.ticto.cloud/mcp
+    ```
+    Depois, rode `/mcp` no Claude Code, escolha `ticto` e **Authenticate**.
+  </Tab>
+  <Tab title="Cursor">
+    Em `~/.cursor/mcp.json` (ou `.cursor/mcp.json` no projeto):
+    ```json
+    {
+      "mcpServers": {
+        "ticto": { "url": "https://api.ticto.cloud/mcp" }
+      }
+    }
+    ```
+    O Cursor pede para autenticar na primeira vez que usar o servidor.
+  </Tab>
+  <Tab title="VS Code">
+    Em `.vscode/mcp.json`:
+    ```json
+    {
+      "servers": {
+        "ticto": { "type": "http", "url": "https://api.ticto.cloud/mcp" }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Outros clientes">
+    Qualquer cliente com MCP remoto (HTTP) e OAuth 2.1 funciona: ChatGPT, Windsurf, Gemini CLI, MCP Inspector, Le Chat e outros. Informe o endereço do MCP; o cliente faz o resto. Veja [OAuth para desenvolvedores](/mcp/oauth) se você estiver construindo o seu próprio cliente.
+  </Tab>
+</Tabs>
+
+<Note>
+  Só o **dono do time** conecta agentes. Se um colaborador tentar, a tela de autorização avisa e pede para o dono fazer a conexão.
+</Note>
+
+## A tela de autorização
+
+Ao conectar, o cliente abre **Autorizar acesso** no painel da Ticto:
+
+<Steps>
+  <Step title="Login">
+    Se você não estiver logado, entra com a sua conta Ticto.
+  </Step>
+  <Step title="Conta e time">
+    A tela mostra a conta e o time em que o agente vai trabalhar: o time que está ativo no painel.
+  </Step>
+  <Step title="O que liberar">
+    Cada área (Pedidos, Assinaturas, Produtos...) é um card, todas marcadas no início, menos **Cancelar assinaturas** e **Excluir produtos, ofertas, cupons e checkouts**, que você marca de propósito. Desmarque o que este agente não deve usar. Veja [Permissões](/mcp/permissions).
+  </Step>
+  <Step title="Autorizar">
+    Clique em **Autorizar**. O navegador volta para o cliente e a conexão daquele agente fica pronta. Ela aparece em **Ferramentas MCP → Gerenciar conexões**.
+  </Step>
+</Steps>
+
+<Warning>
+  Se a tela mostrar o aviso **"Este aplicativo não foi verificado pela Ticto"**, só autorize se foi **você** quem iniciou a conexão e se confia no aplicativo. Apenas os clientes oficiais do Claude aparecem como verificados; os demais clientes funcionam normalmente, mas mostram o aviso.
+</Warning>
+
+## Trocar de time
+
+O agente trabalha no time que estava ativo quando você autorizou. Se você trocar de time no painel, o MCP para de agir e pede para reconectar: conecte de novo com o time desejado ativo.

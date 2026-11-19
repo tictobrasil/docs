@@ -1,0 +1,69 @@
+---
+title: "Ferramentas MCP"
+sidebarTitle: "Ferramentas MCP"
+description: "Controle pelo painel, agente por agente, quais ferramentas cada um pode usar; pause ou desconecte um agente sem afetar os outros."
+---
+
+A tela **Ferramentas MCP** fica no painel da Ticto, no menu do seu avatar, em **MCP**. Ela mostra o servidor MCP da sua conta, os dados de conexão e os **agentes conectados**, cada um com as próprias ferramentas. As mudanças valem na hora.
+
+## Servidor MCP
+
+O switch **Servidor MCP** no topo controla o MCP inteiro da sua conta.
+
+<Tabs>
+  <Tab title="Desligar (desconectar todos)">
+    Ao desligar, você confirma em **Desconectar o agente de IA**:
+
+    - Os acessos de **todos** os agentes são revogados na hora.
+    - O Servidor MCP fica pausado: nenhum agente vê nem executa ferramentas.
+  </Tab>
+  <Tab title="Religar">
+    Ao religar, o MCP volta a ficar ativo, mas cada agente **precisa conectar de novo**, porque os acessos foram revogados. A tela avisa: **"MCP reativado. Conecte o agente de IA de novo para voltar a usar."**
+
+    Autorizar de novo pelo agente também reativa o MCP.
+  </Tab>
+</Tabs>
+
+## Dados de conexão
+
+- **Endpoint**: o endereço do servidor MCP, com o botão **Copiar endpoint**.
+- **Autenticação**: OAuth 2.1. Ao conectar, o agente abre a tela de autorização da Ticto. Não existe token para copiar.
+
+## Permissões de cada agente
+
+Em **Editando permissões de**, escolha o agente. As ferramentas ficam em abas por área:
+
+| Aba | O que tem |
+|---|---|
+| **Vendas e relatórios** | Pedidos, assinaturas, saques, relatórios e financeiro |
+| **Produtos** | Produtos, ofertas, checkouts, cupons, lotes e ingressos |
+| **Webhooks e integrações** | Webhooks, regras e segmentações |
+| **Área de membros** | Portais, turmas, conteúdos e alunos |
+| **Agentes de IA** | Agentes, personas e conversas |
+
+Cada ferramenta tem um switch e a indicação de risco (**Baixo**, **Médio** ou **Alto**). Você também pode usar **Ativar todas** / **Desativar todas** na aba ou **Ativar grupo** / **Desativar grupo** em cada recurso.
+
+As mudanças ficam pendentes até você clicar em **Salvar permissões de** *agente*, na barra que aparece embaixo. Se trocar de agente com alteração pendente, a tela pergunta se quer **Salvar e trocar**, **Descartar e trocar** ou **Continuar editando**.
+
+Ferramenta desligada some da lista daquele agente e, se ele tentar usá-la, a chamada é recusada com o aviso de que foi desligada por você.
+
+<Note>
+  O que você desmarcou na autorização começa **desligado** para aquele agente. Ligar libera a área na hora, sem reconectar, e só para ele.
+</Note>
+
+## Gerenciar conexões
+
+Em **Gerenciar conexões** você vê todos os agentes conectados:
+
+| Coluna | O que mostra |
+|---|---|
+| **Conexão** | Nome do agente (o que ele informa à Ticto), data da conexão e se não é verificado |
+| **Status** | **Ativa** ou **Pausada** |
+| **Último uso** | Quando o agente chamou o MCP pela última vez |
+| **Permissões ativas** | Quantas ferramentas estão ligadas para ele |
+
+Ações em cada linha:
+
+- **Permissões**: abre as ferramentas daquele agente.
+- **Pausar** / **Reativar**: o agente para de ver e executar ferramentas, mas continua conectado. Os outros não mudam.
+- **Desconectar**: os acessos daquele agente são revogados na hora. Os outros continuam funcionando. Para voltar a usar, conecte de novo pelo agente.
